@@ -51,6 +51,14 @@ jobs:
           test -f target/${{ steps.version.outputs.jar }}
           sha256sum "$JAR" | tee "${{ steps.version.outputs.jar }}.sha256"
 
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.version.outputs.jar }}
+          path: target/${{ steps.version.outputs.jar }}
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Publish direct JAR release asset
         env:
           GH_TOKEN: ${{ github.token }}
