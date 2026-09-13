@@ -4,7 +4,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import io.taraxacum.libs.plugin.util.TextUtil;
 import io.taraxacum.libs.slimefun.interfaces.ShowInfoItem;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +26,7 @@ import java.util.regex.Pattern;
  */
 public final class GuideItemLoreUtil {
     private static final int MAX_PURPOSE_LINES = 3;
+    private static final int MAX_LINE_LENGTH = 42;
     private static final Pattern DYNAMIC_PLACEHOLDER = Pattern.compile("\\{\\d+}");
 
     private static final Map<String, String> EXACT_FALLBACKS = Map.ofEntries(
@@ -94,7 +94,8 @@ public final class GuideItemLoreUtil {
             return explicit;
         }
 
-        // Prefer runtime information because placeholders such as {1} are already resolved there.
+        // ShowInfoItem is what FinalTECH itself uses to populate the Item Info panel.
+        // Prefer its Usage/Mechanism section so dynamic values are already resolved.
         if (slimefunItem instanceof ShowInfoItem showInfoItem) {
             List<String> runtimeInfo = deriveFromResolvedInfo(showInfoItem.getInfos());
             if (!runtimeInfo.isEmpty()) {
@@ -112,23 +113,50 @@ public final class GuideItemLoreUtil {
             return configuredInfo;
         }
 
-        return wrap(ChatColor.GRAY + fallbackPurpose(id, slimefunItem.getItemName()));
+        return wrapGray(fallbackPurpose(id, slimefunItem.getItemName()));
     }
 
     @Nonnull
-    private static List<String> deriveFromResolvedInfo(@Nonnull Map<String, String> infos) {
-        for (String preferred : List.of("purpose", "usage", "function", "mechanism", "description")) {
-            for (Map.Entry<String, String> entry : infos.entrySet()) {
-                String heading = ChatColor.stripColor(entry.getKey());
-                if (heading != null && heading.toLowerCase(Locale.ROOT).contains(preferred)) {
-                    List<String> lines = stableWrappedValue(entry.getValue());
-                    if (!lines.isEmpty()) {
-                        return lines;
-                    }
+    private static List<String> deriveFromResolvedInfo(@Nonnull String[] infos) {
+        List<String> result = new ArrayList<>();
+        boolean collect = false;
+
+        for (String line : infos) {
+            if (line == null || line.isBlank()) {
+                if (collect && !result.isEmpty()) {
+                    break;
+                }
+                continue;
+            }
+
+            String plain = ChatColor.stripColor(line);
+            if (plain == null) {
+                continue;
+            }
+            String normalized = plain.trim().toLowerCase(Locale.ROOT);
+            boolean heading = normalized.contains("usage")
+                    || normalized.contains("mechanism")
+                    || normalized.contains("function")
+                    || normalized.contains("purpose")
+                    || normalized.contains("description");
+
+            if (heading) {
+                collect = true;
+                int colon = plain.indexOf(':');
+                if (colon >= 0 && colon + 1 < plain.length()) {
+                    appendWrappedGray(result, plain.substring(colon + 1).trim());
+                }
+                continue;
+            }
+
+            if (collect) {
+                appendWrappedGray(result, plain);
+                if (result.size() >= MAX_PURPOSE_LINES) {
+                    break;
                 }
             }
         }
-        return List.of();
+        return result;
     }
 
     @Nonnull
@@ -164,9 +192,9 @@ public final class GuideItemLoreUtil {
             return List.of();
         }
 
+        List<String> result = new ArrayList<>();
         List<String> configured = languageManager.getStringList(path);
         if (!configured.isEmpty()) {
-            List<String> result = new ArrayList<>();
             for (String line : configured) {
                 appendStableWrapped(result, line);
                 if (result.size() >= MAX_PURPOSE_LINES) {
@@ -178,16 +206,9 @@ public final class GuideItemLoreUtil {
 
         String scalar = languageManager.getString(path);
         String rawPath = String.join(".", path);
-        if (scalar.equals(rawPath)) {
-            return List.of();
+        if (!scalar.equals(rawPath)) {
+            appendStableWrapped(result, scalar);
         }
-        return stableWrappedValue(scalar);
-    }
-
-    @Nonnull
-    private static List<String> stableWrappedValue(String value) {
-        List<String> result = new ArrayList<>();
-        appendStableWrapped(result, value);
         return result;
     }
 
@@ -195,25 +216,37 @@ public final class GuideItemLoreUtil {
         if (value == null || value.isBlank() || DYNAMIC_PLACEHOLDER.matcher(value).find()) {
             return;
         }
-        for (String line : TextUtil.getSmallString(value, 40)) {
-            if (!line.isBlank()) {
-                result.add(ChatColor.GRAY + line);
+        appendWrappedGray(result, ChatColor.stripColor(value));
+    }
+
+    private static void appendWrappedGray(@Nonnull List<String> result, String value) {
+        if (value == null || value.isBlank() || result.size() >= MAX_PURPOSE_LINES) {
+            return;
+        }
+
+        StringBuilder current = new StringBuilder();
+        for (String word : value.trim().split("\\s+")) {
+            if (current.length() > 0 && current.length() + 1 + word.length() > MAX_LINE_LENGTH) {
+                result.add(ChatColor.GRAY + current.toString());
+                current.setLength(0);
                 if (result.size() >= MAX_PURPOSE_LINES) {
                     return;
                 }
             }
+            if (current.length() > 0) {
+                current.append(' ');
+            }
+            current.append(word);
+        }
+        if (current.length() > 0 && result.size() < MAX_PURPOSE_LINES) {
+            result.add(ChatColor.GRAY + current.toString());
         }
     }
 
     @Nonnull
-    private static List<String> wrap(@Nonnull String value) {
+    private static List<String> wrapGray(@Nonnull String value) {
         List<String> result = new ArrayList<>();
-        for (String line : TextUtil.getSmallString(value, 40)) {
-            result.add(line);
-            if (result.size() >= MAX_PURPOSE_LINES) {
-                break;
-            }
-        }
+        appendWrappedGray(result, value);
         return result;
     }
 
