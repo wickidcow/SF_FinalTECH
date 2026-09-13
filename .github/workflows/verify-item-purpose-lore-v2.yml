@@ -34,7 +34,7 @@ jobs:
           grep -F 'Left-click: Give 1' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
           grep -F 'Right-click: Give a full stack' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
           grep -F 'Shift-click: Bookmark' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
-          grep -F "name: '{color:positive}Item Info'" src/main/resources/language/en-US.yml
+          grep -F "name: '{color:stress}Item Info'" src/main/resources/language/en-US.yml
           ! grep -F 'Shift-click: Give a full stack' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
 
       - name: Validate English YAML quoting
