@@ -8,7 +8,6 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.taraxacum.common.util.ReflectionUtil;
 import io.taraxacum.common.util.StringUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.command.ShowItemInfo;
 import io.taraxacum.finaltech.core.command.TransformToCopyCardItem;
 import io.taraxacum.finaltech.core.command.TransformToStorageItem;
@@ -27,6 +26,7 @@ import io.taraxacum.libs.slimefun.util.ResearchUtil;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemFlag;
@@ -110,6 +110,23 @@ public final class SetupUtil {
                 }
             }
         });
+
+        setupGuideHelperLanguage(languageManager);
+    }
+
+    private static void setupGuideHelperLanguage(@Nonnull LanguageManager languageManager) {
+        String path = "helper.ICON.wiki-icon.name";
+        String currentName = languageManager.containPath("helper", "ICON", "wiki-icon", "name")
+                ? languageManager.getString("helper", "ICON", "wiki-icon", "name")
+                : "";
+        String plainName = ChatColor.stripColor(currentName);
+
+        if (plainName == null
+                || plainName.isBlank()
+                || plainName.equalsIgnoreCase("Parameters")
+                || currentName.equals(path)) {
+            languageManager.setValue("{color:stress}Item Info", "helper", "ICON", "wiki-icon", "name");
+        }
     }
 
     private static void setupEnchantment() {

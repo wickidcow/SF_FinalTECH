@@ -14,6 +14,7 @@ import io.github.thebusybiscuit.slimefun4.core.multiblocks.MultiBlockMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
+import io.taraxacum.finaltech.util.GuideItemLoreUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.util.GuideUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
@@ -223,8 +224,7 @@ public class SubFlexItemGroup extends FlexItemGroup {
                     Research research = slimefunItem.getResearch();
                     boolean cheatMode = slimefunGuideMode == SlimefunGuideMode.CHEAT_MODE;
                     if (cheatMode || research == null || playerProfile.hasUnlocked(research)) {
-                        ItemStack itemStack = ItemStackUtil.cloneWithoutNBT(slimefunItem.getItem());
-                        ItemStackUtil.addLoreToFirst(itemStack, "§7" + slimefunItem.getId());
+                        ItemStack itemStack = GuideItemLoreUtil.createGuideIcon(slimefunItem, cheatMode);
                         if (hasLegacyBookmarks()
                                 && isBookmarked(player, slimefunItem)) {
                             ItemStackUtil.addLoreToFirst(itemStack, "§6★ Bookmarked");
