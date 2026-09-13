@@ -55,7 +55,7 @@ call_replacement = '''        });
                 || plainName.isBlank()
                 || plainName.equalsIgnoreCase("Parameters")
                 || currentName.equals(path)) {
-            languageManager.setValue("{color:positive}Item Info", "helper", "ICON", "wiki-icon", "name");
+            languageManager.setValue("{color:stress}Item Info", "helper", "ICON", "wiki-icon", "name");
         }
     }
 
@@ -68,10 +68,16 @@ if 'setupGuideHelperLanguage(languageManager);' not in setup:
 setup_path.write_text(setup, encoding='utf-8')
 
 yaml_text = yaml_path.read_text(encoding='utf-8')
-old_name = "      name: '{color:positive}Parameters'"
-new_name = "      name: '{color:positive}Item Info'"
-if old_name in yaml_text:
-    yaml_text = yaml_text.replace(old_name, new_name, 1)
-elif new_name not in yaml_text:
-    raise SystemExit('wiki icon English name was not found')
+old_names = [
+    "      name: '{color:stress}Parameters'",
+    "      name: '{color:positive}Parameters'",
+]
+new_name = "      name: '{color:stress}Item Info'"
+for old_name in old_names:
+    if old_name in yaml_text:
+        yaml_text = yaml_text.replace(old_name, new_name, 1)
+        break
+else:
+    if new_name not in yaml_text:
+        raise SystemExit('wiki icon English name was not found')
 yaml_path.write_text(yaml_text, encoding='utf-8')
