@@ -1,0 +1,57 @@
+name: Verify FinalTECH Cheat Guide Fix
+
+on:
+  push:
+    branches: [fix/cheat-guide-mode]
+    paths:
+      - 'scripts/apply_cheat_guide_fix.py'
+      - '.github/workflows/verify-cheat-guide-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fix branch
+        uses: actions/checkout@v6
+        with:
+          ref: fix/cheat-guide-mode
+
+      - name: Apply cheat-guide fix
+        run: python3 scripts/apply_cheat_guide_fix.py
+
+      - name: Verify cheat semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'getSlimefunGuide(slimefunGuideMode)' src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java
+          grep -F 'boolean cheatMode = slimefunGuideMode == SlimefunGuideMode.CHEAT_MODE;' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'p.hasPermission("slimefun.cheat.items")' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'slimefunItem instanceof MultiBlockMachine' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'clonedItem.setAmount(clonedItem.getMaxStackSize())' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          ! grep -F 'getSlimefunGuide(SlimefunGuideMode.SURVIVAL_MODE)' src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+
+      - name: Build FinalTECH
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+
+      - name: Commit verified production changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          git diff --cached --check
+          git commit -m 'Keep FinalTECH custom guide in cheat mode'
+          git push origin HEAD:fix/cheat-guide-mode
