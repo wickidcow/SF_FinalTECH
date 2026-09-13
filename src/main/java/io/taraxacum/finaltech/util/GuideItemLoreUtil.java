@@ -19,15 +19,17 @@ import java.util.regex.Pattern;
 /**
  * Builds concise player-facing purpose text for FinalTECH items in the Guide.
  *
- * <p>FinalTECH already contains a lot of useful Usage/Mechanism information,
- * but historically that information was hidden inside the recipe page. This
- * helper promotes the useful part into the category browser and supplies
- * conservative fallbacks for simple materials/components.</p>
+ * <p>The original FinalTECH language files keep most gameplay explanations in
+ * {@code items.<id>.info.<n>.lore}, while {@code items.<id>.lore} is frequently
+ * empty or only contains flavor text. This helper promotes the useful original
+ * Usage/Mechanism information into the category browser and only falls back to
+ * generic text when the language file genuinely has no useful explanation.</p>
  */
 public final class GuideItemLoreUtil {
     private static final int MAX_PURPOSE_LINES = 3;
     private static final int MAX_LINE_LENGTH = 42;
     private static final Pattern DYNAMIC_PLACEHOLDER = Pattern.compile("\\{\\d+}");
+    private static final Pattern STRUCTURAL_PLACEHOLDER = Pattern.compile("^(?:\\[\\s*]|\\{\\s*}|null|~)$", Pattern.CASE_INSENSITIVE);
 
     private static final Map<String, String> EXACT_FALLBACKS = Map.ofEntries(
             Map.entry("_FINALTECH_GEARWHEEL", "Crafting component used throughout FinalTECH machines and technology."),
@@ -35,13 +37,13 @@ public final class GuideItemLoreUtil {
             Map.entry("_FINALTECH_ORDERED_DUST", "Refined crafting material used in higher-tier FinalTECH recipes."),
             Map.entry("_FINALTECH_BUG", "Special progression material used by FinalTECH crafting and exchange systems."),
             Map.entry("_FINALTECH_ENTROPY", "Core resource used by FinalTECH logic and advanced crafting systems."),
-            Map.entry("_FINALTECH_ETHER", "Advanced resource used in higher-tier FinalTECH recipes."),
-            Map.entry("_FINALTECH_ANNULAR", "Advanced crafting component used by FinalTECH card and machine recipes."),
-            Map.entry("_FINALTECH_SINGULARITY", "High-tier component used by FinalTECH serialization and end-game recipes."),
-            Map.entry("_FINALTECH_SPIROCHETE", "High-tier component used by FinalTECH serialization and end-game recipes."),
-            Map.entry("_FINALTECH_PHONY", "High-tier component used by serialization and card-operation recipes."),
-            Map.entry("_FINALTECH_JUSTIFIABILITY", "End-game crafting component used by advanced FinalTECH technology."),
-            Map.entry("_FINALTECH_EQUIVALENT_CONCEPT", "End-game crafting component used by advanced FinalTECH technology."),
+            Map.entry("_FINALTECH_ETHER", "GEO resource mined by the Ether Miner and used in advanced FinalTECH recipes."),
+            Map.entry("_FINALTECH_ANNULAR", "Advanced crafting component produced by the Card Operation Table."),
+            Map.entry("_FINALTECH_SINGULARITY", "High-tier component produced by item serialization machines."),
+            Map.entry("_FINALTECH_SPIROCHETE", "High-tier component produced by item serialization machines."),
+            Map.entry("_FINALTECH_PHONY", "High-tier component produced by serialization and card-operation machines."),
+            Map.entry("_FINALTECH_JUSTIFIABILITY", "End-game progression component obtained from an Entropy Seed."),
+            Map.entry("_FINALTECH_EQUIVALENT_CONCEPT", "End-game progression component obtained from an Entropy Seed."),
             Map.entry("_FINALTECH_BEDROCK_CRAFT_TABLE", "Crafting station for Bedrock Craft Table recipes used by many FinalTECH machines."),
             Map.entry("_FINALTECH_MATRIX_CRAFTING_TABLE", "End-game crafting station for Matrix-tier FinalTECH recipes."),
             Map.entry("_FINALTECH_ITEM_DISMANTLE_TABLE", "Breaks supported items back down into component materials."),
@@ -89,13 +91,14 @@ public final class GuideItemLoreUtil {
         LanguageManager languageManager = FinalTechChanged.getLanguageManager();
         String id = slimefunItem.getId();
 
+        // Explicit English guide text always wins when present.
         List<String> explicit = getStableLines(languageManager, "items", id, "guide-lore");
         if (!explicit.isEmpty()) {
             return explicit;
         }
 
-        // ShowInfoItem is what FinalTECH itself uses to populate the Item Info panel.
-        // Prefer its Usage/Mechanism section so dynamic values are already resolved.
+        // Some item classes expose already-resolved runtime information. Prefer
+        // a Usage/Mechanism section because dynamic values are already filled in.
         if (slimefunItem instanceof ShowInfoItem showInfoItem) {
             List<String> runtimeInfo = deriveFromResolvedInfo(showInfoItem.getInfos());
             if (!runtimeInfo.isEmpty()) {
@@ -103,14 +106,17 @@ public final class GuideItemLoreUtil {
             }
         }
 
-        explicit = getStableLines(languageManager, "items", id, "lore");
-        if (!explicit.isEmpty()) {
-            return explicit;
-        }
-
+        // The original Chinese FinalTECH files put the actual instructions in
+        // the nested "info" sections. English translations preserve most of
+        // that data, so surface it before decorative item lore.
         List<String> configuredInfo = deriveFromConfiguredInfo(languageManager, id);
         if (!configuredInfo.isEmpty()) {
             return configuredInfo;
+        }
+
+        explicit = getStableLines(languageManager, "items", id, "lore");
+        if (!explicit.isEmpty()) {
+            return explicit;
         }
 
         return wrapGray(fallbackPurpose(id, slimefunItem.getItemName()));
@@ -122,7 +128,7 @@ public final class GuideItemLoreUtil {
         boolean collect = false;
 
         for (String line : infos) {
-            if (line == null || line.isBlank()) {
+            if (!isUsableText(line, null)) {
                 if (collect && !result.isEmpty()) {
                     break;
                 }
@@ -134,11 +140,7 @@ public final class GuideItemLoreUtil {
                 continue;
             }
             String normalized = plain.trim().toLowerCase(Locale.ROOT);
-            boolean heading = normalized.contains("usage")
-                    || normalized.contains("mechanism")
-                    || normalized.contains("function")
-                    || normalized.contains("purpose")
-                    || normalized.contains("description");
+            boolean heading = isPurposeHeading(normalized);
 
             if (heading) {
                 collect = true;
@@ -161,29 +163,45 @@ public final class GuideItemLoreUtil {
 
     @Nonnull
     private static List<String> deriveFromConfiguredInfo(@Nonnull LanguageManager languageManager, @Nonnull String id) {
-        for (int i = 1; i <= 16; i++) {
+        List<String> firstUsefulSection = List.of();
+
+        for (int i = 1; i <= 32; i++) {
             String section = String.valueOf(i);
             if (!languageManager.containPath("items", id, "info", section, "name")
                     || !languageManager.containPath("items", id, "info", section, "lore")) {
                 continue;
             }
 
-            String heading = ChatColor.stripColor(languageManager.getString("items", id, "info", section, "name"));
-            String normalizedHeading = heading == null ? "" : heading.toLowerCase(Locale.ROOT);
-            if (!normalizedHeading.contains("usage")
-                    && !normalizedHeading.contains("mechanism")
-                    && !normalizedHeading.contains("function")
-                    && !normalizedHeading.contains("purpose")
-                    && !normalizedHeading.contains("description")) {
+            List<String> lines = getStableLines(languageManager, "items", id, "info", section, "lore");
+            if (lines.isEmpty()) {
                 continue;
             }
 
-            List<String> lines = getStableLines(languageManager, "items", id, "info", section, "lore");
-            if (!lines.isEmpty()) {
+            String heading = ChatColor.stripColor(languageManager.getString("items", id, "info", section, "name"));
+            String normalizedHeading = heading == null ? "" : heading.trim().toLowerCase(Locale.ROOT);
+            if (isPurposeHeading(normalizedHeading)) {
                 return lines;
             }
+
+            // If the original item has no Usage/Mechanism section, its first
+            // descriptive section is still more informative than a generic
+            // guess. This covers Production method, Obtaining method, etc.
+            if (firstUsefulSection.isEmpty()) {
+                firstUsefulSection = lines;
+            }
         }
-        return List.of();
+
+        return firstUsefulSection;
+    }
+
+    private static boolean isPurposeHeading(@Nonnull String normalizedHeading) {
+        return normalizedHeading.contains("usage")
+                || normalizedHeading.contains("mechanism")
+                || normalizedHeading.contains("function")
+                || normalizedHeading.contains("purpose")
+                || normalizedHeading.contains("description")
+                || normalizedHeading.contains("effect")
+                || normalizedHeading.contains("operation");
     }
 
     @Nonnull
@@ -196,7 +214,7 @@ public final class GuideItemLoreUtil {
         List<String> configured = languageManager.getStringList(path);
         if (!configured.isEmpty()) {
             for (String line : configured) {
-                appendStableWrapped(result, line);
+                appendStableWrapped(result, line, null);
                 if (result.size() >= MAX_PURPOSE_LINES) {
                     break;
                 }
@@ -206,17 +224,35 @@ public final class GuideItemLoreUtil {
 
         String scalar = languageManager.getString(path);
         String rawPath = String.join(".", path);
-        if (!scalar.equals(rawPath)) {
-            appendStableWrapped(result, scalar);
-        }
+        appendStableWrapped(result, scalar, rawPath);
         return result;
     }
 
-    private static void appendStableWrapped(@Nonnull List<String> result, String value) {
-        if (value == null || value.isBlank() || DYNAMIC_PLACEHOLDER.matcher(value).find()) {
+    private static void appendStableWrapped(@Nonnull List<String> result, String value, String rawPath) {
+        if (!isUsableText(value, rawPath)) {
             return;
         }
         appendWrappedGray(result, ChatColor.stripColor(value));
+    }
+
+    private static boolean isUsableText(String value, String rawPath) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        String plain = ChatColor.stripColor(value);
+        if (plain == null) {
+            return false;
+        }
+
+        String trimmed = plain.trim();
+        if (trimmed.isEmpty()
+                || STRUCTURAL_PLACEHOLDER.matcher(trimmed).matches()
+                || DYNAMIC_PLACEHOLDER.matcher(trimmed).find()) {
+            return false;
+        }
+
+        return rawPath == null || !trimmed.equals(rawPath);
     }
 
     private static void appendWrappedGray(@Nonnull List<String> result, String value) {
@@ -262,11 +298,29 @@ public final class GuideItemLoreUtil {
         if (id.startsWith("_FINALTECH_DIGITAL_")) {
             return "Numeric token used by FinalTECH digital logic, arithmetic and conversion machines.";
         }
+        if (id.startsWith("_FINALTECH_MACHINE_CHARGE_CARD_") || id.contains("MACHINE_CHARGE_CARD")) {
+            return "Consumable card used to add energy to a supported FinalTECH machine.";
+        }
         if (id.startsWith("_FINALTECH_MACHINE_ACCELERATE_CARD_") || id.contains("MACHINE_ACCELERATE_CARD")) {
-            return "Card used to advance or accelerate supported machine operation.";
+            return "Consumable card used to advance a supported machine's current operation.";
+        }
+        if (id.startsWith("_FINALTECH_MACHINE_ACTIVATE_CARD_") || id.contains("MACHINE_ACTIVATE_CARD")) {
+            return "Consumable card used to trigger a supported FinalTECH machine.";
+        }
+        if (id.startsWith("_FINALTECH_ENERGY_CARD_")) {
+            return "Portable energy card used by compatible FinalTECH energy machines.";
         }
         if (id.contains("STORAGE_UNIT")) {
             return "Cargo-compatible item storage; this variant changes how stored items are organized or accessed.";
+        }
+        if (id.contains("ACCESSOR")) {
+            return "Remotely reads or interacts with compatible FinalTECH inventories and machines.";
+        }
+        if (id.contains("TRANSPORTER") || id.endsWith("_TRANSFER")) {
+            return "Moves items between compatible FinalTECH inventories and cargo systems.";
+        }
+        if (id.contains("LOGIC_COMPARATOR")) {
+            return "Compares configured inputs and outputs TRUE/FALSE logic for FinalTECH automation.";
         }
         if (id.startsWith("_FINALTECH_MANUAL_")) {
             return "Manual processing station for " + stripPrefix(itemName, "Manual ") + " recipes.";
@@ -276,6 +330,9 @@ public final class GuideItemLoreUtil {
         }
         if (id.startsWith("_FINALTECH_MATRIX_")) {
             return "End-game Matrix-tier technology for advanced FinalTECH automation.";
+        }
+        if (id.endsWith("_CAPACITOR")) {
+            return "Stores energy for the Slimefun/FinalTECH power network.";
         }
         if (id.endsWith("_CONVERSION")) {
             return "Converts supported FinalTECH resources into another usable form.";
