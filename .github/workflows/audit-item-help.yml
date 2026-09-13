@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/main/resources/language/**'
       - 'src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java'
+      - 'src/main/java/io/taraxacum/finaltech/setup/FinalTechItemStacks.java'
       - '.github/workflows/audit-item-help.yml'
   workflow_dispatch:
 
@@ -18,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Compare English and Chinese item help
+      - name: Compare active English and Chinese item help
         shell: bash
         run: |
           set -euo pipefail
@@ -33,6 +34,13 @@ jobs:
           zh = yaml.safe_load((root / 'zh-CN.yml').read_text(encoding='utf-8')) or {}
           en_items = en.get('items', {}) or {}
           zh_items = zh.get('items', {}) or {}
+
+          item_stack_source = Path('src/main/java/io/taraxacum/finaltech/setup/FinalTechItemStacks.java').read_text(encoding='utf-8')
+          active_ids = sorted(set(re.findall(r'"(_FINALTECH_[A-Z0-9_]+)"', item_stack_source)))
+          # One legacy base item intentionally uses its class name as the Slimefun ID.
+          if '"ManualCraftMachine"' in item_stack_source:
+              active_ids.append('ManualCraftMachine')
+              active_ids.sort()
 
           chinese = re.compile(r'[\u3400-\u9fff]')
 
@@ -54,56 +62,57 @@ jobs:
                       result[str(key)] = lines
               return result
 
-          missing_items = []
-          missing_info = []
-          english_without_help = []
-          chinese_left_in_english = []
-          zh_flavor_without_en = []
+          active_missing_english = []
+          active_missing_info = []
+          active_without_help = []
+          active_chinese_left = []
+          active_zh_flavor_without_en = []
 
-          for item_id, zh_item in sorted(zh_items.items()):
-              if item_id not in en_items:
-                  missing_items.append(item_id)
+          for item_id in active_ids:
+              en_item = en_items.get(item_id)
+              zh_item = zh_items.get(item_id)
+              if not isinstance(en_item, dict):
+                  active_missing_english.append(item_id)
                   continue
-              en_item = en_items[item_id]
-              zinfo = info_sections(zh_item)
+
               einfo = info_sections(en_item)
-              for section in zinfo:
-                  if section not in einfo:
-                      missing_info.append(f'{item_id}.info.{section}')
-
-              en_lore = useful_lines(en_item.get('lore')) if isinstance(en_item, dict) else []
-              en_guide = useful_lines(en_item.get('guide-lore')) if isinstance(en_item, dict) else []
+              en_lore = useful_lines(en_item.get('lore'))
+              en_guide = useful_lines(en_item.get('guide-lore'))
               if not einfo and not en_lore and not en_guide:
-                  english_without_help.append(item_id)
+                  active_without_help.append(item_id)
 
-              zh_lore = useful_lines(zh_item.get('lore')) if isinstance(zh_item, dict) else []
-              if zh_lore and not en_lore:
-                  zh_flavor_without_en.append(item_id)
+              if isinstance(zh_item, dict):
+                  zinfo = info_sections(zh_item)
+                  for section in zinfo:
+                      if section not in einfo:
+                          active_missing_info.append(f'{item_id}.info.{section}')
+                  zh_lore = useful_lines(zh_item.get('lore'))
+                  if zh_lore and not en_lore:
+                      active_zh_flavor_without_en.append(item_id)
 
-              if isinstance(en_item, dict):
-                  dumped = yaml.safe_dump(en_item, allow_unicode=True)
-                  if chinese.search(dumped):
-                      chinese_left_in_english.append(item_id)
+              if chinese.search(yaml.safe_dump(en_item, allow_unicode=True)):
+                  active_chinese_left.append(item_id)
 
           lines = [
-              f'English item entries: {len(en_items)}',
-              f'Chinese item entries: {len(zh_items)}',
-              f'Missing English item entries: {len(missing_items)}',
-              f'Missing translated info sections: {len(missing_info)}',
-              f'English items with no info/lore/guide-lore: {len(english_without_help)}',
-              f'Chinese flavor-lore entries absent from English: {len(zh_flavor_without_en)}',
-              f'English entries still containing Chinese text: {len(chinese_left_in_english)}',
+              f'Active item IDs: {len(active_ids)}',
+              f'English item entries total: {len(en_items)}',
+              f'Chinese item entries total: {len(zh_items)}',
+              f'Active items missing English entry: {len(active_missing_english)}',
+              f'Active translated info sections missing: {len(active_missing_info)}',
+              f'Active English items with no info/lore/guide-lore: {len(active_without_help)}',
+              f'Active Chinese flavor-lore entries absent from English: {len(active_zh_flavor_without_en)}',
+              f'Active English entries still containing Chinese text: {len(active_chinese_left)}',
           ]
 
           def section(title, values):
               if values:
                   lines.extend(['', title, *values])
 
-          section('MISSING_ITEMS', missing_items)
-          section('MISSING_INFO', missing_info)
-          section('NO_ENGLISH_HELP', english_without_help)
-          section('ZH_FLAVOR_NOT_IN_EN', zh_flavor_without_en)
-          section('CHINESE_LEFT_IN_ENGLISH', chinese_left_in_english)
+          section('ACTIVE_MISSING_ENGLISH', active_missing_english)
+          section('ACTIVE_MISSING_INFO', active_missing_info)
+          section('ACTIVE_NO_ENGLISH_HELP', active_without_help)
+          section('ACTIVE_ZH_FLAVOR_NOT_IN_EN', active_zh_flavor_without_en)
+          section('ACTIVE_CHINESE_LEFT_IN_ENGLISH', active_chinese_left)
 
           report = '\n'.join(lines) + '\n'
           print(report, end='')
