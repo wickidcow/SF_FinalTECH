@@ -163,13 +163,17 @@ public class BlockTickerUtil {
                                     }
                                 }
                                 if (canBreak) {
-                                    BlockStorage.clearBlockInfo(block);
-                                    block.setType(Material.AIR);
+                                    String storedItemId = BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID);
+                                    boolean shouldDropSelf = dropSelf && item.getId().equals(storedItemId);
+
                                     if (item instanceof MachineProcessHolder machineProcessHolder) {
                                         machineProcessHolder.getMachineProcessor().endOperation(block);
                                     }
-                                    if (dropSelf && item.getId().equals(BlockStorage.getLocationInfo(block.getLocation(), ConstantTableUtil.CONFIG_ID))) {
-                                        block.getLocation().getWorld().dropItem(block.getLocation(), ItemStackUtil.cloneItem(item.getItem(), 1));
+                                    BlockStorage.clearBlockInfo(block);
+                                    block.setType(Material.AIR);
+
+                                    if (shouldDropSelf) {
+                                        world.dropItem(location, ItemStackUtil.cloneItem(item.getItem(), 1));
                                     }
                                     for (Player player : playerList) {
                                         player.sendMessage(message.replace("{1}", item.getItemName()));
