@@ -1,0 +1,35 @@
+name: English Localization Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  english-only-surfaces:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Reject CJK text outside intentional Chinese locale files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t offenders < <(
+            grep -RInP '[\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}]' . \
+              --exclude-dir=.git \
+              --exclude='zh-CN.yml' \
+              --exclude='zh-TW.yml' \
+              || true
+          )
+
+          if (( ${#offenders[@]} > 0 )); then
+            echo 'CJK text remains outside the intentional Chinese locale files:'
+            printf '%s\n' "${offenders[@]}"
+            exit 1
+          fi
+
+          echo 'English localization audit passed.'
