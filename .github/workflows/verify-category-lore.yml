@@ -21,10 +21,8 @@ jobs:
         with:
           ref: guide/category-lore
 
-      - name: Apply Guide category cleanup
-        run: |
-          python3 scripts/apply_category_lore_cleanup.py
-          python3 scripts/apply_guide_lore_visibility.py
+      - name: Apply visible Guide lore and sorting cleanup
+        run: python3 scripts/apply_guide_lore_visibility.py
 
       - name: Verify category names, lore and sorting
         shell: bash
@@ -76,12 +74,9 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/main/java/io/taraxacum/finaltech/util/ConfigUtil.java \
-                  src/main/java/io/taraxacum/finaltech/setup/FinalTechMenus.java \
-                  src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java \
+          git add src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java \
                   src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java \
-                  src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java \
-                  src/main/resources/language/en-US.yml
+                  src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java
           git diff --cached --check
-          git commit -m 'Improve FinalTECH Guide category presentation'
+          git commit -m 'Preserve FinalTECH Guide category lore'
           git push origin HEAD:guide/category-lore
