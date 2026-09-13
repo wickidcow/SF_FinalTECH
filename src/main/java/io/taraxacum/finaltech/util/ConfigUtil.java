@@ -58,24 +58,59 @@ public class ConfigUtil {
         }
     }
 
-    public static MainItemGroup getMainItemGroup(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull Material defaultMaterial, @Nonnull String defaultName) {
-        Material material = defaultMaterial;
-        if (languageManager.containPath("categories", key, "material")) {
-            material = Material.getMaterial(languageManager.getString("categories", key, "material"));
-            material = material == null ? defaultMaterial : material;
+    @Nonnull
+    private static String getCategoryName(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull String defaultName) {
+        String path = "categories." + key + ".name";
+        String fallbackName = "{color:random}" + defaultName;
+
+        if (!languageManager.containPath("categories", key, "name")) {
+            languageManager.setValue(fallbackName, "categories", key, "name");
         }
-        String name = languageManager.containPath("categories", key, "name") ? languageManager.getString("categories", key, "name") : defaultName;
-        return new MainItemGroup(new NamespacedKey(languageManager.getPlugin(), key), new CustomItemStack(material, name), 0);
+
+        String name = languageManager.getString("categories", key, "name");
+        if (name.isBlank() || name.equals(path)) {
+            languageManager.setValue(fallbackName, "categories", key, "name");
+            name = languageManager.getString("categories", key, "name");
+        }
+        return name;
     }
 
-    public static SubFlexItemGroup getSubFlexItemGroup(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull Material defaultMaterial, @Nonnull String defaultName) {
+    @Nonnull
+    private static String[] getCategoryLore(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull String... defaultLore) {
+        String path = "categories." + key + ".lore";
+        List<String> lore = languageManager.containPath("categories", key, "lore")
+                ? languageManager.getStringList("categories", key, "lore")
+                : List.of();
+
+        if (lore.isEmpty() || (lore.size() == 1 && lore.get(0).equals(path))) {
+            List<String> fallbackLore = java.util.Arrays.stream(defaultLore)
+                    .map(line -> "{color:normal}" + line)
+                    .toList();
+            languageManager.setValue(fallbackLore, "categories", key, "lore");
+            lore = languageManager.getStringList("categories", key, "lore");
+        }
+
+        return lore.toArray(new String[0]);
+    }
+
+    public static MainItemGroup getMainItemGroup(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull Material defaultMaterial, @Nonnull String defaultName, @Nonnull String... defaultLore) {
         Material material = defaultMaterial;
         if (languageManager.containPath("categories", key, "material")) {
             material = Material.getMaterial(languageManager.getString("categories", key, "material"));
             material = material == null ? defaultMaterial : material;
         }
-        String name = languageManager.containPath("categories", key, "name") ? languageManager.getString("categories", key, "name") : defaultName;
-        return new SubFlexItemGroup(new NamespacedKey(languageManager.getPlugin(), key), new CustomItemStack(material, name), 0);
+        String name = getCategoryName(languageManager, key, defaultName);
+        return new MainItemGroup(new NamespacedKey(languageManager.getPlugin(), key), new CustomItemStack(material, name, getCategoryLore(languageManager, key, defaultLore)), 0);
+    }
+
+    public static SubFlexItemGroup getSubFlexItemGroup(@Nonnull LanguageManager languageManager, @Nonnull String key, @Nonnull Material defaultMaterial, @Nonnull String defaultName, @Nonnull String... defaultLore) {
+        Material material = defaultMaterial;
+        if (languageManager.containPath("categories", key, "material")) {
+            material = Material.getMaterial(languageManager.getString("categories", key, "material"));
+            material = material == null ? defaultMaterial : material;
+        }
+        String name = getCategoryName(languageManager, key, defaultName);
+        return new SubFlexItemGroup(new NamespacedKey(languageManager.getPlugin(), key), new CustomItemStack(material, name, getCategoryLore(languageManager, key, defaultLore)), 0);
     }
 
     @Nonnull

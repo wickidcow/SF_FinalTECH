@@ -61,6 +61,29 @@ public class MainItemGroup extends FlexItemGroup {
     }
 
     @Override
+    public @Nonnull ItemStack getItem(@Nonnull Player player) {
+        ItemStack displayItem = super.getItem(player);
+        if (!this.item.hasItemMeta()) {
+            return displayItem;
+        }
+
+        List<String> categoryLore = this.item.getItemMeta().getLore();
+        if (categoryLore == null || categoryLore.isEmpty()) {
+            return displayItem;
+        }
+
+        var displayMeta = displayItem.getItemMeta();
+        List<String> combinedLore = new ArrayList<>(categoryLore);
+        List<String> actionLore = displayMeta.getLore();
+        if (actionLore != null) {
+            combinedLore.addAll(actionLore);
+        }
+        displayMeta.setLore(combinedLore);
+        displayItem.setItemMeta(displayMeta);
+        return displayItem;
+    }
+
+    @Override
     public void open(@Nonnull Player player, @Nonnull PlayerProfile playerProfile, @Nonnull SlimefunGuideMode slimefunGuideMode) {
         playerProfile.getGuideHistory().add(this, this.page);
         this.generateMenu(player, playerProfile, slimefunGuideMode).open(player);
