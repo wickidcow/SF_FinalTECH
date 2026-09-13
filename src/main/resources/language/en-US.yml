@@ -435,7 +435,7 @@ items:
         lore:
           - '{color:normal}Will be generated while:'
           - '{color:normal}The player dies'
-          - '{color:normal}The death location is at least 64 blocks above the world's maximum height'
+          - '{color:normal}The death location is at least 64 blocks above the world''s maximum height'
     message: '{color:normal}You forget something :D'
   _FINALTECH_SHINE:
     name: '{color:prandom}Shine'
@@ -445,7 +445,7 @@ items:
         lore:
           - '{color:normal}Can be obtained when:'
           - '{color:normal}The player takes damage'
-          - '{color:normal}The player is at least 64 blocks below the world's minimum height'
+          - '{color:normal}The player is at least 64 blocks below the world''s minimum height'
           - '{color:normal}The player is carrying {id:_FINALTECH_BOX}'
       2:
         name: '{color:negative}Void Curse'
@@ -2723,7 +2723,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}Accelerates the machine's progress by consuming energy'
+          - '{color:normal}Accelerates the machine''s progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2740,7 +2740,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}Accelerates the machine's progress by consuming energy'
+          - '{color:normal}Accelerates the machine''s progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2757,7 +2757,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}Accelerates the machine's progress by consuming energy'
+          - '{color:normal}Accelerates the machine''s progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
