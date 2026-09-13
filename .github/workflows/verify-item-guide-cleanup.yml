@@ -1,0 +1,84 @@
+name: Verify FinalTECH Item Guide Cleanup
+
+on:
+  push:
+    branches: [guide/item-purpose-lore]
+    paths:
+      - 'scripts/apply_item_guide_cleanup.py'
+      - 'src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java'
+      - '.github/workflows/verify-item-guide-cleanup.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out item Guide branch
+        uses: actions/checkout@v6
+        with:
+          ref: guide/item-purpose-lore
+
+      - name: Apply item Guide cleanup
+        run: python3 scripts/apply_item_guide_cleanup.py
+
+      - name: Verify purpose lore, helper label and cheat behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'return this.page == 1;' src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java
+          grep -F 'getSlimefunGuide(slimefunGuideMode)' src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java
+          grep -F 'getSlimefunGuide(slimefunGuideMode)' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'slimefunGuideMode == SlimefunGuideMode.CHEAT_MODE' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'p.hasPermission("slimefun.cheat.items")' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'action.isShiftClicked()' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'GuideItemLoreUtil.createGuideIcon' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'deriveFromInfo' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
+          grep -F 'Item Information' src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java
+          grep -F "name: '{color:stress}Item Information'" src/main/resources/language/en-US.yml
+
+      - name: Validate English YAML quoting
+        run: python3 scripts/normalize_english_yaml.py --check
+
+      - name: Parse English YAML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+          data = yaml.safe_load(Path('src/main/resources/language/en-US.yml').read_text(encoding='utf-8'))
+          assert data['helper']['ICON']['wiki-icon']['name'].endswith('Item Information')
+          assert len(data.get('items', {})) >= 200
+          print(f"Parsed {len(data.get('items', {}))} item language entries successfully.")
+          PY
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+
+      - name: Build FinalTECH
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+
+      - name: Commit verified production changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java \
+                  src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java \
+                  src/main/resources/language/en-US.yml
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'Improve FinalTECH item Guide usability'
+            git push origin HEAD:guide/item-purpose-lore
+          fi
