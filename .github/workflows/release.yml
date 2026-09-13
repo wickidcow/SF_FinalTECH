@@ -1,0 +1,79 @@
+name: Build and Publish JAR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+
+      - name: Resolve release version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          JAR="SF_FinalTECH${VERSION}.jar"
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "jar=${JAR}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Build shaded JAR
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+
+      - name: Verify direct JAR output
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="target/${{ steps.version.outputs.jar }}"
+          test -f "$JAR"
+          unzip -t "$JAR" >/dev/null
+          test -f target/${{ steps.version.outputs.jar }}
+          sha256sum "$JAR" | tee "${{ steps.version.outputs.jar }}.sha256"
+
+      - name: Publish direct JAR release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          JAR="target/${{ steps.version.outputs.jar }}"
+          CHECKSUM="${{ steps.version.outputs.jar }}.sha256"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$JAR" "$CHECKSUM" --clobber
+          else
+            gh release create "$TAG" "$JAR" "$CHECKSUM" \
+              --target "$GITHUB_SHA" \
+              --title "FinalTECH ${{ steps.version.outputs.version }}" \
+              --notes "English-first maintained FinalTECH build for the Slimefun Legacy ecosystem. Download the attached JAR directly and place it in the server plugins directory."
+          fi
+
+      - name: Confirm release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view "${{ steps.version.outputs.tag }}" --json assets --jq '.assets[].name' | grep -Fx "${{ steps.version.outputs.jar }}"

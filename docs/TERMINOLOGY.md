@@ -8,7 +8,7 @@ This fork follows established English naming from the maintained FinalTECH linea
 | `_FINALTECH_JUSTIFIABILITY` | Justifiability |
 | `_FINALTECH_ENTROPY_SEED` | Entropy Seed |
 | `_FINALTECH_ENTROPY_CLEANER` | Entropy Cleaner |
-| `_FINALTECH_ITEM_PHONY` | Item Phony |
+| `_FINALTECH_PHONY` | Phony |
 | `_FINALTECH_ORDERED_DUST` | Ordered Dust |
 | `_FINALTECH_UNORDERED_DUST` | Unordered Dust |
 | `_FINALTECH_MATRIX_REACTOR` | Matrix Reactor |
