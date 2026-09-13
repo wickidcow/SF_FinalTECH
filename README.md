@@ -10,7 +10,7 @@ The Changed edition is based on Final_ROOT's FinalTECH build 75 and later work b
 
 This fork keeps the Changed edition as the gameplay baseline. It does **not** silently replace its recipes, balance, mechanics, item IDs, or saved-data behavior with another FinalTECH port.
 
-Established English terminology is cross-checked against `LobbyTech-MC/FinalTech` whenever the same item or mechanic exists there. This avoids conflicting literal translations for established names such as **Equivalent Concept**, **Justifiability**, **Entropy Seed**, **Entropy Cleaner**, **Item Phony**, **Ordered Dust**, **Unordered Dust**, and **Matrix Reactor**.
+Established English terminology is cross-checked against `LobbyTech-MC/FinalTech` whenever the same item or mechanic exists there. This avoids conflicting literal translations for established names such as **Equivalent Concept**, **Justifiability**, **Entropy Seed**, **Entropy Cleaner**, **Phony**, **Ordered Dust**, **Unordered Dust**, and **Matrix Reactor**.
 
 ## Language support
 
@@ -67,7 +67,7 @@ Possible policies include:
 - allowing normal use while monitoring abuse; or
 - disabling the mechanic entirely if its performance profile does not fit the server.
 
-The upstream Changed documentation suggested an example exchange of **1 Item Phony + 24 stacks of Entropy** for **192 Equivalent Concept + 1024 Justifiability**. Treat that as a historical balance suggestion, not a requirement for this maintained fork.
+The upstream Changed documentation suggested an example exchange of **1 Phony + 24 stacks of Entropy** for **192 Equivalent Concept + 1024 Justifiability**. Treat that as a historical balance suggestion, not a requirement for this maintained fork.
 
 ## Building
 

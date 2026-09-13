@@ -29,7 +29,7 @@ helper:
     quantity-module:
       name: '{color:normal}Quantity Module'
       lore:
-        - '{color:normal}Put {id:_FINALTECH_QUANTITY_MODULE} {color:normal}to change efficiency'
+        - '{color:normal}Insert {id:_FINALTECH_QUANTITY_MODULE} {color:normal}to change efficiency'
       amount-lore:
         - '{color:normal}Efficiency: {color:number}{1}'
       amount-infinity: '{color:stress}Infinity'
@@ -57,17 +57,17 @@ helper:
       name: '{color:normal}Machine Max Stack'
     '0':
       lore:
-        - '{color:normal}No Limit in input by cargo'
+        - '{color:normal}No limit on cargo input'
     value:
       lore:
-        - '{color:normal}Max Stack to input by cargo: {color:number}{1}'
+        - '{color:normal}Maximum stack size for cargo input: {color:number}{1}'
   CARGO_NUMBER:
     icon:
       name: '{color:normal}Cargo Number'
       lore:
-        - '{color:normal}Transfer up to {color:number}{1} items {color:normal}at one time'
+        - '{color:normal}Transfer up to {color:number}{1} items {color:normal}at a time'
       lore0:
-        - '{color:normal}No Limit in transferring items at one time'
+        - '{color:normal}No limit on items transferred at a time'
     add-icon:
       name: '{color:normal}Cargo Number {color:conceal}- {color:random}Add'
     sub-icon:
@@ -76,11 +76,11 @@ helper:
     black-filter-mode:
       name: '{color:normal}Cargo Filter {color:conceal}- {color:random}Black'
       lore:
-        - '{color:normal}Transfer item that not matches'
+        - '{color:normal}Transfer items that do not match'
     white-filter-mode:
       name: '{color:normal}Cargo Filter {color:conceal}- {color:random}White'
       lore:
-        - '{color:normal}Transfer item that matches'
+        - '{color:normal}Transfer items that match'
   CARGO_MODE:
     input-main:
       name: '{color:normal}Cargo Mode {color:conceal}- {color:random}Input Main'
@@ -108,12 +108,12 @@ helper:
     type:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}Type'
       lore:
-        - '{color:normal}Only one type of items will be transferred in one time'
+        - '{color:normal}Only one item type will be transferred at a time'
     stack:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}Stack'
       lore:
-        - '{color:normal}Only one type of items will be transferred in one time'
-        - '{color:normal}Transfer amount will not be more than max stack amount of the item'
+        - '{color:normal}Only one item type will be transferred at a time'
+        - '{color:normal}The transfer amount will not exceed the item's maximum stack size'
     nonnull:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}Nonnull'
       lore:
@@ -122,17 +122,17 @@ helper:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}First'
       lore:
         - '{color:normal}Only one slot will be involved'
-        - '{color:normal}(mostly like slimefun cargo)'
+        - '{color:normal}(similar to Slimefun cargo)'
   SLOT_SEARCH_SIZE:
     inputs-only:
       name: '{color:normal}Slot Search Size {color:conceal}- {color:random}Inputs Only'
       lore:
-        - '{color:normal}Only input slots will be involved'
+        - '{color:normal}Only input slots are considered'
         - '{color:normal}(Only for slimefun container)'
     outputs-only:
       name: '{color:normal}Slot Search Size {color:conceal}- {color:random}Outputs Only'
       lore:
-        - '{color:normal}Only output slots will be involved'
+        - '{color:normal}Only output slots are considered'
         - '{color:normal}(Only for slimefun container)'
     inputs-and-outputs:
       name: '{color:normal}Slot Search Size {color:conceal}- {color:random}Inputs And Outputs'
@@ -148,23 +148,23 @@ helper:
     ascent:
       name: '{color:normal}Slot Search Order {color:conceal}- {color:random}Ascent'
       lore:
-        - '{color:normal}Ascent use the result of {color:stress}slot search size'
+        - '{color:normal}Ascending order uses the result of {color:stress}slot search size'
     descend:
       name: '{color:normal}Slot Search Order {color:conceal}- {color:random}Descend'
       lore:
-        - '{color:normal}Descend use the result of {color:stress}slot search size'
+        - '{color:normal}Descending order uses the result of {color:stress}slot search size'
     first-only:
       name: '{color:normal}Slot Search Order {color:conceal}- {color:random}First Only'
       lore:
-        - '{color:normal}Only use the first slot of {color:stress}slot search size'
+        - '{color:normal}Use only the first slot from {color:stress}slot search size'
     last-only:
       name: '{color:normal}Slot Search Order {color:conceal}- {color:random}Last Only'
       lore:
-        - '{color:normal}Only use the last slot of {color:stress}slot search size'
+        - '{color:normal}Use only the last slot from {color:stress}slot search size'
     random:
       name: '{color:normal}Slot Search Order {color:conceal}- {color:random}Random'
       lore:
-        - '{color:normal}Randomly use the result of {color:stress}slot search size'
+        - '{color:normal}Randomly select from the result of {color:stress}slot search size'
   BLOCK_SEARCH_MODE:
     zero:
       name: '{color:normal}Block Search Mode {color:conceal}- {color:random}Zero'
@@ -174,17 +174,17 @@ helper:
       name: '{color:normal}Block Search Mode {color:conceal}- {color:random}Inherit'
       lore:
         - '{color:normal}Remote search'
-        - "{color:normal}Inherit same type of block and it's direction"
+        - "{color:normal}Follow connected blocks of the same type and preserve direction"
     penetrate:
       name: '{color:normal}Block Search Mode {color:conceal}- {color:random}Penetrate'
       lore:
         - '{color:normal}Remote search'
-        - "{color:normal}Penetrate same type of block and not change direction"
+        - "{color:normal}Pass through connected blocks of the same type without changing direction"
     interrupt:
       name: '{color:normal}Block Search Mode {color:conceal}- {color:random}Interrupt'
       lore:
         - '{color:normal}Remote search'
-        - "{color:normal}Stopped while meeting same type of block"
+        - "{color:normal}Stop when another block of the same type is encountered"
   BLOCK_SEARCH_ORDER:
     positive:
       name: '{color:normal}Block Search Order {color:conceal}- {color:random}Positive'
@@ -202,24 +202,24 @@ helper:
     'false':
       name: '{color:normal}Block Search Cycle {color:conceal}- {color:random}False'
       lore:
-        - '{color:normal}Not add first block to the end of block queue'
+        - '{color:normal}Do not add the first block to the end of the block queue'
     'true':
       name: '{color:normal}Block Search Cycle {color:conceal}- {color:random}True'
       lore:
-        - '{color:normal}Add first block to the end of block queue'
+        - '{color:normal}Add the first block to the end of the block queue'
   BLOCK_SEARCH_SELF:
     'false':
       name: '{color:normal}Block Search Self {color:conceal}- {color:random}False'
       lore:
-        - "{color:normal}Not add itself to block queue"
+        - "{color:normal}Do not add this block to the block queue"
     start:
       name: '{color:normal}Block Search Self {color:conceal}- {color:random}Start'
       lore:
-        - "{color:normal}Add itself to the start of block queue"
+        - "{color:normal}Add this block to the start of the block queue"
     end:
       name: '{color:normal}Block Search Self {color:conceal}- {color:random}End'
       lore:
-        - "{color:normal}Add itself to the end block queue"
+        - "{color:normal}Add this block to the end of the block queue"
   POSITION_INFO:
     north:
       name: '{color:normal}Position {color:conceal}- {color:random}North'
@@ -236,20 +236,20 @@ helper:
     'null':
       lore:
         - '{color:stress}Null'
-        - '{color:normal}Do nothing for this side'
+        - '{color:normal}Do nothing on this side'
     input:
       lore:
         - '{color:stress}Input'
-        - '{color:normal}Do input for this side'
+        - '{color:normal}Allow input on this side'
     output:
       lore:
         - '{color:stress}Output'
-        - '{color:normal}Do output for this side'
+        - '{color:normal}Allow output on this side'
     input-and-output:
       lore:
         - '{color:stress}Input And Output'
-        - '{color:normal}Do input for this side'
-        - '{color:normal}Do output for this side'
+        - '{color:normal}Allow input on this side'
+        - '{color:normal}Allow output on this side'
   MACHINE_RECIPE_LOCK:
     icon:
       name: '{color:random}Recipe Lock'
@@ -284,11 +284,11 @@ helper:
     'false':
       name: '{color:normal}Force Close {color:conceal}- {color:random}False'
       lore:
-        - '{color:normal}Not close menu if not work'
+        - '{color:normal}Keep the menu open if the operation cannot run'
     'true':
       name: '{color:normal}Force Close {color:conceal}- {color:random}True'
       lore:
-        - '{color:normal}Close menu if not work'
+        - '{color:normal}Close the menu if the operation cannot run'
 categories:
   _FINALTECH_ITEM_GROUP:
     name: '{color:random}FINAL TECH'
@@ -363,35 +363,35 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can be used to replace water bucket in some machine'
+          - '{color:normal}Can replace a water bucket in supported machines'
   _FINALTECH_LAVA_CARD:
     name: '{color:prandom}Lava Card'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can be used to replace lava bucket in some machine'
+          - '{color:normal}Can replace a lava bucket in supported machines'
   _FINALTECH_MILK_CARD:
     name: '{color:prandom}Milk Card'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can be used to replace milk bucket in some machine'
+          - '{color:normal}Can replace a milk bucket in supported machines'
   _FINALTECH_FLINT_AND_STEEL_CARD:
     name: '{color:prandom}Flint and steel Card'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can be used to replace fline and steel in some machine'
+          - '{color:normal}Can replace flint and steel in supported machines'
   _FINALTECH_GEARWHEEL:
     name: '{color:prandom}Gearwheel'
     info:
       1:
         name: '{color:initiative}Additional Crafting'
         lore:
-          - '{color:normal}Can be crafted in vanilla crafting table'
+          - '{color:normal}Can be crafted in a vanilla crafting table'
         output: 'CRAFTING_TABLE'
   _FINALTECH_UNORDERED_DUST:
     name: '{color:prandom}Unordered Dust'
@@ -434,8 +434,8 @@ items:
         name: '{color:initiative}Obtaining method'
         lore:
           - '{color:normal}Will be generated while:'
-          - '{color:normal}Player get dead'
-          - '{color:normal}The death place is 64 blocks above world max height'
+          - '{color:normal}The player dies'
+          - '{color:normal}The death location is at least 64 blocks above the world's maximum height'
     message: '{color:normal}You forget something :D'
   _FINALTECH_SHINE:
     name: '{color:prandom}Shine'
@@ -443,26 +443,26 @@ items:
       1:
         name: '{color:initiative}Obtaining method'
         lore:
-          - '{color:normal}Can be obtained while:'
-          - '{color:normal}Player is damaged'
-          - '{color:normal}Player is 64 blocks below world minimum height'
-          - '{color:normal}Player carries {id:_FINALTECH_BOX}'
+          - '{color:normal}Can be obtained when:'
+          - '{color:normal}The player takes damage'
+          - '{color:normal}The player is at least 64 blocks below the world's minimum height'
+          - '{color:normal}The player is carrying {id:_FINALTECH_BOX}'
       2:
         name: '{color:negative}Void Curse'
         lore:
-          - '{color:normal}While obtaining {id:_FINALTECH_SHINE}'
-          - '{color:normal}Player will be cursed by void for a short time'
+          - '{color:normal}When obtaining {id:_FINALTECH_SHINE}'
+          - '{color:normal}The player is briefly afflicted by the Void Curse'
       3:
         name: '{color:negative}Notice'
         lore:
           - '{color:normal}While carrying {id:_FINALTECH_SHINE} {color:normal}or {id:_FINALTECH_BOX}'
-          - '{color:normal}The void damage player get will be enlarged greatly'
+          - '{color:normal}Void damage taken by the player is greatly increased'
       4:
         name: '{color:negative}Notice'
         lore:
           - '{color:normal}While carrying {id:_FINALTECH_BOX}'
-          - '{color:normal}if player is in low place or cursed by void'
-          - '{color:negative}Player will lose all his items after death!!!'
+          - '{color:normal}if the player is below the world or afflicted by the Void Curse'
+          - '{color:negative}The player will lose all items on death!'
     message: '{color:normal}You forget something :D'
   _FINALTECH_COPY_CARD:
     name: '{color:prandom}Copy Card'
@@ -497,7 +497,7 @@ items:
         name: '{color:passive}Mechanism'
         lore:
           - '{color:normal}Can tweak the efficiency of some machines'
-          - '{color:normal}Efficiency tweak is downward compatible'
+          - '{color:normal}Lower-tier efficiency settings remain compatible'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -509,7 +509,7 @@ items:
         name: '{color:passive}Mechanism'
         lore:
           - '{color:normal}Can tweak the efficiency of some machines'
-          - '{color:normal}Efficiency tweak is downward compatible'
+          - '{color:normal}Lower-tier efficiency settings remain compatible'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -521,7 +521,7 @@ items:
         name: '{color:passive}Mechanism'
         lore:
           - '{color:normal}Can tweak the efficiency of some machines'
-          - '{color:normal}Efficiency tweak is downward compatible'
+          - '{color:normal}Lower-tier efficiency settings remain compatible'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -963,7 +963,7 @@ items:
         name: '{color:positive}Usage'
         lore:
           - '{color:normal}Charge machine for {color:number}{1} J + {2}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
   _FINALTECH_MACHINE_CHARGE_CARD_L2:
     name: '{color:prandom}Machine Charge Card {color:conceal}- {color:number}L2'
     info:
@@ -971,11 +971,11 @@ items:
         name: '{color:positive}Usage'
         lore:
           - '{color:normal}Charge machine for {color:number}{1} J + {2}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}1 exp {color:normal}every use'
+          - '{color:normal}Costs {color:number}1 XP {color:normal}per use'
   _FINALTECH_MACHINE_CHARGE_CARD_L3:
     name: '{color:prandom}Machine Charge Card {color:conceal}- {color:number}L3'
     info:
@@ -983,75 +983,75 @@ items:
         name: '{color:positive}Usage'
         lore:
           - '{color:normal}Charge machine for {color:number}{1} J + {2}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}1 exp level {color:normal}every use'
+          - '{color:normal}Costs {color:number}1 experience level {color:normal}per use'
   _FINALTECH_MACHINE_ACCELERATE_CARD_L1:
     name: '{color:prandom}Machine Accelerate Card {color:conceal}- {color:number}L1'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
   _FINALTECH_MACHINE_ACCELERATE_CARD_L2:
     name: '{color:prandom}Machine Accelerate Card {color:conceal}- {color:number}L2'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}1 hp {color:normal}every use'
+          - '{color:normal}Costs {color:number}1 HP {color:normal}per use'
   _FINALTECH_MACHINE_ACCELERATE_CARD_L3:
     name: '{color:prandom}Machine Accelerate Card {color:conceal}- {color:number}L3'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}10% hp {color:normal}every use'
+          - '{color:normal}Costs {color:number}10% HP {color:normal}per use'
   _FINALTECH_MACHINE_ACTIVATE_CARD_L1:
     name: '{color:prandom}Machine Activate Card {color:conceal}- {color:number}L1'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
-          - '{color:normal}Before every work, it will be charged for {color:number}{2} J + {3}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
+          - '{color:normal}Before each cycle, it is charged with {color:number}{2} J + {3}% of machine capacity'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
   _FINALTECH_MACHINE_ACTIVATE_CARD_L2:
     name: '{color:prandom}Machine Activate Card {color:conceal}- {color:number}L2'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
-          - '{color:normal}Before every work, it will be charged for {color:number}{2} J + {3}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
+          - '{color:normal}Before each cycle, it is charged with {color:number}{2} J + {3}% of machine capacity'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}1 exp {color:normal}and {color:number}1 hp {color:normal}every use'
+          - '{color:normal}Costs {color:number}1 XP {color:normal}and {color:number}1 HP {color:normal}per use'
   _FINALTECH_MACHINE_ACTIVATE_CARD_L3:
     name: '{color:prandom}Machine Activate Card {color:conceal}- {color:number}L3'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
-          - '{color:normal}Before every work, it will be charged for {color:number}{2} J + {3}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
+          - '{color:normal}Before each cycle, it is charged with {color:number}{2} J + {3}% of machine capacity'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Cost {color:number}1 exp level {color:normal}and {color:number}10% hp {color:normal}every use'
+          - '{color:normal}Costs {color:number}1 experience level {color:normal}and {color:number}10% HP {color:normal}per use'
   _FINALTECH_ENERGY_CARD_K:
     name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1K'
     info:
@@ -1062,7 +1062,7 @@ items:
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Support expanded capacitor'
+          - '{color:normal}Supports Expanded Capacitors'
         output: '_FINALTECH_SMALL_EXPANDED_CAPACITOR'
   _FINALTECH_ENERGY_CARD_M:
     name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1M'
@@ -1074,7 +1074,7 @@ items:
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Support expanded capacitor'
+          - '{color:normal}Supports Expanded Capacitors'
         output: '_FINALTECH_SMALL_EXPANDED_CAPACITOR'
   _FINALTECH_ENERGY_CARD_B:
     name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1B'
@@ -1086,7 +1086,7 @@ items:
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Support expanded capacitor'
+          - '{color:normal}Supports Expanded Capacitors'
         output: '_FINALTECH_SMALL_EXPANDED_CAPACITOR'
   _FINALTECH_ENERGY_CARD_T:
     name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1T'
@@ -1098,7 +1098,7 @@ items:
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Support expanded capacitor'
+          - '{color:normal}Supports Expanded Capacitors'
         output: '_FINALTECH_SMALL_EXPANDED_CAPACITOR'
   _FINALTECH_ENERGY_CARD_Q:
     name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1Q'
@@ -1110,7 +1110,7 @@ items:
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Support expanded capacitor'
+          - '{color:normal}Supports Expanded Capacitors'
         output: '_FINALTECH_SMALL_EXPANDED_CAPACITOR'
   _FINALTECH_MAGIC_HYPNOTIC:
     name: '{color:prandom}Magic Hypnotic'
@@ -1118,7 +1118,7 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Apply random normal potion effect to you'
+          - '{color:normal}Applies a random standard potion effect'
   _FINALTECH_RESEARCH_UNLOCK_TICKET:
     name: '{color:prandom}Research Unlock Ticket'
     info:
@@ -1133,30 +1133,30 @@ items:
         name: '{color:positive}Usage'
         lore:
           - '{color:normal}Makes you teleport to the place you are looking at'
-          - '{color:action}[Right-Click] {color:normal}teleport to {color:number}{1} blocks {color:normal}away'
-          - '{color:action}[Shift + Right-Click] {color:normal}teleport to {color:number}{2} blocks {color:normal}away'
+          - '{color:action}[Right-click] {color:normal}teleport to {color:number}{1} blocks {color:normal}away'
+          - '{color:action}[Shift + Right-click] {color:normal}teleport to {color:number}{2} blocks {color:normal}away'
   _FINALTECH_POTION_EFFECT_COMPRESSOR:
     name: '{color:prandom}Potion Effect Compressor'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Level up your potion effect'
+          - '{color:normal}Increases the level of your potion effect'
   _FINALTECH_POTION_EFFECT_DILATOR:
     name: '{color:prandom}Potion Effect Dilator'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Enlarge your potion effect duration'
+          - '{color:normal}Extends the duration of your potion effect'
   _FINALTECH_POTION_EFFECT_PURIFIER:
     name: '{color:prandom}Potion Effect Purifier'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:action}[Right-Click] {color:normal}Clear your potion effect'
-          - "{color:action}[Shift + Right-Click] {color:normal}Clear around lives' potion effect"
+          - '{color:action}[Right-click] {color:normal}Clear your potion effects'
+          - "{color:action}[Shift + Right-click] {color:normal}Clear potion effects from nearby living entities"
           - "    {color:normal}Horizontal Range: {color:number}{1}"
           - "    {color:normal}Vertical Range: {color:number}{2}"
   _FINALTECH_GRAVITY_REVERSAL_RUNE:
@@ -1165,14 +1165,14 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:action}[Right-Click] {color:normal}Reverse your vertical speed'
+          - '{color:action}[Right-click] {color:normal}Reverse your vertical speed'
   _FINALTECH_MENU_VIEWER:
     name: '{color:prandom}Menu Viewer'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}To see how machine interact with others'
+          - '{color:normal}Shows how machines interact with each other'
     void-icon:
       name: '{color:normal}Non-interactive'
     input-icon:
@@ -1194,7 +1194,7 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:action}[Right-click] {color:normal}Open the machine in the specified location if existed'
+          - '{color:action}[Right-click] {color:normal}Open the machine at the recorded location, if it exists'
           - '{color:action}[Shift + Right-click] {color:normal}Record and mark the location you are looking at'
       2:
         name: '{color:passive}Mechanism'
@@ -1207,12 +1207,12 @@ items:
       1:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:action}[Right-click] {color:normal}Paste config to th machine you are looking at'
-          - '{color:action}[Shift + Right-click] {color:normal}Copy the machine config you are looking at'
+          - '{color:action}[Right-click] {color:normal}Paste the saved configuration to the machine you are looking at'
+          - '{color:action}[Shift + Right-click] {color:normal}Copy the configuration of the machine you are looking at'
       2:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Machines in same group can share their config'
+          - '{color:normal}Machines in the same group can share configurations'
           - ''
           - '{color:conceal}For example, you can copy the config of {id:CARGO_NODE_OUTPUT_ADVANCED}'
           - '{color:conceal}Then paste it to {id:CARGO_NODE_INPUT}'
@@ -1222,8 +1222,8 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:action}[Right-click] {color:normal}Insert the energy to a machine'
-          - '{color:action}[Shift + Right-click] {color:normal}Withdraw all the energy of a machine'
+          - '{color:action}[Right-click] {color:normal}Insert energy into a machine'
+          - '{color:action}[Shift + Right-click] {color:normal}Withdraw all energy from a machine'
       2:
         name: '{color:positive}Mechanism'
         lore:
@@ -1232,7 +1232,7 @@ items:
       3:
         name: '{color:positive}Mechanism'
         lore:
-          - '{color:normal}Can be used to craft energy card'
+          - '{color:normal}Can be used to craft Energy Cards'
         output: '_FINALTECH_ENERGY_CARD_K'
     status:
       lore:
@@ -1243,79 +1243,79 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop 1 extra exp instead while breaking block'
+          - '{color:normal}Drops 1 extra experience point when breaking blocks'
   _FINALTECH_ULTIMATE_SHOVEL:
     name: '{color:prandom}Ultimate Shovel'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop extra exp instead while breaking block'
+          - '{color:normal}Drops extra experience when breaking blocks'
   _FINALTECH_SUPER_PICKAXE:
     name: '{color:prandom}Super Pickaxe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop 1 extra exp instead while breaking block'
+          - '{color:normal}Drops 1 extra experience point when breaking blocks'
   _FINALTECH_ULTIMATE_PICKAXE:
     name: '{color:prandom}Ultimate Pickaxe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop extra exp instead while breaking block'
+          - '{color:normal}Drops extra experience when breaking blocks'
   _FINALTECH_SUPER_AXE:
     name: '{color:prandom}Super Axe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop 1 extra exp instead while breaking block'
+          - '{color:normal}Drops 1 extra experience point when breaking blocks'
   _FINALTECH_ULTIMATE_AXE:
     name: '{color:prandom}Ultimate Axe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop extra exp instead while breaking block'
+          - '{color:normal}Drops extra experience when breaking blocks'
   _FINALTECH_SUPER_HOE:
     name: '{color:prandom}Super Hoe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop 1 extra exp instead while breaking block'
+          - '{color:normal}Drops 1 extra experience point when breaking blocks'
   _FINALTECH_ULTIMATE_HOE:
     name: '{color:prandom}Ultimate Hoe'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Drop extra exp instead while breaking block'
+          - '{color:normal}Drops extra experience when breaking blocks'
   _FINALTECH_BASIC_GENERATOR:
     name: '{color:prandom}Basic Generator'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_ADVANCED_GENERATOR:
     name: '{color:prandom}Advanced Generator'
@@ -1323,23 +1323,23 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_CARBONADO_GENERATOR:
     name: '{color:prandom}Carbonado Generator'
@@ -1347,23 +1347,23 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_ENERGIZED_GENERATOR:
     name: '{color:prandom}Energized Generator'
@@ -1371,23 +1371,23 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_ENERGIZED_STACK_GENERATOR:
     name: '{color:prandom}Energized Stack Generator'
@@ -1395,23 +1395,23 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_OVERLOADED_GENERATOR:
     name: '{color:prandom}Overloaded Generator'
@@ -1419,23 +1419,23 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}{1} J'
-          - '{color:normal}Range: {color:number}{2} Block'
+          - '{color:normal}Range: {color:number}{2} blocks'
           - '{color:normal}Rate: {color:number}{3} s/times'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in same item will enlarge energy efficiency'
-          - '{color:normal}Support using {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Adding more of the same item increases energy efficiency'
+          - '{color:normal}Supports {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Total Energy: {color:number}{2} J'
   _FINALTECH_ORDERED_DUST_GENERATOR:
     name: '{color:prandom}Ordered Dust Generator'
@@ -1443,31 +1443,31 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Generate energy by consuming {id:_FINALTECH_UNORDERED_DUST} {color:normal}or {id:_FINALTECH_PHONY}'
-          - '{color:normal}Keep importing valid items, and it will generate energy more efficient'
+          - '{color:normal}Generates energy by consuming {id:_FINALTECH_UNORDERED_DUST} {color:normal}or {id:_FINALTECH_PHONY}'
+          - '{color:normal}Continuously supplying valid items increases generation efficiency'
         output: '_FINALTECH_UNORDERED_DUST'
       2:
         name: '{color:passive}Mechanism'
         lore:
           - '{color:normal}Consuming {id:_FINALTECH_UNORDERED_DUST}{color:normal}: {color:number}power + 1'
           - '{color:normal}Consuming {id:_FINALTECH_PHONY}{color:normal}: {color:number}power * 2'
-          - '{color:negative}If no valid item being consumed: {color:number}power / 2'
+          - '{color:negative}If no valid item is consumed: {color:number}power / 2'
         output: '_FINALTECH_PHONY'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{3} J'
         - ''
         - '{color:normal}Power: {color:number}{1}'
-        - '{color:normal}Generate Energy: {color:number}{2} J/times'
+        - '{color:normal}Generated Energy: {color:number}{2} J/cycle'
   _FINALTECH_TIME_GENERATOR:
     name: '{color:prandom}Time Generator'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Generate energy 1J per {color:number}{1}s'
+          - '{color:normal}Generates 1 J every {color:number}{1} s'
           - '{color:normal}Can store {color:number}{2} J {color:normal}of energy'
-          - '{color:normal}Double stored energy with time going'
+          - '{color:normal}Stored energy doubles over time'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{1} J'
@@ -1477,12 +1477,12 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - "{color:normal}Charge machine on it's top"
-          - "{color:normal}Charge energy: {color:number}{1} * machine's capacity"
+          - "{color:normal}Charge the machine above it"
+          - "{color:normal}Charge amount: {color:number}{1} × the machine's capacity"
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{1} J'
@@ -1493,13 +1493,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - "{color:normal}Charge machine on it's top"
-          - "{color:normal}Charge energy: {color:number}{1} * machine's capacity"
-          - "{color:normal}Can charge energy to {color:number}{2}% of machine's capacity"
+          - "{color:normal}Charge the machine above it"
+          - "{color:normal}Charge amount: {color:number}{1} × the machine's capacity"
+          - "{color:normal}Can charge up to {color:number}{2}% of the machine's capacity"
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{1} J'
@@ -1510,13 +1510,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1528,13 +1528,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1546,13 +1546,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1564,13 +1564,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1582,13 +1582,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1600,13 +1600,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1618,13 +1618,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1636,13 +1636,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Be compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Compatible with {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
     status:
       lore:
@@ -1655,7 +1655,7 @@ items:
         name: '{color:passive}Mechanism'
         lore:
           - '{color:normal}Can store {color:number}{1} J {color:normal}of energy'
-          - '{color:normal}Double stored energy with time going'
+          - '{color:normal}Stored energy doubles over time'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{1} J'
@@ -1665,15 +1665,15 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy stored in the capacitor or generator behind it'
-          - '{color:normal}To the machine it is pointing at nearly'
+          - '{color:normal}Transfer energy from the capacitor or generator behind it'
+          - '{color:normal}To the nearest machine it is pointing at'
           - ''
-          - '{color:normal}It will charge only one machine at same time'
+          - '{color:normal}It charges only one machine at a time'
           - ''
           - '{color:normal}Range: {color:number}{1}'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Transfer Energy: {color:number}{2} J'
   _FINALTECH_NORMAL_CONSUMABLE_ELECTRICITY_SHOOT_PILE:
     name: '{color:prandom}Normal Electricity Shoot Pile {color:conceal}- {color:positive}Consumable'
@@ -1681,10 +1681,10 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy stored in the capacitor or generator behind it'
+          - '{color:normal}Transfer energy from the capacitor or generator behind it'
           - '{color:normal}To the machine it is pointing at'
           - ''
-          - '{color:normal}It will charge only one machine at same time'
+          - '{color:normal}It charges only one machine at a time'
         output: '_FINALTECH_DIGITAL_ZERO'
     status:
       lore:
@@ -1696,10 +1696,10 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy stored in the capacitor or generator behind it'
+          - '{color:normal}Transfer energy from the capacitor or generator behind it'
           - '{color:normal}To the machine it is pointing at'
           - ''
-          - '{color:normal}It will charge only one machine at same time'
+          - '{color:normal}It charges only one machine at a time'
         output: '_FINALTECH_DIGITAL_ZERO'
     status:
       lore:
@@ -1711,16 +1711,16 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy stored in a capacitor or generator behind it'
-          - '{color:normal}To the machine it is pointing at one by one'
+          - '{color:normal}Transfer energy from a capacitor or generator behind it'
+          - '{color:normal}To machines in its path one by one'
           - ''
-          - '{color:normal}It will try to charge all machine at same time'
-          - '{color:normal}It will skip a machine with full energy'
+          - '{color:normal}It tries to charge all machines at the same time'
+          - '{color:normal}It skips machines that are fully charged'
           - ''
           - '{color:normal}Range: {color:number}{1}'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Transfer Energy: {color:number}{2} J'
   _FINALTECH_OVERLOADED_ELECTRICITY_SHOOT_PILE:
     name: '{color:prandom}Overloaded Electricity Shoot Pile'
@@ -1728,20 +1728,20 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy stored in a capacitor or generator behind it'
-          - '{color:normal}To the machine it is pointing at one by one'
+          - '{color:normal}Transfer energy from a capacitor or generator behind it'
+          - '{color:normal}To machines in its path one by one'
           - ''
-          - '{color:normal}It will try to charge all machine at same time'
-          - '{color:normal}It will charge a machine with full energy'
+          - '{color:normal}It tries to charge all machines at the same time'
+          - '{color:normal}It can continue charging a fully charged machine'
           - ''
           - '{color:normal}Range: {color:number}{1}'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not transfer energy to another capacitor or generator'
+          - '{color:normal}Cannot transfer energy to another capacitor or generator'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Transfer Energy: {color:number}{2} J'
   _FINALTECH_DISPERSAL_CAPACITOR:
     name: '{color:prandom}Dispersal Capacitor'
@@ -1749,15 +1749,15 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Transfer energy to machines around directly'
+          - '{color:normal}Transfers energy directly to nearby machines'
   _FINALTECH_VARIABLE_WIRE_RESISTANCE:
     name: '{color:prandom}Variable Wire Resistance'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can stored energy {color:number}{1} J'
-          - '{color:normal}Convert to {id:_FINALTECH_VARIABLE_WIRE_CAPACITOR} {color:normal}while being fully charged'
+          - '{color:normal}Can store {color:number}{1} J of energy'
+          - '{color:normal}Converts to {id:_FINALTECH_VARIABLE_WIRE_CAPACITOR} {color:normal}when fully charged'
         output: '_FINALTECH_VARIABLE_WIRE_CAPACITOR'
     status:
       lore:
@@ -1768,8 +1768,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can stored energy {color:number}{1} J'
-          - '{color:normal}Convert to {id:_FINALTECH_VARIABLE_WIRE_RESISTANCE} {color:normal}while being empty'
+          - '{color:normal}Can store {color:number}{1} J of energy'
+          - '{color:normal}Converts to {id:_FINALTECH_VARIABLE_WIRE_RESISTANCE} {color:normal}when empty'
         output: '_FINALTECH_VARIABLE_WIRE_RESISTANCE'
     status:
       lore:
@@ -1780,13 +1780,13 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Consume energy to make around machine work more times'
+          - '{color:normal}Consumes energy to make nearby machines run additional cycles'
           - '{color:normal}Range: {color:number}{1}'
           - '{color:normal}Capacity: {color:number}{2} J'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Only support machine that can store energy'
+          - '{color:normal}Only supports machines that can store energy'
     status:
       lore:
         - '{color:normal}Stored Energy: {color:number}{1} J'
@@ -1799,12 +1799,12 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Make around machine work several times which stored energy is beyond capacity'
+          - '{color:normal}Runs nearby machines additional cycles when stored energy exceeds capacity'
           - '{color:normal}Range: {color:number}{1}'
       2:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Only support machine that can store energy of course'
+          - '{color:normal}Only supports machines that can store energy of course'
     status:
       lore:
         - '{color:normal}Available Machines: {color:number}{1}'
@@ -1815,200 +1815,200 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
   _FINALTECH_DIVIDED_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}DIVIDED'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}The first {color:number}{2} slots {color:normal}will be identified as input slot'
-          - '{color:normal}The last {color:number}{3} slots {color:normal}will be identified as output slot'
+          - '{color:normal}The first {color:number}{2} slots {color:normal}are treated as input slots'
+          - '{color:normal}The last {color:number}{3} slots {color:normal}are treated as output slots'
   _FINALTECH_LIMITED_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}LIMITED'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can only input one slot of items while being interacted by other machine every times'
+          - '{color:normal}Allows other machines to insert into only one slot per interaction'
   _FINALTECH_STACK_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}STACK'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}It will sort items every {color:number}{2} s'
+          - '{color:normal}Sorts items every {color:number}{2} s'
   _FINALTECH_DIVIDED_LIMITED_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}DIVIDED | LIMITED'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}The first {color:number}{2} slots {color:normal}will be identified as input slot'
-          - '{color:normal}The last {color:number}{3} slots {color:normal}will be identified as output slot'
+          - '{color:normal}The first {color:number}{2} slots {color:normal}are treated as input slots'
+          - '{color:normal}The last {color:number}{3} slots {color:normal}are treated as output slots'
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can only input one slot of items while being interacted by other machine every times'
+          - '{color:normal}Allows other machines to insert into only one slot per interaction'
   _FINALTECH_DIVIDED_STACK_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}DIVIDED | STACK'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}The first {color:number}{2} slots {color:normal}will be identified as input slot'
-          - '{color:normal}The last {color:number}{3} slots {color:normal}will be identified as output slot'
+          - '{color:normal}The first {color:number}{2} slots {color:normal}are treated as input slots'
+          - '{color:normal}The last {color:number}{3} slots {color:normal}are treated as output slots'
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}It will sort items every {color:number}{4} s'
+          - '{color:normal}Sorts items every {color:number}{4} s'
   _FINALTECH_LIMITED_STACK_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}LIMITED | STACK'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can only input one slot of items while being interacted by other machine every times'
+          - '{color:normal}Allows other machines to insert into only one slot per interaction'
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}It will sort items every {color:number}{2} s'
+          - '{color:normal}Sorts items every {color:number}{2} s'
   _FINALTECH_RANDOM_INPUT_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}RANDOM INPUT'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Will be randomly interacted while inputting item to it by other machines'
+          - '{color:normal}Other machines choose a random slot when inserting items'
   _FINALTECH_RANDOM_OUTPUT_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}RANDOM OUTPUT'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Will be randomly interacted while outputting item from it by other machines'
+          - '{color:normal}Other machines choose a random slot when extracting items'
   _FINALTECH_RANDOM_ACCESS_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}RANDOM ACCESS'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Will be randomly interacted by other machines'
+          - '{color:normal}Other machines interact with a random slot'
   _FINALTECH_DISTRIBUTE_LEFT_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}DISTRIBUTE LEFT'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Will distribute items to left slots'
+          - '{color:normal}Distributes items toward the left slots'
   _FINALTECH_DISTRIBUTE_RIGHT_STORAGE_UNIT:
     name: '{color:prandom}Storage Unit {color:conceal}- {color:positive}DISTRIBUTE RIGHT'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can store {color:number}{1} slots {color:normal}of items'
+          - '{color:normal}Provides {color:number}{1} item-storage slots'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Will distribute items to right slots'
+          - '{color:normal}Distributes items toward the right slots'
   _FINALTECH_STORAGE_INTERACT_PORT:
     name: '{color:prandom}Storage Interact Port'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put vanilla container upside it'
-          - '{color:normal}Insert the {id:_FINALTECH_STORAGE_CARD} {color:normal}to the first {color:number}{1} slots'
+          - '{color:normal}Place a vanilla container above it'
+          - '{color:normal}Insert {id:_FINALTECH_STORAGE_CARD} {color:normal}into the first {color:number}{1} slots'
           - ''
-          - '{color:normal}Can input item to {id:_FINALTECH_STORAGE_CARD}'
-          - '{color:normal}Can output item from {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Can insert items into {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Can extract items from {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Execute the input only when half of the input slots are filled with items'
+          - '{color:normal}Runs input only when at least half of the input slots are filled'
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Execute the output only when half of the output slots are empty'
+          - '{color:normal}Runs output only when at least half of the output slots are empty'
   _FINALTECH_STORAGE_INSERT_PORT:
     name: '{color:prandom}Storage Insert Port'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put vanilla container upside it'
-          - '{color:normal}Insert the {id:_FINALTECH_STORAGE_CARD} {color:normal}to the first {color:number}{1} slots'
+          - '{color:normal}Place a vanilla container above it'
+          - '{color:normal}Insert {id:_FINALTECH_STORAGE_CARD} {color:normal}into the first {color:number}{1} slots'
           - ''
-          - '{color:normal}Can input item to {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Can insert items into {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Execute the input only when half of the input slot is filled with items'
+          - '{color:normal}Runs input only when at least half of the input slots are filled'
   _FINALTECH_STORAGE_WITHDRAW_PORT:
     name: '{color:prandom}Storage Withdraw Port'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put vanilla container upside it'
-          - '{color:normal}Insert the {id:_FINALTECH_STORAGE_CARD} {color:normal}to the first {color:number}{1} slots'
+          - '{color:normal}Place a vanilla container above it'
+          - '{color:normal}Insert {id:_FINALTECH_STORAGE_CARD} {color:normal}into the first {color:number}{1} slots'
           - ''
-          - '{color:normal}Can output item from {id:_FINALTECH_STORAGE_CARD}'
+          - '{color:normal}Can extract items from {id:_FINALTECH_STORAGE_CARD}'
         output: '_FINALTECH_STORAGE_CARD'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Execute the output only when half of the output slot is empty'
+          - '{color:normal}Runs output only when at least half of the output slots are empty'
   _FINALTECH_STORAGE_CARD:
     name: '{color:prandom}Storage Card'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can storage item by using {id:_FINALTECH_STORAGE_INTERACT_PORT}'
+          - '{color:normal}Can store items using {id:_FINALTECH_STORAGE_INTERACT_PORT}'
         output: '_FINALTECH_STORAGE_INTERACT_PORT'
   _FINALTECH_REMOTE_ACCESSOR:
     name: '{color:prandom}Remote Accessor'
@@ -2016,7 +2016,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to open slimefun machine it is looking at'
+          - '{color:normal}Right-click to open the Slimefun machine it is pointing at'
           - '{color:normal}Range: {color:number}{1}'
   _FINALTECH_CONSUMABLE_REMOTE_ACCESSOR:
     name: '{color:prandom}Remote Accessor {color:conceal}- {color:positive}Consumable'
@@ -2024,8 +2024,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to open slimefun machine it is looking at'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to open the Slimefun machine it is pointing at'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_CONFIGURABLE_REMOTE_ACCESSOR:
     name: '{color:prandom}Remote Accessor {color:conceal}- {color:positive}Configurable'
@@ -2033,8 +2033,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to open slimefun machine it is looking at'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to open the Slimefun machine it is pointing at'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_EXPANDED_CONSUMABLE_REMOTE_ACCESSOR:
     name: '{color:prandom}Expanded Remote Accessor {color:conceal}- {color:positive}Consumable'
@@ -2042,8 +2042,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to open slimefun machine it is looking at'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to open the Slimefun machine it is pointing at'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_EXPANDED_CONFIGURABLE_REMOTE_ACCESSOR:
     name: '{color:prandom}Expanded Remote Accessor {color:conceal}- {color:positive}Configurable'
@@ -2051,8 +2051,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to open slimefun machine it is looking at'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to open the Slimefun machine it is pointing at'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_RANDOM_ACCESSOR:
     name: '{color:prandom}Random Accessor'
@@ -2060,14 +2060,14 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to randomly open slimefun machine around it'
+          - '{color:normal}Right-click to open a random nearby Slimefun machine'
   _FINALTECH_AREA_ACCESSOR:
     name: '{color:prandom}Area Accessor'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to open menu and then you can directly open slimefun machine around it'
+          - '{color:normal}Right-click to open a menu of nearby Slimefun machines'
           - '{color:normal}Range: {color:number}{1}'
     temp-icon:
       lore:
@@ -2080,7 +2080,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to teleport to the target place'
+          - '{color:normal}Right-click to teleport to the target location'
           - '{color:normal}Range: {color:number}{1}'
   _FINALTECH_CONSUMABLE_TRANSPORTER:
     name: '{color:prandom}Transporter {color:conceal}- {color:positive}Consumable'
@@ -2088,8 +2088,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to teleport to the target place'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to teleport to the target location'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_CONFIGURABLE_TRANSPORTER:
     name: '{color:prandom}Transporter {color:conceal}- {color:positive}Configurable'
@@ -2097,8 +2097,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to teleport to the target place'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to teleport to the target location'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_EXPANDED_CONSUMABLE_TRANSPORTER:
     name: '{color:prandom}Expanded Transporter {color:conceal}- {color:positive}Consumable'
@@ -2106,8 +2106,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to teleport to the target place'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to teleport to the target location'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_EXPANDED_CONFIGURABLE_TRANSPORTER:
     name: '{color:prandom}Expanded Transporter {color:conceal}- {color:positive}Configurable'
@@ -2115,8 +2115,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Right click it to config it by using digital items'
-          - '{color:normal}Right click it to teleport to the target place'
+          - '{color:normal}Right-click to configure it using Digital items'
+          - '{color:normal}Right-click to teleport to the target location'
         output: '_FINALTECH_DIGITAL_ZERO'
   _FINALTECH_LOGIC_COMPARATOR_NOTNULL:
     name: '{color:prandom}Logic Comparator {color:conceal}- {color:positive}Not Null'
@@ -2124,9 +2124,9 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}While matching precondition'
-          - '{color:normal}It will perform conditional judgment'
-          - '{color:normal}And then output specified items'
+          - '{color:normal}When the precondition is met'
+          - '{color:normal}It evaluates the configured condition'
+          - '{color:normal}Then outputs the specified items'
       2:
         name: '{color:passive}Precondition'
         lore:
@@ -2147,9 +2147,9 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}While matching precondition'
-          - '{color:normal}It will perform conditional judgment'
-          - '{color:normal}And then output specified items'
+          - '{color:normal}When the precondition is met'
+          - '{color:normal}It evaluates the configured condition'
+          - '{color:normal}Then outputs the specified items'
       2:
         name: '{color:passive}Precondition'
         lore:
@@ -2170,9 +2170,9 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}While matching precondition'
-          - '{color:normal}It will perform conditional judgment'
-          - '{color:normal}And then output specified items'
+          - '{color:normal}When the precondition is met'
+          - '{color:normal}It evaluates the configured condition'
+          - '{color:normal}Then outputs the specified items'
       2:
         name: '{color:passive}Precondition'
         lore:
@@ -2193,9 +2193,9 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}While matching precondition'
-          - '{color:normal}It will perform conditional judgment'
-          - '{color:normal}And then output specified items'
+          - '{color:normal}When the precondition is met'
+          - '{color:normal}It evaluates the configured condition'
+          - '{color:normal}Then outputs the specified items'
       2:
         name: '{color:passive}Precondition'
         lore:
@@ -2404,7 +2404,7 @@ items:
         lore:
           - '{color:normal}While all slots have item'
           - '{color:normal}Every slot is with different item amount'
-          - '{color:normal}Will make it more probability to generate {id:_FINALTECH_UNORDERED_DUST}'
+          - '{color:normal}Makes {id:_FINALTECH_UNORDERED_DUST} {color:normal}more likely to be generated'
         output: '_FINALTECH_UNORDERED_DUST'
       3:
         name: '{color:passive}Mechanism'
@@ -2423,14 +2423,14 @@ items:
       1:
         name: '{color:stress}Introduction'
         lore:
-          - '{color:normal}Put item orderly to craft'
+          - '{color:normal}Place items in the required order to craft'
   _FINALTECH_MATRIX_CRAFTING_TABLE:
     name: '{color:prandom}Matrix Crafting Table'
     info:
       1:
         name: '{color:stress}Introduction'
         lore:
-          - '{color:normal}Put item orderly to craft'
+          - '{color:normal}Place items in the required order to craft'
     parse-icon:
       name: '{color:negative}Invalid'
     show-icon:
@@ -2442,7 +2442,7 @@ items:
       1:
         name: '{color:stress}Introduction'
         lore:
-          - '{color:normal}Restore item to its raw materials'
+          - '{color:normal}Dismantles items into their raw materials'
     status-icon:
       lore:
         - '{color:normal}Charge: {color:number}{1} {color:conceal}/ {color:number}{2}'
@@ -2452,15 +2452,15 @@ items:
       1:
         name: '{color:stress}Introduction'
         lore:
-          - '{color:normal}Restore item to its raw materials'
+          - '{color:normal}Dismantles items into their raw materials'
   _FINALTECH_EQUIVALENT_EXCHANGE_TABLE:
     name: '{color:prandom}Equivalent Exchange Table'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Input items to convert them to value'
-          - '{color:normal}Input {id:_FINALTECH_UNORDERED_DUST} {color:normal}to consume value and get random item'
+          - '{color:normal}Insert items to convert them into value'
+          - '{color:normal}Insert {id:_FINALTECH_UNORDERED_DUST} {color:normal}to spend stored value and receive a random item'
         output: '_FINALTECH_UNORDERED_DUST'
       2:
         name: '{color:passive}Mechanism'
@@ -2492,7 +2492,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Use at least {color:number}{1} {color:normal}same items to craft one {id:_FINALTECH_COPY_CARD} {color:normal}of specified item'
+          - '{color:normal}Use at least {color:number}{1} {color:normal}identical items to craft one {id:_FINALTECH_COPY_CARD} {color:normal}for that item'
         output: '_FINALTECH_COPY_CARD'
       2:
         name: '{color:passive}Mechanism'
@@ -2502,12 +2502,12 @@ items:
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Use {color:number}{3} {color:normal}different type of {id:_FINALTECH_COPY_CARD} {color:normal}to craft a {id:_FINALTECH_SPIROCHETE}'
+          - '{color:normal}Use {color:number}{3} {color:normal}different types of {id:_FINALTECH_COPY_CARD} {color:normal}to craft a {id:_FINALTECH_SPIROCHETE}'
         output: '_FINALTECH_SPIROCHETE'
       4:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Produce a {id:_FINALTECH_PHONY} {color:normal}instead while it can craft {id:_FINALTECH_SINGULARITY} {color:normal}and {id:_FINALTECH_SPIROCHETE} {color:normal}at same time'
+          - '{color:normal}Produces a {id:_FINALTECH_PHONY} {color:normal}instead when it can craft {id:_FINALTECH_SINGULARITY} {color:normal}and {id:_FINALTECH_SPIROCHETE} {color:normal}at the same time'
         output: '_FINALTECH_PHONY'
       5:
         name: '{color:passive}Mechanism'
@@ -2517,11 +2517,11 @@ items:
       6:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Only items from Slimefun will be supported to make {id:_FINALTECH_COPY_CARD}'
+          - '{color:normal}Only Slimefun items can be used to make {id:_FINALTECH_COPY_CARD}'
     null-icon:
-      name: '{color:negative}Not Work'
+      name: '{color:negative}Inactive'
       lore:
-        - '{color:normal}Input something to make me work'
+        - '{color:normal}Insert an item to begin'
     copy-card:
       name: '{color:normal}Status'
       lore:
@@ -2539,7 +2539,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in {id:_FINALTECH_COPY_CARD}'
+          - '{color:normal}Insert {id:_FINALTECH_COPY_CARD}'
           - '{color:normal}Then it will slowly generate the specified item'
         output: '_FINALTECH_COPY_CARD'
   _FINALTECH_CARD_OPERATION_TABLE:
@@ -2593,37 +2593,37 @@ items:
           - '{color:normal}Use {id:_FINALTECH_COPY_CARD} {color:normal}to craft one {id:_FINALTECH_ANNULAR}'
         output: '_FINALTECH_ANNULAR'
     status:
-      name: '{color:negative}No Matched'
+      name: '{color:negative}No Match'
       lore:
-        - '{color:normal}Please input correct thing.'
+        - '{color:normal}Please insert the correct items.'
   _FINALTECH_ADVANCED_AUTO_CRAFT_FRAME:
     name: '{color:prandom}Advanced Auto Craft Frame'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Parse how slimefun item is crafted'
+          - '{color:normal}Analyze how a Slimefun item is crafted'
     parse-icon:
       name: '{color:stress}Parse'
       lore:
-        - '{color:action}[click] {color:normal}to parse item'
+        - '{color:action}[Click] {color:normal}to parse the item'
     wiki-icon:
       name: '{color:stress}Wiki'
       lore:
         - '{color:normal}↓ Put item here'
         - '{color:normal}↙ Click and parse it'
-        - '{color:normal}↑↑ Put machine item in top two lines to parse item more steps'
-        - '    {color:normal}Available machine item can be found in slimefun guide.'
-        - '{color:normal}↑ Put quantity module to speed up'
+        - '{color:normal}↑↑ Put machine items in the top two rows to parse additional crafting steps'
+        - '    {color:normal}Available machine items can be found in the Slimefun Guide.'
+        - '{color:normal}↑ Insert a Quantity Module to speed it up'
         - '{color:negative}The machine can not work at all'
     parse-failed-icon:
       name: '{color:negative}Parse Failed'
       lore:
-        - '{color:normal}Please try to parse different item'
+        - '{color:normal}Please try parsing a different item'
     parse-extend-icon:
       name: '{color:positive}Parse Success'
       lore:
-        - '{color:action}[click] {color:normal}to get more information'
+        - '{color:action}[Click] {color:normal}for more information'
     parse-success-icon:
       name: '{color:positive}Parse Success'
     parse-amount: '{color:conceal}Amount : {1}'
@@ -2633,8 +2633,8 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Cost {id:_FINALTECH_UNORDERED_DUST} {color:normal}to start mine work'
-          - '{color:normal}You should scan the GEO resource first'
+          - '{color:normal}Consumes {id:_FINALTECH_UNORDERED_DUST} {color:normal}to begin mining'
+          - '{color:normal}Scan the GEO resource first'
         output: '_FINALTECH_UNORDERED_DUST'
     status:
       name: '{color:normal}Status'
@@ -2647,18 +2647,18 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can input energy to {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
-          - '{color:normal}Can output energy from {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Can transfer energy into {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Can transfer energy out of {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Use energy card to input energy'
+          - '{color:normal}Use an Energy Card to insert energy'
         output: '_FINALTECH_ENERGY_CARD_K'
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Output energy will be replaced by energy card'
+          - '{color:normal}Extracted energy is converted into Energy Cards'
         output: '_FINALTECH_ENERGY_CARD_K'
   _FINALTECH_ENERGY_INPUT_TABLE:
     name: '{color:prandom}Energy Input Table'
@@ -2666,12 +2666,12 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can input energy to {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Can transfer energy into {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Use energy card to input energy'
+          - '{color:normal}Use an Energy Card to insert energy'
         output: '_FINALTECH_ENERGY_CARD_K'
   _FINALTECH_ENERGY_OUTPUT_TABLE:
     name: '{color:prandom}Energy Output Table'
@@ -2679,12 +2679,12 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can output energy from {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
+          - '{color:normal}Can transfer energy out of {id:_FINALTECH_PORTABLE_ENERGY_STORAGE}'
         output: '_FINALTECH_PORTABLE_ENERGY_STORAGE'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Output energy will be replaced by energy card'
+          - '{color:normal}Extracted energy is converted into Energy Cards'
         output: '_FINALTECH_ENERGY_CARD_K'
   _FINALTECH_ITEM_FIXER:
     name: '{color:prandom}Item Fixer'
@@ -2692,7 +2692,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Slowly restore durability of item'
+          - '{color:normal}Slowly restores item durability'
   _FINALTECH_COBBLESTONE_FACTORY:
     name: '{color:prandom}Cobblestone Factory'
   _FINALTECH_FUEL_CHARGER:
@@ -2723,7 +2723,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}It will accelerate the work progress of the machine by consuming energy'
+          - '{color:normal}Accelerates the machine's progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2740,7 +2740,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}It will accelerate the work progress of the machine by consuming energy'
+          - '{color:normal}Accelerates the machine's progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2757,7 +2757,7 @@ items:
         name: '{color:passive}Introduction'
         lore:
           - '{color:normal}Place it below the machine to work'
-          - '{color:normal}It will accelerate the work progress of the machine by consuming energy'
+          - '{color:normal}Accelerates the machine's progress by consuming energy'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2780,7 +2780,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Cure the surrounding living slowly'
+          - '{color:normal}Slowly heals nearby living entities'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2789,7 +2789,7 @@ items:
           - '{color:normal}Cure Health: {color:number}{3}'
     status:
       lore:
-        - '{color:normal}Impact Amount: {color:number}{1}'
+        - '{color:normal}Affected Entities: {color:number}{1}'
         - '{color:normal}Range: {color:number}{2}'
   _FINALTECH_PURIFY_LEVEL_TOWER:
     name: '{color:prandom}Purify Level Tower'
@@ -2797,7 +2797,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Purify the surrounding living'
+          - '{color:normal}Purifies nearby living entities'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2809,7 +2809,7 @@ items:
           - '{color:normal}Multi Range: {color:number}{2}'
     status:
       lore:
-        - '{color:normal}Impact Amount: {color:number}{1}'
+        - '{color:normal}Affected Entities: {color:number}{1}'
         - '{color:normal}Range: {color:number}{2}'
   _FINALTECH_PURIFY_TIME_TOWER:
     name: '{color:prandom}Purify Time Tower'
@@ -2817,7 +2817,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Purify the surrounding living'
+          - '{color:normal}Purifies nearby living entities'
       2:
         name: '{color:passive}Mechanism'
         lore:
@@ -2829,18 +2829,18 @@ items:
           - '{color:normal}Multi Range: {color:number}{2}'
     status:
       lore:
-        - '{color:normal}Impact Amount: {color:number}{1}'
+        - '{color:normal}Affected Entities: {color:number}{1}'
         - '{color:normal}Range: {color:number}{2}'
   _FINALTECH_MANUAL_CRAFT_MACHINE:
     name: '{color:random}Manual Craft Machine'
     lore:
-      - '{color:positive}Do craft without the need to place items in order'
+      - '{color:positive}Crafts without requiring items to be placed in recipe order'
       - ''
-      - '{color:normal}Cost energy to craft'
-      - '{color:normal}Recovery energy over time'
+      - '{color:normal}Consumes energy when crafting'
+      - '{color:normal}Recovers energy over time'
       - ''
-      - '{color:negative}While the stored energy is more than half of capacity'
-      - '{color:negative}Stored energy will be reduced by half'
+      - '{color:negative}When stored energy exceeds half of its capacity'
+      - '{color:negative}Stored energy is reduced by half'
   _FINALTECH_MANUAL_CRAFTING_TABLE:
     name: '{color:prandom}Manual Crafting Table'
   _FINALTECH_MANUAL_ENHANCED_CRAFTING_TABLE:
@@ -2880,7 +2880,7 @@ items:
   _FINALTECH_ADVANCED_JUICER:
     name: '{color:prandom}Advanced Juicer'
   _FINALTECH_ADVANCED_FURNACE:
-    name: '{color:prandom}Advanced Furance'
+    name: '{color:prandom}Advanced Furnace'
   _FINALTECH_ADVANCED_GOLD_PAN:
     name: '{color:prandom}Advanced Gold Pan'
   _FINALTECH_ADVANCED_DUST_WASHER:
@@ -2927,7 +2927,8 @@ items:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}???'
+          - '{color:normal}Starts a finite entropy propagation process'
+          - '{color:normal}Produces {id:_FINALTECH_EQUIVALENT_CONCEPT} {color:normal}and {id:_FINALTECH_JUSTIFIABILITY}'
   _FINALTECH_MATRIX_MACHINE_CHARGE_CARD:
     name: '{color:prandom}Matrix Machine Charge Card'
     info:
@@ -2935,23 +2936,23 @@ items:
         name: '{color:positive}Usage'
         lore:
           - '{color:normal}Charge machine for {color:number}{1} J + {2}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
   _FINALTECH_MATRIX_MACHINE_ACCELERATE_CARD:
     name: '{color:prandom}Matrix Machine Accelerate Card'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
   _FINALTECH_MATRIX_MACHINE_ACTIVATE_CARD:
     name: '{color:prandom}Machine Activate Card {color:conceal}- {color:number}L4'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Make machine work immediately for {color:number}{1} times'
-          - '{color:normal}Before every work, it will be charged for {color:number}{2} J + {3}% of machine capacity'
-          - '{color:normal}Percentage energy charge is not applicable to to capacitor and generator'
+          - '{color:normal}Run the machine immediately for {color:number}{1} cycles'
+          - '{color:normal}Before each cycle, it is charged with {color:number}{2} J + {3}% of machine capacity'
+          - '{color:normal}Percentage-based charging does not apply to capacitors or generators'
       2:
         name: '{color:negative}Limit'
         lore:
@@ -2962,41 +2963,41 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Can tweak some machines to an amazing efficiency'
-          - '{color:normal}Efficiency tweak is downward compatible'
+          - '{color:normal}Can greatly increase the efficiency of supported machines'
+          - '{color:normal}Lower-tier efficiency settings remain compatible'
   _FINALTECH_ADVANCED_AUTO_CRAFT:
     name: '{color:prandom}Advanced Auto Craft'
     info:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Parse how slimefun item is crafted'
-          - '{color:normal}Then craft it from its raw materials directly'
+          - '{color:normal}Analyze how a Slimefun item is crafted'
+          - '{color:normal}Then crafts it directly from its raw materials'
       2:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Support using {id:_FINALTECH_COPY_CARD} {color:normal}to replace raw material'
+          - '{color:normal}Supports {id:_FINALTECH_COPY_CARD} {color:normal}as a substitute for raw materials'
         output: '_FINALTECH_COPY_CARD'
     parse-icon:
       name: '{color:stress}Parse'
       lore:
-        - '{color:action}[click] {color:normal}to parse item'
+        - '{color:action}[Click] {color:normal}to parse the item'
     wiki-icon:
       name: '{color:stress}Wiki'
       lore:
         - '{color:normal}↓ Put item here'
         - '{color:normal}↙ Click and parse it'
-        - '{color:normal}↑↑ Put machine item in top two lines to parse item more steps'
-        - '    {color:normal}Available machine item can be found in slimefun guide.'
-        - '{color:normal}↑ Put quantity module to speed up'
+        - '{color:normal}↑↑ Put machine items in the top two rows to parse additional crafting steps'
+        - '    {color:normal}Available machine items can be found in the Slimefun Guide.'
+        - '{color:normal}↑ Insert a Quantity Module to speed it up'
     parse-failed-icon:
       name: '{color:negative}Parse Failed'
       lore:
-        - '{color:normal}Please try to parse different item'
+        - '{color:normal}Please try parsing a different item'
     parse-extend-icon:
       name: '{color:positive}Parse Success'
       lore:
-        - '{color:action}[click] {color:normal}to get more information'
+        - '{color:action}[Click] {color:normal}for more information'
     parse-success-icon:
       name: '{color:positive}Parse Success'
     parse-amount: '{color:conceal}Amount : {1}'
@@ -3013,15 +3014,15 @@ items:
       1:
         name: '{color:stress}Introduction'
         lore:
-          - '{color:normal}Restore item to its raw materials'
+          - '{color:normal}Dismantles items into their raw materials'
   _FINALTECH_MATRIX_EXPANDED_CAPACITOR:
     name: '{color:prandom}Matrix Expanded Capacitor'
     info:
       1:
         name: '{color:positive}Usage'
         lore:
-          - '{color:normal}Can store {color:number}{1} J {color:normal}of energy every stack'
-          - '{color:normal}Can store {color:number}{2} stack {color:normal}of energy'
+          - '{color:normal}Stores {color:number}{1} J {color:normal}per energy stack'
+          - '{color:normal}Can store {color:number}{2} energy stacks'
           - '{color:normal}Generate energy with the same amount of stored energy stack every {color:number}{3} s'
     status:
       lore:
@@ -3033,7 +3034,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Put in {id:_FINALTECH_COPY_CARD}'
+          - '{color:normal}Insert {id:_FINALTECH_COPY_CARD}'
           - '{color:normal}Then it will slowly generate the specified item'
         output: '_FINALTECH_COPY_CARD'
   _FINALTECH_ENTROPY_CONSTRUCTOR:
@@ -3050,7 +3051,7 @@ items:
       1:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Charge around machine'
+          - '{color:normal}Charge nearby machines'
           - '{color:normal}Energy: {color:number}100%'
           - '{color:normal}Range: {color:number}{1} Block'
           - '{color:normal}Rate: {color:number}{2} s/times'
@@ -3062,10 +3063,10 @@ items:
       3:
         name: '{color:negative}Limit'
         lore:
-          - '{color:normal}Can not charge capacitor and generator'
+          - '{color:normal}Cannot charge capacitors or generators'
     status:
       lore:
-        - '{color:normal}Affected Machine: {color:number}{1}'
+        - '{color:normal}Affected Machines: {color:number}{1}'
         - '{color:normal}Range: {color:number}{2}'
   _FINALTECH_MATRIX_ACCELERATOR:
     name: '{color:prandom}Matrix Accelerator'
@@ -3108,12 +3109,12 @@ items:
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Use {color:number}{3} {color:normal}different type of {id:_FINALTECH_COPY_CARD} {color:normal}to craft a {id:_FINALTECH_SPIROCHETE}'
+          - '{color:normal}Use {color:number}{3} {color:normal}different types of {id:_FINALTECH_COPY_CARD} {color:normal}to craft a {id:_FINALTECH_SPIROCHETE}'
         output: '_FINALTECH_SPIROCHETE'
       4:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}Produce a {id:_FINALTECH_PHONY} {color:normal}instead while it can craft {id:_FINALTECH_SINGULARITY} {color:normal}and {id:_FINALTECH_SPIROCHETE} {color:normal}at same time'
+          - '{color:normal}Produces a {id:_FINALTECH_PHONY} {color:normal}instead when it can craft {id:_FINALTECH_SINGULARITY} {color:normal}and {id:_FINALTECH_SPIROCHETE} {color:normal}at the same time'
         output: '_FINALTECH_PHONY'
       5:
         name: '{color:passive}Mechanism'
@@ -3121,9 +3122,9 @@ items:
           - '{color:normal}While making {id:_FINALTECH_COPY_CARD}'
           - '{color:normal}{id:_FINALTECH_PHONY} {color:normal}can be used to replace any item'
     null-icon:
-      name: '{color:negative}Not Work'
+      name: '{color:negative}Inactive'
       lore:
-        - '{color:normal}Input something to make me work'
+        - '{color:normal}Insert an item to begin'
     copy-card:
       name: '{color:normal}Status'
       lore:
@@ -3156,7 +3157,7 @@ items:
       3:
         name: '{color:passive}Mechanism'
         lore:
-          - '{color:normal}The amount {id:_FINALTECH_UNORDERED_DUST} {color:normal}and {id:_FINALTECH_ORDERED_DUST} {color:normal}consumed every times'
+          - '{color:normal}The amount {id:_FINALTECH_UNORDERED_DUST} {color:normal}and {id:_FINALTECH_ORDERED_DUST} {color:normal}consumed each time'
           - '{color:normal}is equal to the amount of the input item'
           - ''
           - '{color:normal}Else the progress will be reduced by {color:number}1'
