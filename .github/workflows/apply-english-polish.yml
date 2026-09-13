@@ -1,0 +1,37 @@
+name: Apply English Prose Polish
+
+on:
+  push:
+    branches: [localization/english-polish]
+    paths:
+      - 'scripts/polish_english_locale.py'
+      - '.github/workflows/apply-english-polish.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out polish branch
+        uses: actions/checkout@v6
+        with:
+          ref: localization/english-polish
+
+      - name: Polish inherited English locale prose
+        run: python3 scripts/polish_english_locale.py
+
+      - name: Commit polished locale
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/main/resources/language/en-US.yml README.md docs/LOCALIZATION.md docs/TERMINOLOGY.md
+          if git diff --cached --quiet; then
+            echo 'No prose changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Polish inherited FinalTECH English prose'
+          git push origin HEAD:localization/english-polish
