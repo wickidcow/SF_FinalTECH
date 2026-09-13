@@ -8,7 +8,7 @@ helper:
     capacitor:
       name: '{color:normal}Capacitor'
     wiki-icon:
-      name: '{color:stress}Parameters'
+      name: '{color:stress}Item Information'
       lore:
         - '§7{1}'
         - '{color:normal}Research: {color:negative}{2}'

@@ -57,7 +57,7 @@ public class MainItemGroup extends FlexItemGroup {
 
     @Override
     public boolean isVisible(@Nonnull Player p, @Nonnull PlayerProfile profile, @Nonnull SlimefunGuideMode layout) {
-        return layout.equals(SlimefunGuideMode.SURVIVAL_MODE) && this.page == 1;
+        return this.page == 1;
     }
 
     @Override
@@ -122,7 +122,7 @@ public class MainItemGroup extends FlexItemGroup {
             if (action.isShiftClicked()) {
                 SlimefunGuide.openMainMenu(playerProfile, slimefunGuideMode, guideHistory.getMainMenuPage());
             } else {
-                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(SlimefunGuideMode.SURVIVAL_MODE));
+                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(slimefunGuideMode));
             }
             return false;
         });

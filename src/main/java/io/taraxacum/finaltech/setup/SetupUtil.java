@@ -27,6 +27,7 @@ import io.taraxacum.libs.slimefun.util.ResearchUtil;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemFlag;
@@ -110,6 +111,31 @@ public final class SetupUtil {
                 }
             }
         });
+
+        setupGuideHelperLanguage(languageManager);
+    }
+
+    private static void setupGuideHelperLanguage(@Nonnull LanguageManager languageManager) {
+        String currentName = languageManager.containPath("helper", "ICON", "wiki-icon", "name")
+                ? languageManager.getString("helper", "ICON", "wiki-icon", "name")
+                : "";
+        String plainName = ChatColor.stripColor(currentName);
+        if (plainName == null
+                || plainName.isBlank()
+                || plainName.equalsIgnoreCase("Parameters")
+                || currentName.equals("helper.ICON.wiki-icon.name")) {
+            languageManager.setValue("{color:stress}Item Information", "helper", "ICON", "wiki-icon", "name");
+        }
+
+        if (!languageManager.containPath("helper", "ICON", "wiki-icon", "lore")) {
+            languageManager.setValue(List.of(
+                    "§7{1}",
+                    "{color:normal}Research: {color:negative}{2}",
+                    "{color:normal}Addon: {color:initiative}{3}",
+                    "{color:normal}EE Input Value: {color:number}{4}",
+                    "{color:normal}EE Output Value: {color:number}{5}"),
+                    "helper", "ICON", "wiki-icon", "lore");
+        }
     }
 
     private static void setupEnchantment() {
