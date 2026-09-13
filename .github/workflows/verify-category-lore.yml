@@ -5,6 +5,7 @@ on:
     branches: [guide/category-lore]
     paths:
       - 'scripts/apply_category_lore_cleanup.py'
+      - 'scripts/apply_guide_lore_visibility.py'
       - '.github/workflows/verify-category-lore.yml'
   workflow_dispatch:
 
@@ -21,14 +22,19 @@ jobs:
           ref: guide/category-lore
 
       - name: Apply Guide category cleanup
-        run: python3 scripts/apply_category_lore_cleanup.py
+        run: |
+          python3 scripts/apply_category_lore_cleanup.py
+          python3 scripts/apply_guide_lore_visibility.py
 
-      - name: Verify category names and lore
+      - name: Verify category names, lore and sorting
         shell: bash
         run: |
           set -euo pipefail
           grep -F 'String path = "categories." + key + ".name";' src/main/java/io/taraxacum/finaltech/util/ConfigUtil.java
           grep -F 'getCategoryLore(languageManager, key, defaultLore)' src/main/java/io/taraxacum/finaltech/util/ConfigUtil.java
+          grep -F 'List<String> combinedLore = new ArrayList<>(categoryLore);' src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java
+          grep -F 'List<String> combinedLore = new ArrayList<>(categoryLore);' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'FinalTechMenus.MAIN_ITEM_GROUP.setTier(3);' src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java
           grep -F 'Advanced automation, logistics and end-game technology.' src/main/resources/language/en-US.yml
           grep -F 'Storage, routing, filtering and automated item transport.' src/main/resources/language/en-US.yml
           grep -F 'Legacy items kept for compatibility; avoid new use.' src/main/resources/language/en-US.yml
@@ -72,7 +78,10 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/main/java/io/taraxacum/finaltech/util/ConfigUtil.java \
                   src/main/java/io/taraxacum/finaltech/setup/FinalTechMenus.java \
+                  src/main/java/io/taraxacum/finaltech/core/group/MainItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java \
                   src/main/resources/language/en-US.yml
           git diff --cached --check
-          git commit -m 'Add explanatory lore to FinalTECH Guide categories'
+          git commit -m 'Improve FinalTECH Guide category presentation'
           git push origin HEAD:guide/category-lore
