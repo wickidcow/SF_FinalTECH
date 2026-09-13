@@ -56,9 +56,11 @@ public class ConfigFileManager {
     }
 
     /**
-     * FinalTECH 3.0 briefly shipped an English language line with an apostrophe
-     * inside a YAML single-quoted scalar. SnakeYAML correctly rejects that file.
-     * Repair both newly copied and already-existing en-US.yml files before load.
+     * FinalTECH 3.0 briefly shipped English localization prose containing raw
+     * apostrophes inside YAML single-quoted scalars. YAML requires apostrophes
+     * inside those values to be doubled. Repair every affected one-line value
+     * before Bukkit/SnakeYAML attempts to load the file so existing server
+     * copies self-heal after the plugin JAR is updated.
      */
     private static void repairKnownLanguageSyntax(@Nonnull File file) {
         if (!"en-US.yml".equalsIgnoreCase(file.getName()) || !file.isFile()) {
@@ -66,18 +68,74 @@ public class ConfigFileManager {
         }
 
         try {
-            String source = Files.readString(file.toPath());
-            String repaired = source.replace(
-                "The transfer amount will not exceed the item's maximum stack size",
-                "The transfer amount will not exceed the item''s maximum stack size"
-            );
+            List<String> sourceLines = Files.readAllLines(file.toPath());
+            List<String> repairedLines = new ArrayList<>(sourceLines.size());
+            boolean changed = false;
 
-            if (!source.equals(repaired)) {
-                Files.writeString(file.toPath(), repaired);
+            for (String line : sourceLines) {
+                String repairedLine = repairSingleQuotedYamlScalar(line);
+                repairedLines.add(repairedLine);
+                changed |= !line.equals(repairedLine);
+            }
+
+            if (changed) {
+                Files.write(file.toPath(), repairedLines);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Nonnull
+    private static String repairSingleQuotedYamlScalar(@Nonnull String line) {
+        int scalarStart = -1;
+        int listMarker = line.indexOf("- '");
+        int valueMarker = line.indexOf(": '");
+
+        if (listMarker >= 0) {
+            scalarStart = listMarker + 2;
+        } else if (valueMarker >= 0) {
+            scalarStart = valueMarker + 2;
+        }
+
+        if (scalarStart < 0 || scalarStart >= line.length() || line.charAt(scalarStart) != '\'') {
+            return line;
+        }
+
+        int scalarEnd = line.lastIndexOf('\'');
+        if (scalarEnd <= scalarStart) {
+            return line;
+        }
+
+        String body = line.substring(scalarStart + 1, scalarEnd);
+        String repairedBody = escapeYamlSingleQuotedBody(body);
+        if (body.equals(repairedBody)) {
+            return line;
+        }
+
+        return line.substring(0, scalarStart + 1) + repairedBody + line.substring(scalarEnd);
+    }
+
+    @Nonnull
+    private static String escapeYamlSingleQuotedBody(@Nonnull String body) {
+        StringBuilder result = new StringBuilder(body.length());
+
+        for (int i = 0; i < body.length(); i++) {
+            char current = body.charAt(i);
+            if (current != '\'') {
+                result.append(current);
+                continue;
+            }
+
+            if (i + 1 < body.length() && body.charAt(i + 1) == '\'') {
+                result.append("''");
+                i++;
+            } else {
+                result.append("''");
+            }
+        }
+
+        return result.toString();
     }
 
     @Nonnull
