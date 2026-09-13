@@ -36,6 +36,7 @@ public class ConfigFileManager {
                 e.printStackTrace();
             }
         }
+        repairKnownLanguageSyntax(this.file);
         this.configFile = YamlConfiguration.loadConfiguration(this.file);
     }
 
@@ -49,10 +50,34 @@ public class ConfigFileManager {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-
         }
+        repairKnownLanguageSyntax(this.file);
         this.configFile = YamlConfiguration.loadConfiguration(this.file);
+    }
+
+    /**
+     * FinalTECH 3.0 briefly shipped an English language line with an apostrophe
+     * inside a YAML single-quoted scalar. SnakeYAML correctly rejects that file.
+     * Repair both newly copied and already-existing en-US.yml files before load.
+     */
+    private static void repairKnownLanguageSyntax(@Nonnull File file) {
+        if (!"en-US.yml".equalsIgnoreCase(file.getName()) || !file.isFile()) {
+            return;
+        }
+
+        try {
+            String source = Files.readString(file.toPath());
+            String repaired = source.replace(
+                "The transfer amount will not exceed the item's maximum stack size",
+                "The transfer amount will not exceed the item''s maximum stack size"
+            );
+
+            if (!source.equals(repaired)) {
+                Files.writeString(file.toPath(), repaired);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Nonnull

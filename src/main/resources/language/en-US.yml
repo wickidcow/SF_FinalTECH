@@ -113,7 +113,7 @@ helper:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}Stack'
       lore:
         - '{color:normal}Only one item type will be transferred at a time'
-        - '{color:normal}The transfer amount will not exceed the item's maximum stack size'
+        - '{color:normal}The transfer amount will not exceed the item''s maximum stack size'
     nonnull:
       name: '{color:normal}Cargo Limit {color:conceal}- {color:random}Nonnull'
       lore:
