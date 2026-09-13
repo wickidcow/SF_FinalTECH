@@ -1,73 +1,78 @@
-# FinalTECH-Changed
-对于乱序技艺(FinalTECH)进行最新版的简中粘液适配,同时进行大量平衡性魔改,bug修复
+# FinalTECH-Changed — English Maintained Fork
 
-原作者Final_ROOT关于乱序技艺库已删除/私有(github上只有克隆版本)
+FinalTECH-Changed is a heavily modified continuation of FinalTECH, focused on high-throughput automation, cargo systems, endgame progression, balance changes, and bug fixes.
 
-基于Final_ROOT的乱序技艺(FinalTECH)构建75版本, 进行大量的参数调整, 配方平衡性调整, 机制合理化, 修复了部分bug, 完善了汉化以及纠正补全了汉化描述
+This repository is the English-first maintained fork at `wickidcow/SF_FinalTECH`.
 
-同时对简中粘液进行适配
+## Lineage and credits
 
-同时允许与其他版本的乱序共存, 但是物品并不互通兼容
+The Changed edition is based on Final_ROOT's FinalTECH build 75 and later work by QYhB05 and balugaq. The original Final_ROOT repository was later deleted or made private, so surviving forks and maintained continuations are important references for compatibility and terminology.
 
-配置文件提供了大量可调整参数, 部分机器描述仅供参考, 为默认参数情况下的数据
+This fork keeps the Changed edition as the gameplay baseline. It does **not** silently replace its recipes, balance, mechanics, item IDs, or saved-data behavior with another FinalTECH port.
 
-加载时会发生一个关于物品注册的错误, 请忽略它, 它并不影响任何东西!
+Established English terminology is cross-checked against `LobbyTech-MC/FinalTech` whenever the same item or mechanic exists there. This avoids conflicting literal translations for established names such as **Equivalent Concept**, **Justifiability**, **Entropy Seed**, **Entropy Cleaner**, **Item Phony**, **Ordered Dust**, **Unordered Dust**, and **Matrix Reactor**.
 
-自行构建
+## Language support
 
-# 一定要看的注意事项!!!!!
+English (`en-US`) is the default language in this maintained fork.
 
-#### 1.较于构建29的乱序确实优化了许多，但是毕竟功能强大的同时（比如货运）肯定有一定后果，所以还是会有一定的延迟!
-```
-1.1关于链式卡tps的问题已经修了，但是粘液刻延时可能偏高，大概在0.1~0.5ms间
-```
+The Simplified Chinese (`zh-CN`) and Traditional Chinese (`zh-TW`) locale files are retained as optional translations. Source code, documentation, default configuration, logs, and other maintained project text are English-first.
 
-#### 2.有些物品功能过于强大，会带来一些粘液刻延迟，酌情ban物！
+## Compatibility notes
 
-#### 3.关于熵种(_FINALTECH_ENTROPY_SEED)你必须要知道的！
+FinalTECH-Changed includes extensive parameter changes, recipe balancing, mechanic adjustments, and bug fixes compared with older FinalTECH builds.
 
-  ##### 3.1简介 这是一个乱序的终极物品用于产出 等概念体 与 合理性 这个两个终极材料, 自身玩家需要很长时间(排除其他附属的辅助效益可能也需要几个月)才可能获得一个(除非玩家获得了复制物品性质的东西)
+It can coexist with some other FinalTECH variants, but items from different variants should **not** be assumed to be mutually compatible. Do not replace one variant with another on a live world without testing and backups.
 
-  ##### 3.2效果 放下后自身转变为一个带数据的 等概念体
-  
-  ```
-    3.2.1 生产出的等概念体会继续往周围随机生成 等概念体 与 合理性, 所有等概念体生成几秒后会变为 合理性
-    
-    3.2.2 关于合理性, 产出后5刻自动消散
-    
-    3.2.3 上述过程并不是无限的, 约会产出几万合理性与几万等概念体, 会在一小段时间内产生一定的粘液刻延迟
-```
+Many values are configurable. Machine descriptions and performance expectations generally assume the default settings unless otherwise stated.
 
- ##### 3.3如何停止他的扩散 
+Upstream notes that an item-registration warning may appear during startup. In the Changed lineage this warning has been treated as harmless when the plugin otherwise enables normally.
 
- ```
-   3.3.1 通过等待, 一段时间后会全部消散;
-   
-   3.3.2 我们在物品里面也提供了 熵清除器 , 右键即可打开清除模式, 开始删除所有的等概念体与合理性, 再次右键即可关闭清除模式;
-```
+## Performance notes
 
- ##### 3.4可能的后果 
+FinalTECH is powerful by design. Cargo networks, large automation chains, and some endgame mechanics can increase Slimefun tick time. The Changed edition contains optimizations compared with much older builds, including fixes for chain-card TPS problems, but server owners should still monitor demanding setups.
 
-```  
-   3.4.1 如果只摆放了一个用于获取终极材料, 你们并不需担心, 因为几分钟后100%可以恢复; 
-   
-   3.4.2 如果短时间内放了过多的该物品, 粘液刻会在一段时间内有较大延迟, 此时请迅速使用熵清除器!!!
-```
+Some machines and items are intentionally powerful enough that administrators may want to restrict them on larger public servers.
 
- ##### 3.5建议处理
- 
- ```
-   ·严格管控, 平时禁用, 每次有玩家要用时让管理员进行解禁, 玩家用 1伪物+24x64熵兑换一次使用权, 继而管理摆放一个让玩家自行挖掘产出物品; 
-   
-   ·提供兑换, 用 1伪物+24x64熵 兑换 等概念体与合理性(推荐比例 1伪物+24x64熵 => 192等概念体 + 1024合理性);
-   
-   ·制定规章, 通过惩戒来阻止用此卡粘液刻, 另外积极备份;
-   
-   ·放任不管, 可能被刷物者用于破坏服务器, 但是正常玩家并不会因此产生太大影响;
-   
-   ·直接完全禁用, 我不推荐如此, 因为会破坏乱序的完整性, 毕竟这是一个获取终极材料的必要步骤!   
-```
+## Entropy Seed
 
-最后祝您游玩愉快
+The **Entropy Seed** (`_FINALTECH_ENTROPY_SEED`) is an endgame progression item used to produce **Equivalent Concept** and **Justifiability**, two of FinalTECH's ultimate materials.
 
+Under normal progression it is intentionally very expensive and may take a long time to obtain without assistance from other addons or item-copying mechanics.
 
+### What it does
+
+When placed, the Entropy Seed begins a finite propagation process involving Equivalent Concept and Justifiability.
+
+- Generated Equivalent Concepts can continue spreading and producing additional Equivalent Concept and Justifiability nearby.
+- Equivalent Concepts produced by the process eventually convert into Justifiability.
+- Produced Justifiability automatically disappears after 5 ticks.
+- The process is **not infinite**, but one full run can create tens of thousands of temporary objects or material events and may noticeably increase Slimefun tick time for a short period.
+
+### Stopping the propagation
+
+You can either allow the process to finish naturally or use the **Entropy Cleaner** supplied by FinalTECH.
+
+Right-click the Entropy Cleaner to enable cleanup mode. While active, it removes Equivalent Concept and Justifiability created by the entropy process. Right-click it again to disable cleanup mode.
+
+### Server-owner guidance
+
+A single normal use should recover on its own after the propagation finishes. Placing many Entropy Seeds in a short period can produce severe temporary Slimefun tick delay, so public servers should decide how they want to control access.
+
+Possible policies include:
+
+- temporarily enabling the item only when a player is ready to perform the progression step;
+- offering a controlled exchange for Equivalent Concept and Justifiability instead of unrestricted seed placement;
+- establishing server rules and maintaining good backups;
+- allowing normal use while monitoring abuse; or
+- disabling the mechanic entirely if its performance profile does not fit the server.
+
+The upstream Changed documentation suggested an example exchange of **1 Item Phony + 24 stacks of Entropy** for **192 Equivalent Concept + 1024 Justifiability**. Treat that as a historical balance suggestion, not a requirement for this maintained fork.
+
+## Building
+
+The current source still follows the Changed edition's Maven build layout. Further Paper/Slimefun Legacy modernization is tracked separately from this translation pass so localization changes do not alter gameplay behavior.
+
+## License
+
+FinalTECH-Changed is distributed under the MIT License. Preserve the license and original credits when redistributing modified builds.

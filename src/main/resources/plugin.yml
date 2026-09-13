@@ -2,7 +2,8 @@ name: FinalTECH-Changed
 
 authors: [Final_ROOT, QYhB05, balugaq]
 
-description: About making the world faster
+description: A Slimefun addon about making the world faster.
+website: https://github.com/wickidcow/SF_FinalTECH
 
 main: io.taraxacum.finaltech.FinalTechChanged
 

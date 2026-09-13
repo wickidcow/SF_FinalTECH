@@ -321,7 +321,7 @@ public final class FinalTechItemStacks {
 
     // Trophy
     public static final SlimefunItemStack TROPHY_MEAWERFUL = ConfigUtil.getSlimefunItemStack(FinalTechChanged.getLanguageManager(), "_FINALTECH_TROPHY_MEAWERFUL", "3c8c397e89c92745ef27a43df1636586ed0bbaeca49e2604c1347c2e149ae58d", "§fmeawerful");
-    public static final SlimefunItemStack TROPHY_QYhB05 = new SlimefunItemStack("_FINALTECH_TROPHY_QY", new CustomItemStack(SlimefunUtils.getCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFkZWYxYzZmMTE4ODk5M2ExNGE2YjFhODc0NDM3MmViZDMyMDdkNWFjZDVjNDgyNjg4ZTAyZjA3YjJlMjliOSJ9fX0="), "&fQYhB05", "&f此乱序改版作者, 基于作者原有build 75进行修复、调整与魔改"));
+    public static final SlimefunItemStack TROPHY_QYhB05 = new SlimefunItemStack("_FINALTECH_TROPHY_QY", new CustomItemStack(SlimefunUtils.getCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFkZWYxYzZmMTE4ODk5M2ExNGE2YjFhODc0NDM3MmViZDMyMDdkNWFjZDVjNDgyNjg4ZTAyZjA3YjJlMjliOSJ9fX0="), "&fQYhB05", "&fAuthor of this modified FinalTECH version, based on original build 75 with fixes, balance adjustments, and mechanic changes."));
     public static final SlimefunItemStack TROPHY_SHIXINZIA = ConfigUtil.getSlimefunItemStack(FinalTechChanged.getLanguageManager(), "_FINALTECH_TROPHY_SHIXINZIA", "2d461f5c7a9bc81c77910980d821d4a550766c7867e112f040794c4fa949b974", "§fshixinzia");
     public static final SlimefunItemStack TROPHY_BALUGAQ = ConfigUtil.getSlimefunItemStack(FinalTechChanged.getLanguageManager(), "_FINALTECH_TROPHY_BALUGAQ", "73112785f64d814103931505ace00048c087337785550c99a67449c392b39772", "§fbalugaq");
 }
