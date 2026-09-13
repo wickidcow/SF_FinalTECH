@@ -37,7 +37,6 @@ jobs:
 
           item_stack_source = Path('src/main/java/io/taraxacum/finaltech/setup/FinalTechItemStacks.java').read_text(encoding='utf-8')
           active_ids = sorted(set(re.findall(r'"(_FINALTECH_[A-Z0-9_]+)"', item_stack_source)))
-          # One legacy base item intentionally uses its class name as the Slimefun ID.
           if '"ManualCraftMachine"' in item_stack_source:
               active_ids.append('ManualCraftMachine')
               active_ids.sort()
@@ -117,6 +116,21 @@ jobs:
           report = '\n'.join(lines) + '\n'
           print(report, end='')
           Path('item-help-audit.txt').write_text(report, encoding='utf-8')
+
+          gap_ids = set(active_missing_english) | set(active_without_help)
+          for entry in active_missing_info:
+              gap_ids.add(entry.split('.info.', 1)[0])
+
+          source = {}
+          for item_id in sorted(gap_ids):
+              source[item_id] = {
+                  'english': en_items.get(item_id),
+                  'chinese': zh_items.get(item_id),
+              }
+          Path('item-help-source.yml').write_text(
+              yaml.safe_dump(source, allow_unicode=True, sort_keys=False, width=120),
+              encoding='utf-8'
+          )
           PY
 
       - name: Set up Java 17
@@ -134,7 +148,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add item-help-audit.txt
+          git add item-help-audit.txt item-help-source.yml
           if git diff --cached --quiet; then
             exit 0
           fi
