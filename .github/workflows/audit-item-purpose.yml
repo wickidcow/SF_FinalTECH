@@ -1,0 +1,23 @@
+name: Audit FinalTECH Item Purpose
+
+on:
+  push:
+    branches: [guide/item-purpose-lore]
+    paths:
+      - 'scripts/audit_item_purpose.py'
+      - '.github/workflows/audit-item-purpose.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: guide/item-purpose-lore
+      - run: python3 -m pip install --quiet pyyaml
+      - name: Audit item purpose coverage
+        run: python3 scripts/audit_item_purpose.py
