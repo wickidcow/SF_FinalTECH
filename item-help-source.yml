@@ -1,0 +1,736 @@
+_FINALTECH_ADVANCED_AUTO_DRIER:
+  english:
+    name: '{color:prandom}Advanced Auto Drier'
+  chinese:
+    name: '{color:prandom}高级烘干机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_CARBON_PRESS:
+  english:
+    name: '{color:prandom}Advanced Carbon Press'
+  chinese:
+    name: '{color:prandom}高级碳压机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_COMPOSTER:
+  english:
+    name: '{color:prandom}Advanced Composter'
+  chinese:
+    name: '{color:prandom}高级搅拌机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_CRUCIBLE:
+  english:
+    name: '{color:prandom}Advanced Crucible'
+  chinese:
+    name: '{color:prandom}高级坩埚'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_DUST_WASHER:
+  english:
+    name: '{color:prandom}Advanced Dust Washer'
+  chinese:
+    name: '{color:prandom}高级洗矿机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_FOOD_FACTORY:
+  english:
+    name: '{color:prandom}Advanced Food Factory'
+  chinese:
+    name: '{color:prandom}高级食品加工机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_FREEZER:
+  english:
+    name: '{color:prandom}Advanced Freezer'
+  chinese:
+    name: '{color:prandom}高级冰箱'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_FURNACE:
+  english:
+    name: '{color:prandom}Advanced Furnace'
+  chinese:
+    name: '{color:prandom}高级熔炉'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_GOLD_PAN:
+  english:
+    name: '{color:prandom}Advanced Gold Pan'
+  chinese:
+    name: '{color:prandom}高级淘金机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_HEATED_PRESSURE_CHAMBER:
+  english:
+    name: '{color:prandom}Advanced Heated Pressure'
+  chinese:
+    name: '{color:prandom}高级加热压力舱'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_INGOT_FACTORY:
+  english:
+    name: '{color:prandom}Advanced Ingot Factory'
+  chinese:
+    name: '{color:prandom}高级铸锭机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_INGOT_PULVERIZER:
+  english:
+    name: '{color:prandom}Advanced Ingot Pulverizer'
+  chinese:
+    name: '{color:prandom}高级打粉机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_JUICER:
+  english:
+    name: '{color:prandom}Advanced Juicer'
+  chinese:
+    name: '{color:prandom}高级榨汁机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_ORE_GRINDER:
+  english:
+    name: '{color:prandom}Advanced Ore Grinder'
+  chinese:
+    name: '{color:prandom}高级碎矿机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_PRESS:
+  english:
+    name: '{color:prandom}Advanced Press'
+  chinese:
+    name: '{color:prandom}高级压力机'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_ADVANCED_SMELTERY:
+  english:
+    name: '{color:prandom}Advanced Smeltery'
+  chinese:
+    name: '{color:prandom}高级冶炼炉'
+    lore:
+    - '&7Fast Things!'
+_FINALTECH_BASIC_LOGIC_FACTORY:
+  english:
+    name: '{color:prandom}Basic Logic Factory'
+  chinese:
+    name: '{color:prandom}基础逻辑工厂'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_CARD_OPERATION_TABLE:
+  english:
+    name: '{color:prandom}Card Operation Table'
+    entropy:
+      info-icon:
+        name: '{color:passive}Entropy'
+        lore:
+        - '{color:normal}Use {id:_FINALTECH_ENTROPY} {color:normal}to replace item in {id:_FINALTECH_STORAGE_CARD} {color:normal}or
+          {id:_FINALTECH_COPY_CARD}'
+        output: _FINALTECH_ENTROPY
+    craft-infinity-storage-card:
+      info-icon:
+        name: '{color:passive}Craft Infinity Storage Card'
+        lore:
+        - '{color:normal}Use {id:_FINALTECH_PHONY} {color:normal}and {id:_FINALTECH_COPY_CARD} {color:normal}to craft one
+          {id:_FINALTECH_STORAGE_CARD} {color:normal}with infinity amount'
+        output: _FINALTECH_STORAGE_CARD
+    distribute-storage-card:
+      info-icon:
+        name: '{color:passive}Distribute Storage Card'
+        lore:
+        - '{color:normal}Distribute item in one {id:_FINALTECH_STORAGE_CARD} {color:normal}to another empty {id:_FINALTECH_STORAGE_CARD}'
+        output: _FINALTECH_STORAGE_CARD
+    merge-storage-card:
+      info-icon:
+        name: '{color:passive}Merge Storage Card'
+        lore:
+        - '{color:normal}Merge two {id:_FINALTECH_STORAGE_CARD} {color:normal}into one'
+        output: _FINALTECH_STORAGE_CARD
+    copy-copy-card:
+      info-icon:
+        name: '{color:passive}Copy Copy Card'
+        lore:
+        - '{color:normal}Cost {id:_FINALTECH_SHELL} {color:normal}to copy one {id:_FINALTECH_COPY_CARD}'
+        output: _FINALTECH_COPY_CARD
+    craft-item-phony:
+      info-icon:
+        name: '{color:passive}Craft Item Phony'
+        lore:
+        - '{color:normal}Use {id:_FINALTECH_SINGULARITY} {color:normal}and {id:_FINALTECH_SPIROCHETE} {color:normal}to craft
+          one {id:_FINALTECH_PHONY}'
+        output: _FINALTECH_PHONY
+    craft-item-shell:
+      info-icon:
+        name: '{color:passive}Craft Item Shell'
+        lore:
+        - '{color:normal}Use {id:_FINALTECH_SINGULARITY} {color:normal}or {id:_FINALTECH_SPIROCHETE} {color:normal}to craft
+          one {id:_FINALTECH_SHELL}'
+        output: _FINALTECH_SHELL
+    craft-annular:
+      info-icon:
+        name: '{color:passive}Craft Annular'
+        lore:
+        - '{color:normal}Use {id:_FINALTECH_COPY_CARD} {color:normal}to craft one {id:_FINALTECH_ANNULAR}'
+        output: _FINALTECH_ANNULAR
+    status:
+      name: '{color:negative}No Match'
+      lore:
+      - '{color:normal}Please insert the correct items.'
+  chinese:
+    name: '{color:prandom}卡片操作台'
+    merge-storage-card:
+      info-icon:
+        name: '{color:passive}合并存储卡'
+        lore:
+        - '{color:normal}将两张 {id:_FINALTECH_STORAGE_CARD} 合并为一张'
+        output: _FINALTECH_STORAGE_CARD
+    copy-copy-card:
+      info-icon:
+        name: '{color:passive}复制复制卡'
+        lore:
+        - '{color:normal}消耗 {id:_FINALTECH_SHELL} {color:normal}以复制一张 {id:_FINALTECH_COPY_CARD}'
+        output: _FINALTECH_COPY_CARD
+    craft-item-phony:
+      info-icon:
+        name: '{color:passive}合成伪物'
+        lore:
+        - '{color:normal}使用 {id:_FINALTECH_SINGULARITY} {color:normal}和 {id:_FINALTECH_SPIROCHETE} {color:normal}以获取一个 {id:_FINALTECH_PHONY}'
+        output: _FINALTECH_PHONY
+    craft-item-shell:
+      info-icon:
+        name: '{color:passive}合成壳'
+        lore:
+        - '{color:normal}使用 {id:_FINALTECH_SINGULARITY} {color:normal}或 {id:_FINALTECH_SPIROCHETE} {color:normal}以获取一个 {id:_FINALTECH_SHELL}'
+        output: _FINALTECH_SHELL
+    craft-annular:
+      info-icon:
+        name: '{color:passive}合成环'
+        lore:
+        - '{color:normal}使用 {id:_FINALTECH_COPY_CARD} {color:normal}以获取一张 {id:_FINALTECH_ANNULAR}'
+        output: _FINALTECH_ANNULAR
+    status:
+      name: '{color:negative}无匹配内容'
+      lore:
+      - '{color:normal}请输入正确的物品'
+    entropy:
+      info-icon:
+        name: '{color:passive}熵'
+        lore:
+        - '{color:normal}使用 {id:_FINALTECH_ENTROPY} {color:normal}替换 {id:_FINALTECH_STORAGE_CARD} {color:normal}或 {id:_FINALTECH_COPY_CARD}
+          {color:normal}中的物品'
+        output: _FINALTECH_ENTROPY
+    craft-infinity-storage-card:
+      info-icon:
+        name: '{color:passive}合成无限存储卡'
+        lore:
+        - '{color:normal}使用 {id:_FINALTECH_PHONY} {color:normal}和 {id:_FINALTECH_COPY_CARD} {color:normal}合成一个 {id:_FINALTECH_STORAGE_CARD}
+          {color:normal}不限数量'
+        output: _FINALTECH_STORAGE_CARD
+    distribute-storage-card:
+      info-icon:
+        name: '{color:passive}均分存储卡'
+        lore:
+        - '{color:normal}把物品从 {id:_FINALTECH_STORAGE_CARD} {color:normal}分发到 另一个空的 {id:_FINALTECH_STORAGE_CARD}'
+        output: _FINALTECH_STORAGE_CARD
+    lore:
+    - '&7老是被聊天插件屏蔽的屑物品...'
+_FINALTECH_COBBLESTONE_FACTORY:
+  english:
+    name: '{color:prandom}Cobblestone Factory'
+  chinese:
+    name: '{color:prandom}圆石工厂'
+    lore:
+    - '&7嘿嘿, 把内部的圆石都变成64个~'
+_FINALTECH_CRUCIBLE:
+  english:
+    name: '{color:prandom}Manual Crucible'
+  chinese:
+    name: '{color:prandom}快捷坩埚'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_DIGITAL_EXTRACTION:
+  english:
+    name: '{color:prandom}Digital Extraction'
+  chinese:
+    name: '{color:prandom}数字提取器'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_DIGITAL_GENERATOR:
+  english:
+    name: '{color:prandom}Digital Generator'
+  chinese:
+    name: '{color:prandom}数码生成器'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_ELECTRIC_REACTOR:
+  english: null
+  chinese:
+    name: '{color:prandom}电活化反应催化堆'
+    info:
+      '1':
+        name: '{color:stress}简介'
+        lore:
+        - '{color:normal}检测周围2格范围的所有机器的储存电力'
+        - '{color:normal}当有超过5台机器电量超过储能上限并且有超过5台机器储能超过1M时'
+        - '{color:normal}消耗所有电力并破坏反应催化物以进行活化反应并增加进度, 进度达到{color:number} 16777216 {color:norma;}制作出更高级的物品'
+        - '{color:normal}当催化物不足时, 反应进度将{color:number} -1; 若更换反应物则清零进度'
+        - '{color:normal}储能计算支持本附属的电容'
+        - '{color:normal}反应过程中 {id:_FINALTECH_ENTROPY} {color:normal}可以作为万能催化物, 进度{color:number} +5'
+        - '{color:normal}反应过程中 {id:_FINALTECH_PHONY} {color:normal}可以作为万能催化物, 进度{color:number} +262144'
+      '2':
+        name: '{color:stress}增加 {id:_FINALTECH_COPY_CARD} {color:normal}中物品数量'
+        lore:
+        - '{color:normal}用 {id:_FINALTECH_COPY_CARD} {color:normal}作为反应物'
+        - '{color:normal}可以使用 {id:_FINALTECH_SHINE} {color:normal}和 {color:_FINALTECH_BOX} {color:normal}作为催化物'
+        - '{color:normal}此时每次消耗时进度增加 {color:number}16384'
+        - '{color:normal}可以使用 {id:_FINALTECH_EQUIVALENT_CONCEPT} {color:normal}和 {color:_FINALTECH_JUSTIFIABILITY} {color:normal}作为催化物'
+        - '{color:normal}此时每次消耗时进度增加 {color:number}131072'
+        output: _FINALTECH_COPY_CARD
+      '3':
+        name: '{color:stress}制作 {id:_FINALTECH_STRING}'
+        lore:
+        - '{color:normal}用 {id:_FINALTECH_ENTROPY_SEED} {color:normal}作为反应物'
+        - '{color:normal}可以使用 {id:_FINALTECH_SINGULARITY} {color:normal}和 {color:_FINALTECH_SPIROCHETE} {color:normal}作为催化物'
+        - '{color:normal}此时每次消耗时进度增加 {color:number}1048576'
+        output: _FINALTECH_STRING
+      '4':
+        name: '{color:stress}制作 {id:_FINALTECH_EQUIVALENT_CONCEPT}'
+        lore:
+        - '{color:normal}用 {id:_FINALTECH_ENTROPY_SEED} {color:normal}作为反应物'
+        - '{color:normal}可以使用 {id:_FINALTECH_BUG} {color:normal}和 {color:_FINALTECH_ANNULAR} {color:normal}作为催化物'
+        - '{color:normal}此时每次消耗时进度增加 {color:number}16384'
+        output: _FINALTECH_EQUIVALENT_CONCEPT
+      '5':
+        name: '{color:stress}制作 {id:_FINALTECH_ENERGY_CARD_Q}'
+        lore:
+        - '{color:normal}用 {id:_FINALTECH_ENERGY_CARD_T} {color:normal}作为反应物'
+        - '{color:normal}可以使用 {id:_FINALTECH_ORDERED_DUST} {color:normal}和 {color:_FINALTECH_UNORDERED_DUST} {color:normal}作为催化物'
+        - '{color:normal}此时每次消耗时进度增加 {color:number}16384'
+        output: _FINALTECH_ENERGY_CARD_Q
+    lore:
+    - '&7反应~催化↑爆炸:D'
+_FINALTECH_ENERGIZED_ELECTRICITY_SHOOT_PILE:
+  english:
+    name: '{color:prandom}Energized Electricity Shoot Pile'
+    info:
+      1:
+        name: '{color:passive}Mechanism'
+        lore:
+        - '{color:normal}Transfer energy from a capacitor or generator behind it'
+        - '{color:normal}To machines in its path one by one'
+        - ''
+        - '{color:normal}It tries to charge all machines at the same time'
+        - '{color:normal}It skips machines that are fully charged'
+        - ''
+        - '{color:normal}Range: {color:number}{1}'
+    status:
+      lore:
+      - '{color:normal}Affected Machines: {color:number}{1}'
+      - '{color:normal}Transfer Energy: {color:number}{2} J'
+  chinese:
+    name: '{color:prandom}充能射电桩'
+    info:
+      '1':
+        name: '{color:passive}机制'
+        lore:
+        - '{color:normal}将自身背向的电容电量'
+        - '{color:normal}依次传输给自身面向的机器'
+        - ''
+        - '{color:normal}它会尝试同时给所有机器充电, 并且传输电量将增加 {color:number}50%'
+        - '{color:normal}并忽略满电量机器'
+        - ''
+        - '{color:normal}范围: {color:number}{1} 格'
+      '2':
+        name: '{color:negative}限制'
+        lore:
+        - '{color:normal}无法给其它电容器输电'
+    status:
+      lore:
+      - '{color:normal}有效机器: {color:number}{1} 台'
+      - '{color:normal}转移电量: {color:number}{2} J'
+    lore: []
+_FINALTECH_ENERGY_CARD_B:
+  english:
+    name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1B'
+    info:
+      1:
+        name: '{color:positive}Usage'
+        lore:
+        - '{color:normal}Charge machine for {color:number}{1} J'
+      2:
+        name: '{color:positive}Mechanism'
+        lore:
+        - '{color:normal}Supports Expanded Capacitors'
+        output: _FINALTECH_SMALL_EXPANDED_CAPACITOR
+  chinese:
+    name: '{color:prandom}电卡 - 1B'
+    info:
+      '1':
+        name: '{color:passive}生产方法/用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取/使用'
+        output: _FINALTECH_ENERGY_TABLE
+      '2':
+        name: '{color:passive}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取'
+        output: _FINALTECH_ENERGY_OUTPUT_TABLE
+      '3':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中使用'
+        output: _FINALTECH_ENERGY_INPUT_TABLE
+    lore:
+    - '&7啊↗啊↘啊~要溢出来了'
+_FINALTECH_ENERGY_CARD_K:
+  english:
+    name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1K'
+    info:
+      1:
+        name: '{color:positive}Usage'
+        lore:
+        - '{color:normal}Charge machine for {color:number}{1} J'
+      2:
+        name: '{color:positive}Mechanism'
+        lore:
+        - '{color:normal}Supports Expanded Capacitors'
+        output: _FINALTECH_SMALL_EXPANDED_CAPACITOR
+  chinese:
+    name: '{color:prandom}电卡 - 1K'
+    info:
+      '1':
+        name: '{color:passive}生产方法/用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取/使用'
+        output: _FINALTECH_ENERGY_TABLE
+      '2':
+        name: '{color:passive}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取'
+        output: _FINALTECH_ENERGY_OUTPUT_TABLE
+      '3':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中使用'
+        output: _FINALTECH_ENERGY_INPUT_TABLE
+    lore:
+    - '&7啊↗啊↘啊~要溢出来了'
+_FINALTECH_ENERGY_CARD_M:
+  english:
+    name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1M'
+    info:
+      1:
+        name: '{color:positive}Usage'
+        lore:
+        - '{color:normal}Charge machine for {color:number}{1} J'
+      2:
+        name: '{color:positive}Mechanism'
+        lore:
+        - '{color:normal}Supports Expanded Capacitors'
+        output: _FINALTECH_SMALL_EXPANDED_CAPACITOR
+  chinese:
+    name: '{color:prandom}电卡 - 1M'
+    info:
+      '1':
+        name: '{color:passive}生产方法/用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取/使用'
+        output: _FINALTECH_ENERGY_TABLE
+      '2':
+        name: '{color:passive}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取'
+        output: _FINALTECH_ENERGY_OUTPUT_TABLE
+      '3':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中使用'
+        output: _FINALTECH_ENERGY_INPUT_TABLE
+    lore:
+    - '&7啊↗啊↘啊~要溢出来了'
+_FINALTECH_ENERGY_CARD_Q:
+  english:
+    name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1Q'
+    info:
+      1:
+        name: '{color:positive}Usage'
+        lore:
+        - '{color:normal}Charge machine for {color:number}{1} J'
+      2:
+        name: '{color:positive}Mechanism'
+        lore:
+        - '{color:normal}Supports Expanded Capacitors'
+        output: _FINALTECH_SMALL_EXPANDED_CAPACITOR
+  chinese:
+    name: '{color:prandom}电卡 - 1Q'
+    info:
+      '1':
+        name: '{color:passive}生产方法/用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取/使用'
+        output: _FINALTECH_ENERGY_TABLE
+      '2':
+        name: '{color:passive}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取'
+        output: _FINALTECH_ENERGY_OUTPUT_TABLE
+      '3':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中使用'
+        output: _FINALTECH_ENERGY_INPUT_TABLE
+    lore:
+    - '&7啊↗啊↘啊~要溢出来了'
+_FINALTECH_ENERGY_CARD_T:
+  english:
+    name: '{color:prandom}Energy Card {color:conceal}- {color:positive}1T'
+    info:
+      1:
+        name: '{color:positive}Usage'
+        lore:
+        - '{color:normal}Charge machine for {color:number}{1} J'
+      2:
+        name: '{color:positive}Mechanism'
+        lore:
+        - '{color:normal}Supports Expanded Capacitors'
+        output: _FINALTECH_SMALL_EXPANDED_CAPACITOR
+  chinese:
+    name: '{color:prandom}电卡 - 1T'
+    info:
+      '1':
+        name: '{color:passive}生产方法/用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取/使用'
+        output: _FINALTECH_ENERGY_TABLE
+      '2':
+        name: '{color:passive}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中获取'
+        output: _FINALTECH_ENERGY_OUTPUT_TABLE
+      '3':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ENERGY_TABLE} {color:normal}中使用'
+        output: _FINALTECH_ENERGY_INPUT_TABLE
+    lore:
+    - '&7啊↗啊↘啊~要溢出来了'
+_FINALTECH_ENTROPY_CLEANER:
+  english: null
+  chinese:
+    name: '{color:prandom}熵清除器'
+    info:
+      '1':
+        name: '{color:passive}用途'
+        lore:
+        - '{color:normal}清除 {id:_FINALTECH_ENTROPY_SEED} {color:normal}带来的 {id:_FINALTECH_JUSTIFIABILITY} {color:normal}和
+          {id:_FINALTECH_EQUIVALENT_CONCEPT}'
+        output: _FINALTECH_ENTROPY_SEED
+    message-on-using-open: 熵自毁已开启
+    message-on-using-close: 熵自毁已关闭
+    lore:
+    - '&7嘿嘿'
+_FINALTECH_GRAVEL_CONVERSION:
+  english:
+    name: '{color:prandom}Gravel Conversion'
+  chinese:
+    name: '{color:prandom}砂砾转换机'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_LIQUID_CARD_GENERATOR:
+  english:
+    name: '{color:prandom}Liquid Card Generator'
+  chinese:
+    name: '{color:prandom}流体卡生成器'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_LOGIC_GENERATOR:
+  english:
+    name: '{color:prandom}Logic Generator'
+  chinese:
+    name: '{color:prandom}逻辑生成器'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_LOGIC_TO_DIGITAL_CONVERSION:
+  english:
+    name: '{color:prandom}Logic To Digital Conversion'
+  chinese:
+    name: '{color:prandom}逻辑数码转换机'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_MANUAL_ANCIENT_ALTAR:
+  english:
+    name: '{color:prandom}Manual Ancient Altar'
+  chinese:
+    name: '{color:prandom}快捷古代祭坛'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_ARMOR_FORGE:
+  english:
+    name: '{color:prandom}Manual Armor Forge'
+  chinese:
+    name: '{color:prandom}快捷盔甲锻造台'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_COMPOSTER:
+  english:
+    name: '{color:prandom}Manual Composter'
+  chinese:
+    name: '{color:prandom}快捷搅拌机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_COMPRESSOR:
+  english:
+    name: '{color:prandom}Manual Compressor'
+  chinese:
+    name: '{color:prandom}快捷压缩机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_CRAFTING_TABLE:
+  english:
+    name: '{color:prandom}Manual Crafting Table'
+  chinese:
+    name: '{color:prandom}快捷原版工作台'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_ENHANCED_CRAFTING_TABLE:
+  english:
+    name: '{color:prandom}Manual Enhanced Crafting Table'
+  chinese:
+    name: '{color:prandom}快捷增强型工作台'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_GOLD_PAN:
+  english:
+    name: '{color:prandom}Manual Gold Pan'
+  chinese:
+    name: '{color:prandom}快捷淘金机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_GRIND_STONE:
+  english:
+    name: '{color:prandom}Manual Grind Stone'
+  chinese:
+    name: '{color:prandom}快捷磨石'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_HEATED_PRESSURE_CHAMBER:
+  english:
+    name: '{color:prandom}Manual Heated Pressure Chamber'
+  chinese:
+    name: '{color:prandom}快捷加热压力舱'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_JUICER:
+  english:
+    name: '{color:prandom}Manual Juicer'
+  chinese:
+    name: '{color:prandom}快捷榨汁机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_MAGIC_WORKBENCH:
+  english:
+    name: '{color:prandom}Manual Magic Workbench'
+  chinese:
+    name: '{color:prandom}快捷魔法工作台'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_ORE_CRUSHER:
+  english:
+    name: '{color:prandom}Manual Ore Crusher'
+  chinese:
+    name: '{color:prandom}快捷矿石粉碎机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_ORE_WASHER:
+  english:
+    name: '{color:prandom}Manual Ore Washer'
+  chinese:
+    name: '{color:prandom}快捷洗矿机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_PRESSURE_CHAMBER:
+  english:
+    name: '{color:prandom}Manual Pressure Chamber'
+  chinese:
+    name: '{color:prandom}快捷压力机'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MANUAL_SMELTERY:
+  english:
+    name: '{color:prandom}Manual Smeltery'
+  chinese:
+    name: '{color:prandom}快捷冶炼炉'
+    lore:
+    - '&7Good Things!'
+_FINALTECH_MATRIX_OPERATION_ACCELERATOR:
+  english:
+    name: '{color:prandom}Matrix Operation Accelerator'
+    info:
+      1:
+        name: '{color:passive}Mechanism'
+        lore:
+        - '{color:normal}Place it below the furnace to work'
+  chinese:
+    name: '{color:prandom}矩阵工程加速器'
+    info:
+      '1':
+        name: '{color:stress}简介'
+        lore:
+        - '{color:normal}加速部分进度类机器运转'
+      '2':
+        name: '{color:passive}机制'
+        lore:
+        - '{color:normal}让上方机器 1tick 内完成当前工作任务'
+    lore:
+    - '&7加速加速加速加速!'
+_FINALTECH_ORDERED_DUST:
+  english:
+    name: '{color:prandom}Ordered Dust'
+  chinese:
+    name: '{color:prandom}有序尘埃'
+    lore:
+    - '&7爱你:D'
+_FINALTECH_SOUL_SAND_CONVERSION:
+  english:
+    name: '{color:prandom}Soul Sand Conversion'
+  chinese:
+    name: '{color:prandom}灵魂沙转换机'
+    lore:
+    - '&7Bad Things!'
+_FINALTECH_STRING:
+  english: null
+  chinese:
+    name: '{color:prandom}弦'
+    info:
+      '1':
+        name: '{color:stress}生产方法'
+        lore:
+        - '{color:normal}在 {id:_FINALTECH_ELECTRIC_REACTOR} {color:normal}中获得'
+        output: _FINALTECH_ELECTRIC_REACTOR
+      '2':
+        name: '{color:stress}机制'
+        lore:
+        - '{color:normal}种下后一段时间后转变成任意一个粘液物品'
+    lore:
+    - '&7在小小的服务器里面挖呀挖呀挖'
+_FINALTECH_TROPHY_BALUGAQ:
+  english: null
+  chinese: null
+_FINALTECH_TROPHY_MEAWERFUL:
+  english: null
+  chinese:
+    lore: []
+_FINALTECH_TROPHY_QY:
+  english: null
+  chinese: null
+_FINALTECH_TROPHY_SHIXINZIA:
+  english: null
+  chinese:
+    lore: []
+_FINALTECH_UNORDERED_DUST:
+  english:
+    name: '{color:prandom}Unordered Dust'
+  chinese:
+    name: '{color:prandom}无序尘埃'
+    lore:
+    - '&7爱你~'
