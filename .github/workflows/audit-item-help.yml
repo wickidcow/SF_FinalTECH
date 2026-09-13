@@ -1,0 +1,117 @@
+name: Audit FinalTECH item help
+
+on:
+  push:
+    branches: [guide/complete-item-help]
+    paths:
+      - 'src/main/resources/language/**'
+      - 'src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java'
+      - '.github/workflows/audit-item-help.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Compare English and Chinese item help
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --disable-pip-version-check pyyaml
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import yaml
+
+          root = Path('src/main/resources/language')
+          en = yaml.safe_load((root / 'en-US.yml').read_text(encoding='utf-8')) or {}
+          zh = yaml.safe_load((root / 'zh-CN.yml').read_text(encoding='utf-8')) or {}
+          en_items = en.get('items', {}) or {}
+          zh_items = zh.get('items', {}) or {}
+
+          chinese = re.compile(r'[\u3400-\u9fff]')
+
+          def useful_lines(value):
+              if not isinstance(value, list):
+                  return []
+              return [str(v).strip() for v in value if v is not None and str(v).strip()]
+
+          def info_sections(item):
+              info = item.get('info', {}) if isinstance(item, dict) else {}
+              if not isinstance(info, dict):
+                  return {}
+              result = {}
+              for key, section in info.items():
+                  if not isinstance(section, dict):
+                      continue
+                  lines = useful_lines(section.get('lore'))
+                  if lines:
+                      result[str(key)] = lines
+              return result
+
+          missing_items = []
+          missing_info = []
+          english_without_help = []
+          chinese_left_in_english = []
+          zh_flavor_without_en = []
+
+          for item_id, zh_item in sorted(zh_items.items()):
+              if item_id not in en_items:
+                  missing_items.append(item_id)
+                  continue
+              en_item = en_items[item_id]
+              zinfo = info_sections(zh_item)
+              einfo = info_sections(en_item)
+              for section in zinfo:
+                  if section not in einfo:
+                      missing_info.append(f'{item_id}.info.{section}')
+
+              en_lore = useful_lines(en_item.get('lore')) if isinstance(en_item, dict) else []
+              en_guide = useful_lines(en_item.get('guide-lore')) if isinstance(en_item, dict) else []
+              if not einfo and not en_lore and not en_guide:
+                  english_without_help.append(item_id)
+
+              zh_lore = useful_lines(zh_item.get('lore')) if isinstance(zh_item, dict) else []
+              if zh_lore and not en_lore:
+                  zh_flavor_without_en.append(item_id)
+
+              if isinstance(en_item, dict):
+                  dumped = yaml.safe_dump(en_item, allow_unicode=True)
+                  if chinese.search(dumped):
+                      chinese_left_in_english.append(item_id)
+
+          print(f'English item entries: {len(en_items)}')
+          print(f'Chinese item entries: {len(zh_items)}')
+          print(f'Missing English item entries: {len(missing_items)}')
+          print(f'Missing translated info sections: {len(missing_info)}')
+          print(f'English items with no info/lore/guide-lore: {len(english_without_help)}')
+          print(f'Chinese flavor-lore entries absent from English: {len(zh_flavor_without_en)}')
+          print(f'English entries still containing Chinese text: {len(chinese_left_in_english)}')
+
+          if missing_items:
+              print('\nMISSING_ITEMS')
+              print('\n'.join(missing_items))
+          if missing_info:
+              print('\nMISSING_INFO')
+              print('\n'.join(missing_info))
+          if english_without_help:
+              print('\nNO_ENGLISH_HELP')
+              print('\n'.join(english_without_help))
+          if zh_flavor_without_en:
+              print('\nZH_FLAVOR_NOT_IN_EN')
+              print('\n'.join(zh_flavor_without_en))
+          if chinese_left_in_english:
+              print('\nCHINESE_LEFT_IN_ENGLISH')
+              print('\n'.join(chinese_left_in_english))
+          PY
+
+      - name: Compile
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+
+      - name: Maven build
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
