@@ -235,7 +235,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             this.item = ConfigFileManager.getOrNewInstance(this, "item");
             this.template = ConfigFileManager.getOrNewInstance(this, "template");
 
-            String language = this.config.getOrDefault("zh-CN", "language");
+            String language = this.config.getOrDefault("en-US", "language");
             this.languageManager = LanguageManager.getOrNewInstance(this, language);
         } catch (Exception e) {
             e.printStackTrace();

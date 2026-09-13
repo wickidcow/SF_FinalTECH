@@ -173,7 +173,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
 
             BlockStorage.addBlockInfo(block, KEY_LIFE, String.valueOf(0));
         } catch (Exception e) {
-            FinalTechChanged.getInstance().getLogger().warning("[FINALTECH] 物品 等概念体 出现了异常, 但不要担心这是正常情况");
+            FinalTechChanged.getInstance().getLogger().warning("[FinalTECH] Equivalent Concept encountered an expected exception; normal operation will continue.");
         }
     }
 

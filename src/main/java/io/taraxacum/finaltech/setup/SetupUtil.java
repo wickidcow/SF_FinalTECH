@@ -204,7 +204,6 @@ public final class SetupUtil {
                 FinalTechItems.JUSTIFIABILITY.registerThis(),
                 FinalTechItems.EQUIVALENT_CONCEPT.registerThis());
         FinalTechChanged.getInstance().getLogger().warning("Maybe something caused an exception, but it actually couldn't make any difference in working;)");
-        FinalTechChanged.getInstance().getLogger().warning("可能出现了一些异常但是事实上这并不影响插件运行与工作, 请忽略它!");
         FinalTechMenus.SUB_MENU_MATERIAL.addTo(
                 FinalTechItems.WATER_CARD.registerThis(),
                 FinalTechItems.LAVA_CARD.registerThis(),
@@ -945,7 +944,7 @@ public final class SetupUtil {
                             FinalTechChanged.logger().info(slimefunItem.getId() + " is tweaked for range limit");
 
                             if (dropSelf) {
-                                FinalTechChanged.logger().warning("Please be carefully if you installed slimefun addon '基岩科技'(BedrockTechnology) and you set drop-self as true.");
+                                FinalTechChanged.logger().warning("Be careful if you have the Slimefun addon 'BedrockTechnology' installed and set drop-self to true.");
                                 FinalTechChanged.logger().warning("There is a duplication bug, and we may fix it in next version");
                             }
                         } else {
