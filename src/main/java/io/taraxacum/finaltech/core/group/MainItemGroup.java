@@ -122,7 +122,7 @@ public class MainItemGroup extends FlexItemGroup {
             if (action.isShiftClicked()) {
                 SlimefunGuide.openMainMenu(playerProfile, slimefunGuideMode, guideHistory.getMainMenuPage());
             } else {
-                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(SlimefunGuideMode.SURVIVAL_MODE));
+                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(slimefunGuideMode));
             }
             return false;
         });

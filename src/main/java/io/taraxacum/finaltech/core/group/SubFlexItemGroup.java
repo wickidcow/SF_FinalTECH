@@ -10,6 +10,7 @@ import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.github.thebusybiscuit.slimefun4.core.guide.GuideHistory;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
+import io.github.thebusybiscuit.slimefun4.core.multiblocks.MultiBlockMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -183,7 +184,7 @@ public class SubFlexItemGroup extends FlexItemGroup {
             if (action.isShiftClicked()) {
                 SlimefunGuide.openMainMenu(playerProfile, slimefunGuideMode, guideHistory.getMainMenuPage());
             } else {
-                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(SlimefunGuideMode.SURVIVAL_MODE));
+                guideHistory.goBack(Slimefun.getRegistry().getSlimefunGuide(slimefunGuideMode));
             }
             return false;
         });
@@ -219,14 +220,29 @@ public class SubFlexItemGroup extends FlexItemGroup {
                 for (int j = 0; j < slimefunItemList.size(); j++) {
                     SlimefunItem slimefunItem = slimefunItemList.get(j);
                     Research research = slimefunItem.getResearch();
-                    if (playerProfile.hasUnlocked(research)) {
+                    boolean cheatMode = slimefunGuideMode == SlimefunGuideMode.CHEAT_MODE;
+                    if (cheatMode || research == null || playerProfile.hasUnlocked(research)) {
                         ItemStack itemStack = ItemStackUtil.cloneWithoutNBT(slimefunItem.getItem());
                         ItemStackUtil.addLoreToFirst(itemStack, "§7" + slimefunItem.getId());
                         chestMenu.addItem(MAIN_CONTENT_L[i][j], ItemStackUtil.cleanItem(itemStack));
                         chestMenu.addMenuClickHandler(MAIN_CONTENT_L[i][j], (p, slot, item, action) -> {
-                            RecipeItemGroup recipeItemGroup = RecipeItemGroup.getByItemStack(player, playerProfile, slimefunGuideMode, slimefunItem.getItem());
-                            if (recipeItemGroup != null) {
-                                Bukkit.getScheduler().runTask(JAVA_PLUGIN, () -> recipeItemGroup.open(player, playerProfile, slimefunGuideMode));
+                            if (cheatMode) {
+                                if (!p.hasPermission("slimefun.cheat.items")) {
+                                    Slimefun.getLocalization().sendMessage(p, "messages.no-permission", true);
+                                } else if (slimefunItem instanceof MultiBlockMachine) {
+                                    Slimefun.getLocalization().sendMessage(p, "guide.cheat.no-multiblocks");
+                                } else {
+                                    ItemStack clonedItem = slimefunItem.getItem().clone();
+                                    if (action.isShiftClicked()) {
+                                        clonedItem.setAmount(clonedItem.getMaxStackSize());
+                                    }
+                                    p.getInventory().addItem(clonedItem);
+                                }
+                            } else {
+                                RecipeItemGroup recipeItemGroup = RecipeItemGroup.getByItemStack(player, playerProfile, slimefunGuideMode, slimefunItem.getItem());
+                                if (recipeItemGroup != null) {
+                                    Bukkit.getScheduler().runTask(JAVA_PLUGIN, () -> recipeItemGroup.open(player, playerProfile, slimefunGuideMode));
+                                }
                             }
                             return false;
                         });
