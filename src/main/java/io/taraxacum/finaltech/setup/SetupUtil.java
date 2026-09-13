@@ -943,10 +943,6 @@ public final class SetupUtil {
                             blockTicker = BlockTickerUtil.getRangeLimitBlockTicker(blockTicker, range, mulRange, dropSelf, message);
                             FinalTechChanged.logger().info(slimefunItem.getId() + " is tweaked for range limit");
 
-                            if (dropSelf) {
-                                FinalTechChanged.logger().warning("Be careful if you have the Slimefun addon 'BedrockTechnology' installed and set drop-self to true.");
-                                FinalTechChanged.logger().warning("There is a duplication bug, and we may fix it in next version");
-                            }
                         } else {
                             FinalTechChanged.logger().warning("wrong value of tweak.range." + slimefunItem.getId() + " in config file");
                         }
