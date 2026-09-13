@@ -593,7 +593,7 @@ public final class SetupUtil {
                 FinalTechMenus.SUB_MENU_TROPHY,
                 FinalTechMenus.SUB_MENU_DEPRECATED);
 
-        FinalTechMenus.MAIN_ITEM_GROUP.setTier(0);
+        FinalTechMenus.MAIN_ITEM_GROUP.setTier(3);
         FinalTechMenus.MAIN_ITEM_GROUP.register(finalTech);
     }
 
