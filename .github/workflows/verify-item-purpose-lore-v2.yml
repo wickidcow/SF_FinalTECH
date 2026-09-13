@@ -1,0 +1,80 @@
+name: Verify FinalTECH Item Purpose Lore
+
+on:
+  push:
+    branches: [guide/item-purpose-lore-v2]
+    paths:
+      - 'src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java'
+      - 'scripts/apply_item_purpose_lore_v2.py'
+      - '.github/workflows/verify-item-purpose-lore-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out guide branch
+        uses: actions/checkout@v6
+        with:
+          ref: guide/item-purpose-lore-v2
+
+      - name: Apply item Guide cleanup
+        run: python3 scripts/apply_item_purpose_lore_v2.py
+
+      - name: Verify Guide behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'GuideItemLoreUtil.createGuideIcon(slimefunItem, cheatMode)' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'action.isShiftClicked() && hasLegacyBookmarks()' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'action.isRightClicked()' src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java
+          grep -F 'Left-click: Give 1' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
+          grep -F 'Right-click: Give a full stack' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
+          grep -F 'Shift-click: Bookmark' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
+          grep -F "name: '{color:positive}Item Info'" src/main/resources/language/en-US.yml
+          ! grep -F 'Shift-click: Give a full stack' src/main/java/io/taraxacum/finaltech/util/GuideItemLoreUtil.java
+
+      - name: Validate English YAML quoting
+        run: python3 scripts/normalize_english_yaml.py --check
+
+      - name: Parse English YAML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --disable-pip-version-check pyyaml
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+          path = Path('src/main/resources/language/en-US.yml')
+          with path.open(encoding='utf-8') as stream:
+              yaml.safe_load(stream)
+          print('English YAML parsed successfully.')
+          PY
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+
+      - name: Build FinalTECH
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+
+      - name: Commit verified production changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/main/java/io/taraxacum/finaltech/core/group/SubFlexItemGroup.java \
+                  src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java \
+                  src/main/resources/language/en-US.yml
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'Explain FinalTECH items in the Guide'
+            git push origin HEAD:guide/item-purpose-lore-v2
+          fi
