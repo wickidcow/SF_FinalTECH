@@ -12,8 +12,6 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.core.multiblocks.MultiBlockMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
-import io.github.thebusybiscuit.slimefun4.implementation.guide.enhanced.LegacyGuideBookmarks;
-import io.github.thebusybiscuit.slimefun4.implementation.guide.enhanced.LegacyGuideSettings;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
@@ -227,14 +225,14 @@ public class SubFlexItemGroup extends FlexItemGroup {
                     if (cheatMode || research == null || playerProfile.hasUnlocked(research)) {
                         ItemStack itemStack = ItemStackUtil.cloneWithoutNBT(slimefunItem.getItem());
                         ItemStackUtil.addLoreToFirst(itemStack, "§7" + slimefunItem.getId());
-                        if (LegacyGuideSettings.get().hasBookmarks()
-                                && LegacyGuideBookmarks.get().contains(player.getUniqueId(), slimefunItem.getId())) {
+                        if (hasLegacyBookmarks()
+                                && isBookmarked(player, slimefunItem)) {
                             ItemStackUtil.addLoreToFirst(itemStack, "§6★ Bookmarked");
                         }
                         chestMenu.addItem(MAIN_CONTENT_L[i][j], ItemStackUtil.cleanItem(itemStack));
                         chestMenu.addMenuClickHandler(MAIN_CONTENT_L[i][j], (p, slot, item, action) -> {
                             if (cheatMode) {
-                                if (action.isShiftClicked() && LegacyGuideSettings.get().hasBookmarks()) {
+                                if (action.isShiftClicked() && hasLegacyBookmarks()) {
                                     toggleBookmark(p, slimefunItem);
                                     refresh(player, playerProfile, slimefunGuideMode);
                                 } else if (!p.hasPermission("slimefun.cheat.items")) {
@@ -248,7 +246,7 @@ public class SubFlexItemGroup extends FlexItemGroup {
                                     }
                                     p.getInventory().addItem(clonedItem);
                                 }
-                            } else if (action.isShiftClicked() && LegacyGuideSettings.get().hasBookmarks()) {
+                            } else if (action.isShiftClicked() && hasLegacyBookmarks()) {
                                 toggleBookmark(p, slimefunItem);
                                 refresh(player, playerProfile, slimefunGuideMode);
                             } else {
@@ -294,14 +292,55 @@ public class SubFlexItemGroup extends FlexItemGroup {
         return chestMenu;
     }
 
+    private boolean hasLegacyBookmarks() {
+        try {
+            Class<?> settingsClass = loadLegacyGuideClass(
+                    "io.github.thebusybiscuit.slimefun4.implementation.guide.enhanced.LegacyGuideSettings");
+            Object settings = settingsClass.getMethod("get").invoke(null);
+            return (boolean) settingsClass.getMethod("hasBookmarks").invoke(settings);
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            return false;
+        }
+    }
+
+    private boolean isBookmarked(@Nonnull Player player, @Nonnull SlimefunItem slimefunItem) {
+        try {
+            Class<?> bookmarksClass = loadLegacyGuideClass(
+                    "io.github.thebusybiscuit.slimefun4.implementation.guide.enhanced.LegacyGuideBookmarks");
+            Object bookmarks = bookmarksClass.getMethod("get").invoke(null);
+            return (boolean) bookmarksClass
+                    .getMethod("contains", java.util.UUID.class, String.class)
+                    .invoke(bookmarks, player.getUniqueId(), slimefunItem.getId());
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            return false;
+        }
+    }
+
     private void toggleBookmark(@Nonnull Player player, @Nonnull SlimefunItem slimefunItem) {
-        boolean added = LegacyGuideBookmarks.get().toggle(player.getUniqueId(), slimefunItem.getId());
+        final boolean added;
+        try {
+            Class<?> bookmarksClass = loadLegacyGuideClass(
+                    "io.github.thebusybiscuit.slimefun4.implementation.guide.enhanced.LegacyGuideBookmarks");
+            Object bookmarks = bookmarksClass.getMethod("get").invoke(null);
+            added = (boolean) bookmarksClass
+                    .getMethod("toggle", java.util.UUID.class, String.class)
+                    .invoke(bookmarks, player.getUniqueId(), slimefunItem.getId());
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            player.sendMessage(ChatColor.RED + "Bookmarks are unavailable in this Slimefun guide.");
+            return;
+        }
+
         player.sendMessage(
                 added
                         ? ChatColor.GOLD + "★ Added " + ChatColor.WHITE + ChatColor.stripColor(slimefunItem.getItemName())
                                 + ChatColor.GOLD + " to your bookmarks."
                         : ChatColor.YELLOW + "Removed " + ChatColor.WHITE + ChatColor.stripColor(slimefunItem.getItemName())
                                 + ChatColor.YELLOW + " from your bookmarks.");
+    }
+
+    @Nonnull
+    private Class<?> loadLegacyGuideClass(@Nonnull String className) throws ClassNotFoundException {
+        return Class.forName(className, true, Slimefun.class.getClassLoader());
     }
 
     @Nonnull
