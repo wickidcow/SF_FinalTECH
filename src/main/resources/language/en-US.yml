@@ -292,70 +292,136 @@ helper:
 categories:
   _FINALTECH_ITEM_GROUP:
     name: '{color:random}FINAL TECH'
+    lore:
+      - '{color:normal}Advanced automation, logistics and end-game technology.'
   _FINALTECH_MAIN_MENU_ITEM:
     name: '{color:random}Item'
+    lore:
+      - '{color:normal}Materials, logic, tools, consumables and weapons.'
   _FINALTECH_SUB_MENU_MATERIAL:
     name: '{color:random}Material'
+    lore:
+      - '{color:normal}Crafting materials and components used by FinalTECH.'
   _FINALTECH_SUB_MENU_LOGIC_ITEM:
     name: '{color:random}Logic Item'
+    lore:
+      - '{color:normal}Logic and digital components for advanced systems.'
   _FINALTECH_SUB_MENU_CONSUMABLE:
     name: '{color:random}Consumable'
+    lore:
+      - '{color:normal}Single-use cards and utility consumables.'
   _FINALTECH_SUB_MENU_TOOL:
     name: '{color:random}Tool'
+    lore:
+      - '{color:normal}Portable tools for configuring and managing FinalTECH.'
   _FINALTECH_SUB_MENU_WEAPON:
     name: '{color:random}Weapon'
+    lore:
+      - '{color:normal}Advanced FinalTECH tools and combat equipment.'
   _FINALTECH_MAIN_MENU_ELECTRICITY_SYSTEM:
     name: '{color:random}Electric System'
+    lore:
+      - '{color:normal}Power generation, storage, transmission and acceleration.'
   _FINALTECH_SUB_MENU_ELECTRIC_GENERATOR:
     name: '{color:random}Electric Generator'
+    lore:
+      - '{color:normal}Machines that generate energy for FinalTECH systems.'
   _FINALTECH_SUB_MENU_ELECTRIC_STORAGE:
     name: '{color:random}Electric Storage'
+    lore:
+      - '{color:normal}Capacitors and devices for storing large amounts of energy.'
   _FINALTECH_SUB_MENU_ELECTRIC_TRANSMISSION:
     name: '{color:random}Electric Transmission'
+    lore:
+      - '{color:normal}Move and distribute energy between machines.'
   _FINALTECH_SUB_MENU_ELECTRIC_ACCELERATOR:
     name: '{color:random}Electric Accelerator'
+    lore:
+      - '{color:normal}Advanced devices for controlling machine operation speed.'
   _FINALTECH_MAIN_MENU_CARGO_SYSTEM:
     name: '{color:random}Cargo System'
+    lore:
+      - '{color:normal}Storage, routing, filtering and automated item transport.'
   _FINALTECH_SUB_MENU_STORAGE_UNIT:
     name: '{color:random}Storage Unit'
+    lore:
+      - '{color:normal}Compact storage devices for large quantities of items.'
   _FINALTECH_SUB_MENU_ADVANCED_STORAGE:
     name: '{color:random}Advanced Storage'
+    lore:
+      - '{color:normal}Higher-capacity and specialized storage technology.'
   _FINALTECH_SUB_MENU_ACCESSOR:
     name: '{color:random}Accessor'
+    lore:
+      - '{color:normal}Remote access and interaction tools for machines and storage.'
   _FINALTECH_SUB_MENU_LOGIC:
     name: '{color:random}Logic'
+    lore:
+      - '{color:normal}Control cargo behavior with conditions and routing logic.'
   _FINALTECH_SUB_MENU_CARGO:
     name: '{color:random}Cargo'
+    lore:
+      - '{color:normal}Move, filter and distribute items automatically.'
   _FINALTECH_MAIN_MENU_FUNCTIONAL_MACHINE:
     name: '{color:random}Functional Machine'
+    lore:
+      - '{color:normal}Utility machines for specialized automation tasks.'
   _FINALTECH_SUB_MENU_CORE_MACHINE:
     name: '{color:random}Core Machine'
+    lore:
+      - '{color:normal}Core devices used by multiple FinalTECH systems.'
   _FINALTECH_SUB_MENU_SPECIAL_MACHINE:
     name: '{color:random}Special Machine'
+    lore:
+      - '{color:normal}Special-purpose machines with unique functions.'
   _FINALTECH_SUB_MENU_TOWER:
     name: '{color:random}Tower'
+    lore:
+      - '{color:normal}Tower-style machines for specialized utility functions.'
   _FINALTECH_MAIN_MENU_PRODUCTIVE_MACHINE:
     name: '{color:random}Productive Machine'
+    lore:
+      - '{color:normal}Machines that process materials and produce resources.'
   _FINALTECH_SUB_MENU_MANUAL_MACHINE:
     name: '{color:random}Manual Machine'
+    lore:
+      - '{color:normal}Player-operated machines for direct processing.'
   _FINALTECH_SUB_MENU_BASIC_MACHINE:
     name: '{color:random}Basic Machine'
+    lore:
+      - '{color:normal}Entry-level automated processing machines.'
   _FINALTECH_SUB_MENU_ADVANCED_MACHINE:
     name: '{color:random}Advanced Machine'
+    lore:
+      - '{color:normal}Higher-tier machines for faster or specialized processing.'
   _FINALTECH_SUB_MENU_CONVERSION:
     name: '{color:random}Conversion'
+    lore:
+      - '{color:normal}Convert items, materials or values into other forms.'
   _FINALTECH_SUB_MENU_EXTRACTION:
     name: '{color:random}Extraction'
+    lore:
+      - '{color:normal}Extract resources and useful products from materials.'
   _FINALTECH_SUB_MENU_GENERATOR:
     name: '{color:random}Generator'
+    lore:
+      - '{color:normal}Generate materials and resources automatically.'
   _FINALTECH_MAIN_MENU_DISC:
     name: '{color:random}Disc'
+    lore:
+      - '{color:normal}End-game items, trophies and legacy content.'
   _FINALTECH_SUB_MENU_FINAL_ITEM:
     name: '{color:random}Final Item'
+    lore:
+      - '{color:normal}Highest-tier components and end-game FinalTECH items.'
   _FINALTECH_SUB_MENU_TROPHY:
     name: '{color:random}Trophy'
+    lore:
+      - '{color:normal}Collectible rewards and acknowledgements.'
   _FINALTECH_SUB_MENU_DEPRECATED:
     name: '{color:random}Deprecated'
+    lore:
+      - '{color:normal}Legacy items kept for compatibility; avoid new use.'
 items:
   _FINALTECH_WATER_CARD:
     name: '{color:prandom}Water Card'
