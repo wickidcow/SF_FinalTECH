@@ -2,7 +2,6 @@ package io.taraxacum.libs.plugin.util;
 
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
@@ -167,7 +166,7 @@ public class StringItemUtil {
         if (count > 0) {
             if (StringNumberUtil.ZERO.equals(amount)) {
                 persistentDataContainer.set(AMOUNT_KEY, PersistentDataType.STRING, String.valueOf(count));
-                persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(stringItem.getItemStack()));
+                persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(ItemStackUtil.cleanItem(stringItem.getItemStack())));
             } else {
                 persistentDataContainer.set(AMOUNT_KEY, PersistentDataType.STRING, StringNumberUtil.add(amount, String.valueOf(count)));
             }
@@ -234,7 +233,7 @@ public class StringItemUtil {
     public static void setItemInCard(@Nonnull ItemMeta itemMeta, @Nonnull ItemStack stringItem) {
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
         if (persistentDataContainer.has(AMOUNT_KEY, PersistentDataType.STRING)) {
-            persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(stringItem));
+            persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(ItemStackUtil.cleanItem(stringItem)));
         }
     }
 
@@ -254,7 +253,7 @@ public class StringItemUtil {
     public static void setItemInCard(@Nonnull ItemMeta itemMeta, @Nonnull ItemStack stringItem, @Nonnull String amount) {
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
         if (StringNumberUtil.compare(amount, StringNumberUtil.ZERO) == 1) {
-            persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(stringItem));
+            persistentDataContainer.set(ITEM_KEY, PersistentDataType.STRING, ItemStackUtil.itemStackToString(ItemStackUtil.cleanItem(stringItem)));
             persistentDataContainer.set(AMOUNT_KEY, PersistentDataType.STRING, amount);
         } else {
             persistentDataContainer.remove(ITEM_KEY);
