@@ -57,10 +57,10 @@ public class ConfigFileManager {
 
     /**
      * FinalTECH 3.0 briefly shipped English localization prose containing raw
-     * apostrophes inside YAML single-quoted scalars. YAML requires apostrophes
-     * inside those values to be doubled. Repair every affected one-line value
-     * before Bukkit/SnakeYAML attempts to load the file so existing server
-     * copies self-heal after the plugin JAR is updated.
+     * or otherwise malformed apostrophe runs inside YAML single-quoted scalars.
+     * YAML requires apostrophes inside those values to be represented by pairs.
+     * Repair every affected one-line value before Bukkit/SnakeYAML attempts to
+     * load the file so existing server copies self-heal after the JAR is updated.
      */
     private static void repairKnownLanguageSyntax(@Nonnull File file) {
         if (!"en-US.yml".equalsIgnoreCase(file.getName()) || !file.isFile()) {
@@ -118,20 +118,31 @@ public class ConfigFileManager {
 
     @Nonnull
     private static String escapeYamlSingleQuotedBody(@Nonnull String body) {
-        StringBuilder result = new StringBuilder(body.length());
+        StringBuilder result = new StringBuilder(body.length() + 2);
+        int index = 0;
 
-        for (int i = 0; i < body.length(); i++) {
-            char current = body.charAt(i);
-            if (current != '\'') {
-                result.append(current);
+        while (index < body.length()) {
+            if (body.charAt(index) != '\'') {
+                result.append(body.charAt(index));
+                index++;
                 continue;
             }
 
-            if (i + 1 < body.length() && body.charAt(i + 1) == '\'') {
+            int runStart = index;
+            while (index < body.length() && body.charAt(index) == '\'') {
+                index++;
+            }
+
+            int runLength = index - runStart;
+            if ((runLength & 1) == 0) {
+                result.append("'".repeat(runLength));
+            } else if (runLength == 1) {
                 result.append("''");
-                i++;
             } else {
-                result.append("''");
+                // A run such as ''' was produced by a broken 3.0 language file.
+                // Drop the unmatched quote instead of expanding it to four and
+                // displaying a doubled apostrophe to players.
+                result.append("'".repeat(runLength - 1));
             }
         }
 
@@ -188,13 +199,11 @@ public class ConfigFileManager {
         return this.plugin;
     }
 
-    @Nonnull
     public Boolean containPath(@Nonnull String... paths) {
         String path = ConfigFileManager.calPath(paths);
         return this.configFile.contains(path);
     }
 
-    @Nonnull
     public <T> Boolean setValue(@Nonnull T value, @Nonnull String... paths) {
         if (this.file == null) {
             return false;
