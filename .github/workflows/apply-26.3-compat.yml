@@ -1,0 +1,183 @@
+name: Apply 1.21.11-26.3 compatibility update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-26.3-compat.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Apply compatibility changes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('src/main/java')
+          for path in root.rglob('*.java'):
+              text = path.read_text(encoding='utf-8')
+              updated = text.replace('Particle.CRIT_MAGIC', 'Particle.ENCHANTED_HIT')
+              updated = updated.replace('Material.CHAIN', 'Material.IRON_CHAIN')
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+
+          area = Path('src/main/java/io/taraxacum/finaltech/core/menu/clicker/AreaAccessorMenu.java')
+          text = area.read_text(encoding='utf-8')
+          text = text.replace('''        BlockStorage storage = BlockStorage.getStorage(world);\n        if (storage == null) {\n            return;\n        }\n\n''', '')
+          text = text.replace(
+              'BlockStorage.hasBlockInfo(tempLocation) && storage.hasInventory(tempLocation)',
+              'BlockStorage.hasBlockInfo(tempLocation) && BlockStorage.hasInventory(tempLocation.getBlock())'
+          )
+          area.write_text(text, encoding='utf-8')
+
+          main = Path('src/main/java/io/taraxacum/finaltech/FinalTechChanged.java')
+          text = main.read_text(encoding='utf-8')
+          start = text.index('    @Override\n    public void onDisable() {')
+          end = text.index('    @Override\n    public String getBugTrackerURL()', start)
+          replacement = '''    @Override
+    public void onDisable() {
+        ServerRunnableLockFactory.stop();
+        if (this.bukkitTask != null) {
+            this.bukkitTask.cancel();
+        }
+        saveBlockStorageCompat();
+        try {
+            FinalTechChanged.logger().info("Waiting all task to end.(" + FinalTechChanged.getLocationRunnableFactory().taskSize() + ")");
+            FinalTechChanged.getLocationRunnableFactory().waitAllTask();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            saveBlockStorageCompat();
+        }
+        try {
+            FinalTechChanged.getEntityRunnableFactory().waitAllTask();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            saveBlockStorageCompat();
+        }
+    }
+
+    /**
+     * Older Slimefun builds exposed explicit BlockStorage save hooks. Modern
+     * Slimefun Legacy persists through its storage controller instead. Invoke
+     * the legacy hooks only when they exist so the same addon remains usable
+     * across the supported server generations.
+     */
+    private void saveBlockStorageCompat() {
+        try {
+            try {
+                BlockStorage.class.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
+            }
+
+            for (World world : Bukkit.getWorlds()) {
+                Object storage = BlockStorage.class.getMethod("getStorage", World.class).invoke(null, world);
+                if (storage == null) {
+                    continue;
+                }
+
+                try {
+                    storage.getClass().getMethod("save").invoke(storage);
+                } catch (NoSuchMethodException ignored) {
+                    // Modern storage controller: persistence is managed centrally.
+                }
+            }
+
+            try {
+                BlockStorage.class.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
+            }
+        } catch (ReflectiveOperationException | LinkageError e) {
+            FinalTechChanged.logger().warning("Could not invoke legacy BlockStorage save hooks: " + e.getMessage());
+        }
+    }
+
+'''
+          main.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
+
+          energy = Path('src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorBlockTicker.java')
+          text = energy.read_text(encoding='utf-8')
+          text = text.replace('import io.taraxacum.finaltech.FinalTechChanged;\nimport io.taraxacum.finaltech.FinalTechChanged;\n',
+                              'import io.taraxacum.finaltech.FinalTechChanged;\n')
+          text = text.replace('import java.lang.reflect.Field;\n', 'import java.lang.reflect.Field;\nimport java.lang.reflect.Method;\n')
+          old = '''        } else {
+            energyNetwork.markDirty(location);
+            energyNetwork.tick(block);
+        }
+    }
+}'''
+          new = '''        } else {
+            tickVanillaEnergyNetwork(energyNetwork, block);
+        }
+    }
+
+    /**
+     * Slimefun's EnergyNet tick signature changed when block data moved to the
+     * modern storage controller. Resolve the available signature at runtime so
+     * this addon can continue to run on both supported API shapes.
+     */
+    private void tickVanillaEnergyNetwork(EnergyNet energyNetwork, Block block) {
+        Location location = block.getLocation();
+        energyNetwork.markDirty(location);
+
+        try {
+            Class<?> slimefunClass = Class.forName("io.github.thebusybiscuit.slimefun4.implementation.Slimefun");
+            Object databaseManager = slimefunClass.getMethod("getDatabaseManager").invoke(null);
+            Object controller = databaseManager.getClass().getMethod("getBlockDataController").invoke(databaseManager);
+            Object blockData = controller.getClass().getMethod("getBlockData", Location.class).invoke(controller, location);
+
+            if (blockData != null) {
+                for (Method method : energyNetwork.getClass().getMethods()) {
+                    Class<?>[] parameters = method.getParameterTypes();
+                    if (method.getName().equals("tick")
+                            && parameters.length == 2
+                            && parameters[0] == Block.class
+                            && parameters[1].isInstance(blockData)) {
+                        method.invoke(energyNetwork, block, blockData);
+                        return;
+                    }
+                }
+            }
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Fall through to the legacy signature.
+        }
+
+        try {
+            energyNetwork.getClass().getMethod("tick", Block.class).invoke(energyNetwork, block);
+            return;
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Fall through to the base Network tick as a final safe fallback.
+        }
+
+        try {
+            energyNetwork.getClass().getMethod("tick").invoke(energyNetwork);
+        } catch (ReflectiveOperationException | LinkageError e) {
+            FinalTechChanged.logger().warning("Unable to tick EnergyNet at " + location + ": " + e.getMessage());
+        }
+    }
+}'''
+          if old not in text:
+              raise SystemExit('EnergyRegulatorBlockTicker compatibility target was not found')
+          energy.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          git diff --check
+      - name: Commit compatibility update
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'wickidcow'
+          git config user.email '185013218+wickidcow@users.noreply.github.com'
+          git add src/main/java
+          git diff --cached --stat
+          git commit -m 'compat: support Minecraft 1.21.11 through 26.3'
+          git push
