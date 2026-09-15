@@ -37,6 +37,24 @@ jobs:
 
           echo 'English localization audit passed.'
 
+      - name: Validate English YAML quoting
+        run: python3 scripts/normalize_english_yaml.py --check
+
+      - name: Parse English YAML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --disable-pip-version-check pyyaml
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          path = Path('src/main/resources/language/en-US.yml')
+          with path.open(encoding='utf-8') as stream:
+              yaml.safe_load(stream)
+          print('English YAML parsed successfully.')
+          PY
+
       - name: Set up Java 17
         uses: actions/setup-java@v5
         with:

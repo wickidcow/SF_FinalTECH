@@ -13,12 +13,21 @@ def escape_single_quoted_body(body: str) -> str:
             i += 1
             continue
 
-        if i + 1 < len(body) and body[i + 1] == "'":
-            result.append("''")
-            i += 2
-        else:
-            result.append("''")
+        run_start = i
+        while i < len(body) and body[i] == "'":
             i += 1
+
+        run_length = i - run_start
+        if run_length % 2 == 0:
+            result.append("'" * run_length)
+        elif run_length == 1:
+            result.append("''")
+        else:
+            # Old 3.0 locale files could contain malformed runs such as '''.
+            # Remove the unmatched quote instead of expanding the run and
+            # displaying an extra apostrophe after SnakeYAML decodes it.
+            result.append("'" * (run_length - 1))
+
     return "".join(result)
 
 
