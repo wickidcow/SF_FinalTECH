@@ -99,11 +99,6 @@ public class AreaAccessorMenu extends AbstractClickerMenu {
         if (world == null) {
             return;
         }
-        BlockStorage storage = BlockStorage.getStorage(world);
-        if (storage == null) {
-            return;
-        }
-
         Map<Integer, List<Location>> distanceLocationMap = new HashMap<>(range * 3);
         Location tempLocation = location.clone();
 
@@ -119,7 +114,7 @@ public class AreaAccessorMenu extends AbstractClickerMenu {
                 tempLocation.setY(y);
                 for (int z = minZ; z <= maxZ; z++) {
                     tempLocation.setZ(z);
-                    if (BlockStorage.hasBlockInfo(tempLocation) && storage.hasInventory(tempLocation)) {
+                    if (BlockStorage.hasBlockInfo(tempLocation) && BlockStorage.hasInventory(tempLocation.getBlock())) {
                         int distance = Math.abs(tempLocation.getBlockX() - location.getBlockX()) + Math.abs(tempLocation.getBlockY() - location.getBlockY()) + Math.abs(tempLocation.getBlockZ() - location.getBlockZ());
                         List<Location> locationList = distanceLocationMap.computeIfAbsent(distance, d -> new ArrayList<>(d * d * 4 + 2));
                         locationList.add(tempLocation.clone());

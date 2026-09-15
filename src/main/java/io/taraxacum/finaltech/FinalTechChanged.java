@@ -452,43 +452,58 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         if (this.bukkitTask != null) {
             this.bukkitTask.cancel();
         }
-        BlockStorage.saveChunks();
+        saveBlockStorageCompat();
         try {
             FinalTechChanged.logger().info("Waiting all task to end.(" + FinalTechChanged.getLocationRunnableFactory().taskSize() + ")");
             FinalTechChanged.getLocationRunnableFactory().waitAllTask();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         } finally {
-            BlockStorage.saveChunks();
-            try {
-                for (World world : Bukkit.getWorlds()) {
-                    BlockStorage storage = BlockStorage.getStorage(world);
-                    if (storage != null) {
-                        storage.save();
-                    }
-                }
-                BlockStorage.saveChunks();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+            saveBlockStorageCompat();
+      }
         try {
             FinalTechChanged.getEntityRunnableFactory().waitAllTask();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         } finally {
-            BlockStorage.saveChunks();
+            saveBlockStorageCompat();
+        }
+    }
+
+    /**
+     * Older Slimefun builds exposed explicit BlockStorage save hooks. Modern
+     * Slimefun Legacy persists through its storage controller instead. Invoke
+     * the legacy hooks only when they exist so the same addon remains usable
+     * across the supported server generations.
+     */
+    private void saveBlockStorageCompat() {
+        try {
             try {
-                for (World world : Bukkit.getWorlds()) {
-                    BlockStorage storage = BlockStorage.getStorage(world);
-                    if (storage != null) {
-                        storage.save();
-                    }
-                }
-                BlockStorage.saveChunks();
-            } catch (Exception e) {
-                e.printStackTrace();
+                BlockStorage.class.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
             }
+
+            for (World world : Bukkit.getWorlds()) {
+                Object storage = BlockStorage.class.getMethod("getStorage", World.class).invoke(null, world);
+                if (storage == null) {
+                    continue;
+                }
+
+                try {
+                    storage.getClass().getMethod("save").invoke(storage);
+                } catch (NoSuchMethodException ignored) {
+                    // Modern storage controller: persistence is managed centrally.
+                }
+            }
+
+            try {
+                BlockStorage.class.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
+            }
+      } catch (ReflectiveOperationException | LinkageError e) {
+            FinalTechChanged.logger().warning("Could not invoke legacy BlockStorage save hooks: " + e.getMessage());
         }
     }
 

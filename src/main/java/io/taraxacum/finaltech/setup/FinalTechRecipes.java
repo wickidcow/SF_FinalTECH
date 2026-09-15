@@ -722,19 +722,19 @@ public final class FinalTechRecipes {
 
     // cargo
     public static final ItemStack[] BASIC_FRAME_MACHINE = new ItemStack[]{
-            new ItemStack(Material.STONE), new ItemStack(Material.CHAIN), new ItemStack(Material.STONE),
-            new ItemStack(Material.CHAIN), FinalTechItemStacks.ORDERED_DUST, new ItemStack(Material.CHAIN),
-            new ItemStack(Material.STONE), new ItemStack(Material.CHAIN), new ItemStack(Material.STONE)
+            new ItemStack(Material.STONE), new ItemStack(Material.IRON_CHAIN), new ItemStack(Material.STONE),
+            new ItemStack(Material.IRON_CHAIN), FinalTechItemStacks.ORDERED_DUST, new ItemStack(Material.IRON_CHAIN),
+            new ItemStack(Material.STONE), new ItemStack(Material.IRON_CHAIN), new ItemStack(Material.STONE)
     };
     public static final ItemStack[] POINT_TRANSFER = new ItemStack[]{
-            new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.CHAIN), new ItemStack(Material.TRIPWIRE_HOOK),
+            new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.IRON_CHAIN), new ItemStack(Material.TRIPWIRE_HOOK),
             new ItemStack(Material.STRING), FinalTechItemStacks.BASIC_FRAME_MACHINE, new ItemStack(Material.STRING),
-            new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.CHAIN), new ItemStack(Material.TRIPWIRE_HOOK)
+            new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.IRON_CHAIN), new ItemStack(Material.TRIPWIRE_HOOK)
     };
     public static final ItemStack[] MESH_TRANSFER = new ItemStack[]{
-            new ItemStack(Material.HOPPER), new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.CHAIN),
+            new ItemStack(Material.HOPPER), new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.IRON_CHAIN),
             new ItemStack(Material.HOPPER), FinalTechItemStacks.BASIC_FRAME_MACHINE, new ItemStack(Material.STRING),
-            new ItemStack(Material.HOPPER), new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.CHAIN)
+            new ItemStack(Material.HOPPER), new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.IRON_CHAIN)
     };
     public static final ItemStack[] LINE_TRANSFER = new ItemStack[]{
             new ItemStack(Material.STRING), new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.STRING),
@@ -742,7 +742,7 @@ public final class FinalTechRecipes {
             new ItemStack(Material.CHEST), new ItemStack(Material.CHEST), new ItemStack(Material.CHEST)
     };
     public static final ItemStack[] LOCATION_TRANSFER = new ItemStack[]{
-            new ItemStack(Material.CHAIN), new ItemStack(Material.CHEST), new ItemStack(Material.CHAIN),
+            new ItemStack(Material.IRON_CHAIN), new ItemStack(Material.CHEST), new ItemStack(Material.IRON_CHAIN),
             new ItemStack(Material.TRIPWIRE_HOOK), FinalTechItemStacks.BASIC_FRAME_MACHINE, new ItemStack(Material.TRIPWIRE_HOOK),
             new ItemStack(Material.TRIPWIRE_HOOK), new ItemStack(Material.STRING), new ItemStack(Material.TRIPWIRE_HOOK)
     };

@@ -4,7 +4,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNet;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.MenuUpdater;
 import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.finaltech.core.networks.AlteredEnergyNet;
@@ -16,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * @author Final_ROOT
@@ -95,8 +95,52 @@ public class EnergyRegulatorBlockTicker extends BlockTicker implements MenuUpdat
                         String.valueOf(summary.getTransferredEnergy()));
             }
         } else {
-            energyNetwork.markDirty(location);
-            energyNetwork.tick(block);
+            tickVanillaEnergyNetwork(energyNetwork, block);
+        }
+    }
+
+    /**
+     * Slimefun's EnergyNet tick signature changed when block data moved to the
+     * modern storage controller. Resolve the available signature at runtime so
+     * this addon can continue to run on both supported API shapes.
+     */
+    private void tickVanillaEnergyNetwork(EnergyNet energyNetwork, Block block) {
+        Location location = block.getLocation();
+        energyNetwork.markDirty(location);
+
+        try {
+            Class<?> slimefunClass = Class.forName("io.github.thebusybiscuit.slimefun4.implementation.Slimefun");
+            Object databaseManager = slimefunClass.getMethod("getDatabaseManager").invoke(null);
+            Object controller = databaseManager.getClass().getMethod("getBlockDataController").invoke(databaseManager);
+            Object blockData = controller.getClass().getMethod("getBlockData", Location.class).invoke(controller, location);
+
+            if (blockData != null) {
+                for (Method method : energyNetwork.getClass().getMethods()) {
+                    Class<?>[] parameters = method.getParameterTypes();
+                    if (method.getName().equals("tick")
+                            && parameters.length == 2
+                            && parameters[0] == Block.class
+                            && parameters[1].isInstance(blockData)) {
+                            method.invoke(energyNetwork, block, blockData);
+                            return;
+                        }
+                }
+            }
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Fall through to the legacy signature.
+        }
+
+        try {
+            energyNetwork.getClass().getMethod("tick", Block.class).invoke(energyNetwork, block);
+            return;
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Fall through to the base Network tick as a final safe fallback.
+        }
+
+        try {
+            energyNetwork.getClass().getMethod("tick").invoke(energyNetwork);
+        } catch (ReflectiveOperationException | LinkageError e) {
+            FinalTechChanged.logger().warning("Unable to tick EnergyNet at " + location + ": " + e.getMessage());
         }
     }
 }

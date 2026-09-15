@@ -382,13 +382,13 @@ public class MeshTransfer extends AbstractCargo implements RecipeItem {
             particleLocationList.add(LocationUtil.getCenterLocation(result));
             if (drawParticle && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
                 JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-                javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawLineByDistance(javaPlugin, Particle.CRIT_MAGIC, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / particleLocationList.size(), this.particleDistance, particleLocationList));
+                javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawLineByDistance(javaPlugin, Particle.ENCHANTED_HIT, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / particleLocationList.size(), this.particleDistance, particleLocationList));
             }
             return result;
         }
         while (true) {
             particleLocationList.add(LocationUtil.getCenterLocation(result));
-            if (result.getType() == Material.CHAIN) {
+            if (result.getType() == Material.IRON_CHAIN) {
                 result = result.getRelative(blockFace);
                 continue;
             }
@@ -400,7 +400,7 @@ public class MeshTransfer extends AbstractCargo implements RecipeItem {
         }
         if (drawParticle && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
             JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-            javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawLineByDistance(javaPlugin, Particle.CRIT_MAGIC, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / particleLocationList.size(), this.particleDistance, particleLocationList));
+            javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawLineByDistance(javaPlugin, Particle.ENCHANTED_HIT, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / particleLocationList.size(), this.particleDistance, particleLocationList));
         }
         return result;
     }
