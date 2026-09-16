@@ -85,7 +85,6 @@ public final class GuideItemLoreUtil {
         ItemMeta meta = icon.getItemMeta();
         List<String> lore = new ArrayList<>();
 
-        lore.add(ChatColor.GOLD + "What it does");
         lore.addAll(getPurposeLore(slimefunItem));
         lore.add("");
         lore.add(ChatColor.DARK_GRAY + slimefunItem.getId());
