@@ -2,14 +2,18 @@ package io.taraxacum.finaltech.util;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.taraxacum.finaltech.FinalTechChanged;
+import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.interfaces.ShowInfoItem;
+import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,14 +21,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Builds player-facing help text for FinalTECH items in the Slimefun Guide.
+ * Builds compact, player-facing FinalTECH help text for the Slimefun Guide.
  *
- * <p>The original FinalTECH language files store most real documentation in
- * {@code items.<id>.info.<n>.lore}. English translations preserve the majority
- * of those sections, while a smaller set of items only had flavor text such as
- * "Good Things!" or "Fast Things!". This helper restores the useful original
- * Usage/Introduction/Mechanism text to the browse view and supplies verified
- * mechanics-based descriptions only where the original English help is absent.</p>
+ * <p>Older FinalTECH versions kept most documentation in item info sections
+ * named Usage, Introduction, Mechanism, and similar headings. Those sections
+ * are also registered as descriptive recipes, where dynamic placeholders have
+ * already been replaced with each item's live configured values. The browse
+ * view reuses that information instead of inventing a generic heading.</p>
  */
 public final class GuideItemLoreUtil {
     private static final int MAX_PURPOSE_LINES = 4;
@@ -33,11 +36,6 @@ public final class GuideItemLoreUtil {
     private static final Pattern STRUCTURAL_PLACEHOLDER = Pattern.compile("^(?:\\[\\s*]|\\{\\s*}|null|~)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern FLAVOR_ONLY = Pattern.compile("^(?:good|bad|fast) things!?$", Pattern.CASE_INSENSITIVE);
 
-    /**
-     * Source-backed help for items whose original English locale is missing,
-     * incomplete, or only contains flavor text. These descriptions were checked
-     * against the original zh-CN locale and/or the current item implementation.
-     */
     private static final Map<String, String> EXACT_FALLBACKS = Map.ofEntries(
             Map.entry("_FINALTECH_GEARWHEEL", "Crafting component used throughout FinalTECH machines and technology."),
             Map.entry("_FINALTECH_UNORDERED_DUST", "Unstable crafting material paired with Ordered Dust in advanced FinalTECH recipes and Matrix reactions."),
@@ -85,7 +83,6 @@ public final class GuideItemLoreUtil {
         ItemMeta meta = icon.getItemMeta();
         List<String> lore = new ArrayList<>();
 
-        lore.add(ChatColor.GOLD + "What it does");
         lore.addAll(getPurposeLore(slimefunItem));
         lore.add("");
         lore.add(ChatColor.DARK_GRAY + slimefunItem.getId());
@@ -107,14 +104,16 @@ public final class GuideItemLoreUtil {
         LanguageManager languageManager = FinalTechChanged.getLanguageManager();
         String id = slimefunItem.getId();
 
-        // Explicit English guide text always wins when present.
         List<String> explicit = getStableLines(languageManager, "items", id, "guide-lore");
         if (!explicit.isEmpty()) {
             return explicit;
         }
 
-        // Some item classes expose already-resolved runtime information. Prefer
-        // it because placeholders such as {1} have already been filled in.
+        List<String> itemLore = deriveFromItemLore(slimefunItem.getItem());
+        if (!itemLore.isEmpty()) {
+            return itemLore;
+        }
+
         if (slimefunItem instanceof ShowInfoItem showInfoItem) {
             List<String> runtimeInfo = deriveFromResolvedInfo(showInfoItem.getInfos());
             if (!runtimeInfo.isEmpty()) {
@@ -122,21 +121,273 @@ public final class GuideItemLoreUtil {
             }
         }
 
-        // The original FinalTECH locales keep the real manual under nested
-        // info sections. Surface those before considering decorative lore.
+        // These cards have important costs/side effects that are spread across
+        // multiple legacy info sections, so present them as one concise summary.
+        List<String> dynamicPurpose = deriveKnownDynamicPurpose(slimefunItem);
+        if (!dynamicPurpose.isEmpty()) {
+            return dynamicPurpose;
+        }
+
+        // RecipeUtil resolves {1}, {2}, etc. before registering descriptive
+        // recipe books. Reusing those books makes generator ranges, machine
+        // rates, capacitor capacities, tool distances and similar values show
+        // the actual server configuration instead of unresolved placeholders.
+        List<String> registeredInfo = deriveFromRegisteredRecipeInfo(slimefunItem);
+        if (!registeredInfo.isEmpty()) {
+            return registeredInfo;
+        }
+
         List<String> configuredInfo = deriveFromConfiguredInfo(languageManager, id);
         if (!configuredInfo.isEmpty()) {
             return configuredInfo;
         }
 
-        // Some simple items have useful ordinary lore. Reject the old one-line
-        // flavor placeholders so they never replace an actual explanation.
         explicit = getStableLines(languageManager, "items", id, "lore");
         if (!explicit.isEmpty()) {
             return explicit;
         }
 
         return wrapGray(fallbackPurpose(id, slimefunItem.getItemName()));
+    }
+
+    @Nonnull
+    private static List<String> deriveFromItemLore(@Nonnull ItemStack itemStack) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null || !meta.hasLore()) {
+            return List.of();
+        }
+
+        List<String> source = meta.getLore();
+        if (source == null || source.isEmpty()) {
+            return List.of();
+        }
+
+        return stableWrappedLines(source);
+    }
+
+    @Nonnull
+    private static List<String> deriveFromRegisteredRecipeInfo(@Nonnull SlimefunItem slimefunItem) {
+        if (!(slimefunItem instanceof RecipeItem recipeItem)) {
+            return List.of();
+        }
+
+        List<String> purpose = List.of();
+        List<String> limit = List.of();
+
+        try {
+            for (MachineRecipe recipe : recipeItem.getMachineRecipes()) {
+                ItemStack[] inputs = recipe.getInput();
+                if (inputs.length == 0 || inputs[0] == null || inputs[0].getType() != Material.BOOK) {
+                    continue;
+                }
+
+                ItemMeta meta = inputs[0].getItemMeta();
+                if (meta == null || !meta.hasDisplayName() || !meta.hasLore()) {
+                    continue;
+                }
+
+                String heading = ChatColor.stripColor(meta.getDisplayName());
+                if (heading == null || heading.isBlank()) {
+                    continue;
+                }
+
+                List<String> lines = stableWrappedLines(meta.getLore());
+                if (lines.isEmpty()) {
+                    continue;
+                }
+
+                String normalizedHeading = heading.trim().toLowerCase(Locale.ROOT);
+                if (purpose.isEmpty() && isPurposeHeading(normalizedHeading)) {
+                    purpose = lines;
+                } else if (limit.isEmpty() && isLimitHeading(normalizedHeading)) {
+                    limit = lines;
+                }
+            }
+        } catch (RuntimeException ignored) {
+            return List.of();
+        }
+
+        if (purpose.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> result = new ArrayList<>(MAX_PURPOSE_LINES);
+        appendUntilLimit(result, purpose);
+        appendUntilLimit(result, limit);
+        return result;
+    }
+
+    private static void appendUntilLimit(@Nonnull List<String> target, @Nonnull List<String> source) {
+        for (String line : source) {
+            if (target.size() >= MAX_PURPOSE_LINES) {
+                return;
+            }
+            target.add(line);
+        }
+    }
+
+    @Nonnull
+    private static List<String> stableWrappedLines(List<String> source) {
+        if (source == null || source.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String line : source) {
+            appendStableWrapped(result, line, null);
+            if (result.size() >= MAX_PURPOSE_LINES) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    @Nonnull
+    private static List<String> deriveKnownDynamicPurpose(@Nonnull SlimefunItem slimefunItem) {
+        String id = slimefunItem.getId();
+
+        if (id.endsWith("MATRIX_MACHINE_ACCELERATE_CARD")) {
+            Number times = readNumberField(slimefunItem, "times");
+            if (times != null) {
+                return wrapGray("Reusable card. Each card in the held stack advances a supported machine by "
+                        + formatNumber(times.doubleValue())
+                        + " cycle(s). Each use costs 1 health point (half a heart).");
+            }
+        }
+
+        if (id.endsWith("MATRIX_MACHINE_CHARGE_CARD")) {
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (energy != null) {
+                return wrapGray("Reusable; held stack scales charge: " + formatEnergyCharge(energy.doubleValue())
+                        + " per card. Percentage is ignored for capacitors/generators. Costs 1 XP point per use.");
+            }
+        }
+
+        if (id.endsWith("MATRIX_MACHINE_ACTIVATE_CARD")) {
+            Number times = readNumberField(slimefunItem, "times");
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (times != null && energy != null) {
+                return wrapGray("Consumes one card; using it wipes all XP and kills the player. It then runs "
+                        + formatNumber(times.doubleValue()) + " machine cycles, charging before each by "
+                        + formatEnergyCharge(energy.doubleValue()) + ".");
+            }
+        }
+
+        if (id.endsWith("MACHINE_ACCELERATE_CARD_L1")
+                || id.endsWith("MACHINE_ACCELERATE_CARD_L2")
+                || id.endsWith("MACHINE_ACCELERATE_CARD_L3")) {
+            Number times = readNumberField(slimefunItem, "times");
+            if (times == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Immediately advances a supported machine by ")
+                    .append(formatNumber(times.doubleValue())).append(" cycles. Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append(" and costs 1 health point (half a heart)");
+            } else if (id.endsWith("_L3")) {
+                description.append(" and costs 10% of maximum health");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.endsWith("MACHINE_CHARGE_CARD_L1")
+                || id.endsWith("MACHINE_CHARGE_CARD_L2")
+                || id.endsWith("MACHINE_CHARGE_CARD_L3")) {
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (energy == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Adds ")
+                    .append(formatEnergyCharge(energy.doubleValue()))
+                    .append(" to a supported energy machine. Percentage is ignored for capacitors/generators. Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append(" and costs 1 XP point");
+            } else if (id.endsWith("_L3")) {
+                description.append(" and costs 1 XP level");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.endsWith("MACHINE_ACTIVATE_CARD_L1")
+                || id.endsWith("MACHINE_ACTIVATE_CARD_L2")
+                || id.endsWith("MACHINE_ACTIVATE_CARD_L3")) {
+            Number times = readNumberField(slimefunItem, "times");
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (times == null || energy == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Charges and advances a supported machine ")
+                    .append(formatNumber(times.doubleValue())).append(" cycles. Each cycle adds ")
+                    .append(formatEnergyCharge(energy.doubleValue()))
+                    .append(". Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append("; costs 1 health point and 1 XP point");
+            } else if (id.endsWith("_L3")) {
+                description.append("; costs 10% max health and 1 XP level");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.startsWith("_FINALTECH_ENERGY_CARD_")) {
+            Object energy = readField(slimefunItem, "energy");
+            if (energy instanceof String energyString && !energyString.isBlank()) {
+                return wrapGray("Consumable energy card that deposits " + energyString
+                        + " J into a supported chargeable machine.");
+            }
+        }
+
+        return List.of();
+    }
+
+    private static Object readField(@Nonnull Object instance, @Nonnull String fieldName) {
+        Class<?> type = instance.getClass();
+        while (type != null) {
+            try {
+                Field field = type.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                return field.get(instance);
+            } catch (NoSuchFieldException exception) {
+                type = type.getSuperclass();
+            } catch (ReflectiveOperationException | SecurityException exception) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static Number readNumberField(@Nonnull Object instance, @Nonnull String fieldName) {
+        Object value = readField(instance, fieldName);
+        return value instanceof Number number ? number : null;
+    }
+
+    @Nonnull
+    private static String formatEnergyCharge(double energy) {
+        double whole = Math.floor(energy);
+        double percentage = (energy - whole) * 100.0D;
+        StringBuilder result = new StringBuilder(formatNumber(whole)).append(" J");
+        if (Math.abs(percentage) > 0.0001D) {
+            result.append(" + ").append(formatNumber(percentage)).append("% capacity");
+        }
+        return result.toString();
+    }
+
+    @Nonnull
+    private static String formatNumber(double value) {
+        if (Math.abs(value - Math.rint(value)) < 0.0000001D) {
+            return String.format(Locale.ROOT, "%,.0f", value);
+        }
+
+        String formatted = String.format(Locale.ROOT, "%,.2f", value);
+        while (formatted.endsWith("0")) {
+            formatted = formatted.substring(0, formatted.length() - 1);
+        }
+        return formatted.endsWith(".") ? formatted.substring(0, formatted.length() - 1) : formatted;
     }
 
     @Nonnull
@@ -204,8 +455,6 @@ public final class GuideItemLoreUtil {
                 return lines;
             }
 
-            // If the original item has no Usage/Introduction/Mechanism section,
-            // its first descriptive section is still preferable to a guess.
             if (firstUsefulSection.isEmpty()) {
                 firstUsefulSection = lines;
             }
@@ -224,6 +473,13 @@ public final class GuideItemLoreUtil {
                 || normalizedHeading.contains("description")
                 || normalizedHeading.contains("effect")
                 || normalizedHeading.contains("operation");
+    }
+
+    private static boolean isLimitHeading(@Nonnull String normalizedHeading) {
+        return normalizedHeading.contains("limit")
+                || normalizedHeading.contains("cost")
+                || normalizedHeading.contains("requirement")
+                || normalizedHeading.contains("condition");
     }
 
     @Nonnull
@@ -355,7 +611,7 @@ public final class GuideItemLoreUtil {
                     + " recipes using FinalTECH's high-throughput machine system; supports Quantity Modules and recipe locking.";
         }
         if (id.startsWith("_FINALTECH_MATRIX_")) {
-            return "End-game Matrix-tier technology for advanced FinalTECH automation; open the item page for its specific mechanism.";
+            return "End-game Matrix-tier technology used by FinalTECH's highest-tier crafting, storage, and automation systems.";
         }
         if (id.endsWith("_CAPACITOR")) {
             return "Stores energy for the Slimefun/FinalTECH power network.";
@@ -376,7 +632,11 @@ public final class GuideItemLoreUtil {
             return "Upgrade component used by compatible FinalTECH machines to change efficiency or capacity.";
         }
 
-        return "FinalTECH progression or automation item. Open its item page for recipes and detailed mechanics.";
+        String plainName = ChatColor.stripColor(itemName);
+        if (plainName == null || plainName.isBlank()) {
+            plainName = "This item";
+        }
+        return plainName + " is used by FinalTECH's crafting, progression, or automation systems.";
     }
 
     @Nonnull
