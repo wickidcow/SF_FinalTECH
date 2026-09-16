@@ -2,10 +2,13 @@ package io.taraxacum.finaltech.util;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.taraxacum.finaltech.FinalTechChanged;
+import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.interfaces.ShowInfoItem;
+import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -18,14 +21,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Builds player-facing help text for FinalTECH items in the Slimefun Guide.
+ * Builds compact, player-facing FinalTECH help text for the Slimefun Guide.
  *
- * <p>The original FinalTECH language files store most real documentation in
- * {@code items.<id>.info.<n>.lore}. English translations preserve the majority
- * of those sections, while a smaller set of items only had flavor text such as
- * "Good Things!" or "Fast Things!". This helper restores the useful original
- * Usage/Introduction/Mechanism text to the browse view and supplies verified
- * mechanics-based descriptions only where the original English help is absent.</p>
+ * <p>Older FinalTECH versions kept most documentation in item info sections
+ * named Usage, Introduction, Mechanism, and similar headings. Those sections
+ * are also registered as descriptive recipes, where dynamic placeholders have
+ * already been replaced with each item's live configured values. The browse
+ * view reuses that information instead of inventing a generic heading.</p>
  */
 public final class GuideItemLoreUtil {
     private static final int MAX_PURPOSE_LINES = 4;
@@ -34,11 +36,6 @@ public final class GuideItemLoreUtil {
     private static final Pattern STRUCTURAL_PLACEHOLDER = Pattern.compile("^(?:\\[\\s*]|\\{\\s*}|null|~)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern FLAVOR_ONLY = Pattern.compile("^(?:good|bad|fast) things!?$", Pattern.CASE_INSENSITIVE);
 
-    /**
-     * Source-backed help for items whose original English locale is missing,
-     * incomplete, or only contains flavor text. These descriptions were checked
-     * against the original zh-CN locale and/or the current item implementation.
-     */
     private static final Map<String, String> EXACT_FALLBACKS = Map.ofEntries(
             Map.entry("_FINALTECH_GEARWHEEL", "Crafting component used throughout FinalTECH machines and technology."),
             Map.entry("_FINALTECH_UNORDERED_DUST", "Unstable crafting material paired with Ordered Dust in advanced FinalTECH recipes and Matrix reactions."),
@@ -107,21 +104,16 @@ public final class GuideItemLoreUtil {
         LanguageManager languageManager = FinalTechChanged.getLanguageManager();
         String id = slimefunItem.getId();
 
-        // Explicit guide text always wins when present.
         List<String> explicit = getStableLines(languageManager, "items", id, "guide-lore");
         if (!explicit.isEmpty()) {
             return explicit;
         }
 
-        // Prefer the lore that is actually attached to the registered item.
-        // This preserves descriptions assembled dynamically by item code.
         List<String> itemLore = deriveFromItemLore(slimefunItem.getItem());
         if (!itemLore.isEmpty()) {
             return itemLore;
         }
 
-        // Some item classes expose already-resolved runtime information. Prefer
-        // it because placeholders such as {1} have already been filled in.
         if (slimefunItem instanceof ShowInfoItem showInfoItem) {
             List<String> runtimeInfo = deriveFromResolvedInfo(showInfoItem.getInfos());
             if (!runtimeInfo.isEmpty()) {
@@ -129,23 +121,27 @@ public final class GuideItemLoreUtil {
             }
         }
 
-        // A few legacy consumables only resolve their {1}/{2}/{3} values while
-        // registering descriptive recipes. Read those live fields so the guide
-        // shows the server's configured values instead of a generic fallback.
+        // These cards have important costs/side effects that are spread across
+        // multiple legacy info sections, so present them as one concise summary.
         List<String> dynamicPurpose = deriveKnownDynamicPurpose(slimefunItem);
         if (!dynamicPurpose.isEmpty()) {
             return dynamicPurpose;
         }
 
-        // The original FinalTECH locales keep the real manual under nested
-        // info sections. Surface those before considering decorative lore.
+        // RecipeUtil resolves {1}, {2}, etc. before registering descriptive
+        // recipe books. Reusing those books makes generator ranges, machine
+        // rates, capacitor capacities, tool distances and similar values show
+        // the actual server configuration instead of unresolved placeholders.
+        List<String> registeredInfo = deriveFromRegisteredRecipeInfo(slimefunItem);
+        if (!registeredInfo.isEmpty()) {
+            return registeredInfo;
+        }
+
         List<String> configuredInfo = deriveFromConfiguredInfo(languageManager, id);
         if (!configuredInfo.isEmpty()) {
             return configuredInfo;
         }
 
-        // Some simple items have useful ordinary lore. Reject old one-line
-        // flavor placeholders so they never replace an actual explanation.
         explicit = getStableLines(languageManager, "items", id, "lore");
         if (!explicit.isEmpty()) {
             return explicit;
@@ -162,6 +158,76 @@ public final class GuideItemLoreUtil {
         }
 
         List<String> source = meta.getLore();
+        if (source == null || source.isEmpty()) {
+            return List.of();
+        }
+
+        return stableWrappedLines(source);
+    }
+
+    @Nonnull
+    private static List<String> deriveFromRegisteredRecipeInfo(@Nonnull SlimefunItem slimefunItem) {
+        if (!(slimefunItem instanceof RecipeItem recipeItem)) {
+            return List.of();
+        }
+
+        List<String> purpose = List.of();
+        List<String> limit = List.of();
+
+        try {
+            for (MachineRecipe recipe : recipeItem.getMachineRecipes()) {
+                ItemStack[] inputs = recipe.getInput();
+                if (inputs.length == 0 || inputs[0] == null || inputs[0].getType() != Material.BOOK) {
+                    continue;
+                }
+
+                ItemMeta meta = inputs[0].getItemMeta();
+                if (meta == null || !meta.hasDisplayName() || !meta.hasLore()) {
+                    continue;
+                }
+
+                String heading = ChatColor.stripColor(meta.getDisplayName());
+                if (heading == null || heading.isBlank()) {
+                    continue;
+                }
+
+                List<String> lines = stableWrappedLines(meta.getLore());
+                if (lines.isEmpty()) {
+                    continue;
+                }
+
+                String normalizedHeading = heading.trim().toLowerCase(Locale.ROOT);
+                if (purpose.isEmpty() && isPurposeHeading(normalizedHeading)) {
+                    purpose = lines;
+                } else if (limit.isEmpty() && isLimitHeading(normalizedHeading)) {
+                    limit = lines;
+                }
+            }
+        } catch (RuntimeException ignored) {
+            return List.of();
+        }
+
+        if (purpose.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> result = new ArrayList<>(MAX_PURPOSE_LINES);
+        appendUntilLimit(result, purpose);
+        appendUntilLimit(result, limit);
+        return result;
+    }
+
+    private static void appendUntilLimit(@Nonnull List<String> target, @Nonnull List<String> source) {
+        for (String line : source) {
+            if (target.size() >= MAX_PURPOSE_LINES) {
+                return;
+            }
+            target.add(line);
+        }
+    }
+
+    @Nonnull
+    private static List<String> stableWrappedLines(List<String> source) {
         if (source == null || source.isEmpty()) {
             return List.of();
         }
@@ -407,6 +473,13 @@ public final class GuideItemLoreUtil {
                 || normalizedHeading.contains("description")
                 || normalizedHeading.contains("effect")
                 || normalizedHeading.contains("operation");
+    }
+
+    private static boolean isLimitHeading(@Nonnull String normalizedHeading) {
+        return normalizedHeading.contains("limit")
+                || normalizedHeading.contains("cost")
+                || normalizedHeading.contains("requirement")
+                || normalizedHeading.contains("condition");
     }
 
     @Nonnull
