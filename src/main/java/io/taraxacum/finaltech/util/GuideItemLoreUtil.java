@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -106,15 +107,14 @@ public final class GuideItemLoreUtil {
         LanguageManager languageManager = FinalTechChanged.getLanguageManager();
         String id = slimefunItem.getId();
 
-        // Explicit English guide text always wins when present.
+        // Explicit guide text always wins when present.
         List<String> explicit = getStableLines(languageManager, "items", id, "guide-lore");
         if (!explicit.isEmpty()) {
             return explicit;
         }
 
         // Prefer the lore that is actually attached to the registered item.
-        // This is the closest match to what a player sees when holding the item,
-        // and it also preserves descriptions assembled dynamically by item code.
+        // This preserves descriptions assembled dynamically by item code.
         List<String> itemLore = deriveFromItemLore(slimefunItem.getItem());
         if (!itemLore.isEmpty()) {
             return itemLore;
@@ -129,6 +129,14 @@ public final class GuideItemLoreUtil {
             }
         }
 
+        // A few legacy consumables only resolve their {1}/{2}/{3} values while
+        // registering descriptive recipes. Read those live fields so the guide
+        // shows the server's configured values instead of a generic fallback.
+        List<String> dynamicPurpose = deriveKnownDynamicPurpose(slimefunItem);
+        if (!dynamicPurpose.isEmpty()) {
+            return dynamicPurpose;
+        }
+
         // The original FinalTECH locales keep the real manual under nested
         // info sections. Surface those before considering decorative lore.
         List<String> configuredInfo = deriveFromConfiguredInfo(languageManager, id);
@@ -136,7 +144,7 @@ public final class GuideItemLoreUtil {
             return configuredInfo;
         }
 
-        // Some simple items have useful ordinary lore. Reject the old one-line
+        // Some simple items have useful ordinary lore. Reject old one-line
         // flavor placeholders so they never replace an actual explanation.
         explicit = getStableLines(languageManager, "items", id, "lore");
         if (!explicit.isEmpty()) {
@@ -166,6 +174,154 @@ public final class GuideItemLoreUtil {
             }
         }
         return result;
+    }
+
+    @Nonnull
+    private static List<String> deriveKnownDynamicPurpose(@Nonnull SlimefunItem slimefunItem) {
+        String id = slimefunItem.getId();
+
+        if (id.endsWith("MATRIX_MACHINE_ACCELERATE_CARD")) {
+            Number times = readNumberField(slimefunItem, "times");
+            if (times != null) {
+                return wrapGray("Reusable card. Each card in the held stack advances a supported machine by "
+                        + formatNumber(times.doubleValue())
+                        + " cycle(s). Each use costs 1 health point (half a heart).");
+            }
+        }
+
+        if (id.endsWith("MATRIX_MACHINE_CHARGE_CARD")) {
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (energy != null) {
+                return wrapGray("Reusable; held stack scales charge: " + formatEnergyCharge(energy.doubleValue())
+                        + " per card. Percentage is ignored for capacitors/generators. Costs 1 XP point per use.");
+            }
+        }
+
+        if (id.endsWith("MATRIX_MACHINE_ACTIVATE_CARD")) {
+            Number times = readNumberField(slimefunItem, "times");
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (times != null && energy != null) {
+                return wrapGray("Consumes one card; using it wipes all XP and kills the player. It then runs "
+                        + formatNumber(times.doubleValue()) + " machine cycles, charging before each by "
+                        + formatEnergyCharge(energy.doubleValue()) + ".");
+            }
+        }
+
+        if (id.endsWith("MACHINE_ACCELERATE_CARD_L1")
+                || id.endsWith("MACHINE_ACCELERATE_CARD_L2")
+                || id.endsWith("MACHINE_ACCELERATE_CARD_L3")) {
+            Number times = readNumberField(slimefunItem, "times");
+            if (times == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Immediately advances a supported machine by ")
+                    .append(formatNumber(times.doubleValue())).append(" cycles. Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append(" and costs 1 health point (half a heart)");
+            } else if (id.endsWith("_L3")) {
+                description.append(" and costs 10% of maximum health");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.endsWith("MACHINE_CHARGE_CARD_L1")
+                || id.endsWith("MACHINE_CHARGE_CARD_L2")
+                || id.endsWith("MACHINE_CHARGE_CARD_L3")) {
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (energy == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Adds ")
+                    .append(formatEnergyCharge(energy.doubleValue()))
+                    .append(" to a supported energy machine. Percentage is ignored for capacitors/generators. Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append(" and costs 1 XP point");
+            } else if (id.endsWith("_L3")) {
+                description.append(" and costs 1 XP level");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.endsWith("MACHINE_ACTIVATE_CARD_L1")
+                || id.endsWith("MACHINE_ACTIVATE_CARD_L2")
+                || id.endsWith("MACHINE_ACTIVATE_CARD_L3")) {
+            Number times = readNumberField(slimefunItem, "times");
+            Number energy = readNumberField(slimefunItem, "energy");
+            if (times == null || energy == null) {
+                return List.of();
+            }
+
+            StringBuilder description = new StringBuilder("Charges and advances a supported machine ")
+                    .append(formatNumber(times.doubleValue())).append(" cycles. Each cycle adds ")
+                    .append(formatEnergyCharge(energy.doubleValue()))
+                    .append(". Consumes one card");
+            if (id.endsWith("_L2")) {
+                description.append("; costs 1 health point and 1 XP point");
+            } else if (id.endsWith("_L3")) {
+                description.append("; costs 10% max health and 1 XP level");
+            }
+            description.append('.');
+            return wrapGray(description.toString());
+        }
+
+        if (id.startsWith("_FINALTECH_ENERGY_CARD_")) {
+            Object energy = readField(slimefunItem, "energy");
+            if (energy instanceof String energyString && !energyString.isBlank()) {
+                return wrapGray("Consumable energy card that deposits " + energyString
+                        + " J into a supported chargeable machine.");
+            }
+        }
+
+        return List.of();
+    }
+
+    private static Object readField(@Nonnull Object instance, @Nonnull String fieldName) {
+        Class<?> type = instance.getClass();
+        while (type != null) {
+            try {
+                Field field = type.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                return field.get(instance);
+            } catch (NoSuchFieldException exception) {
+                type = type.getSuperclass();
+            } catch (ReflectiveOperationException | SecurityException exception) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static Number readNumberField(@Nonnull Object instance, @Nonnull String fieldName) {
+        Object value = readField(instance, fieldName);
+        return value instanceof Number number ? number : null;
+    }
+
+    @Nonnull
+    private static String formatEnergyCharge(double energy) {
+        double whole = Math.floor(energy);
+        double percentage = (energy - whole) * 100.0D;
+        StringBuilder result = new StringBuilder(formatNumber(whole)).append(" J");
+        if (Math.abs(percentage) > 0.0001D) {
+            result.append(" + ").append(formatNumber(percentage)).append("% capacity");
+        }
+        return result.toString();
+    }
+
+    @Nonnull
+    private static String formatNumber(double value) {
+        if (Math.abs(value - Math.rint(value)) < 0.0000001D) {
+            return String.format(Locale.ROOT, "%,.0f", value);
+        }
+
+        String formatted = String.format(Locale.ROOT, "%,.2f", value);
+        while (formatted.endsWith("0")) {
+            formatted = formatted.substring(0, formatted.length() - 1);
+        }
+        return formatted.endsWith(".") ? formatted.substring(0, formatted.length() - 1) : formatted;
     }
 
     @Nonnull
@@ -233,8 +389,6 @@ public final class GuideItemLoreUtil {
                 return lines;
             }
 
-            // If the original item has no Usage/Introduction/Mechanism section,
-            // its first descriptive section is still preferable to a guess.
             if (firstUsefulSection.isEmpty()) {
                 firstUsefulSection = lines;
             }
