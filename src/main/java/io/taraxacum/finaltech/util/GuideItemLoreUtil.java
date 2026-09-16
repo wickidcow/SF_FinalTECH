@@ -113,6 +113,14 @@ public final class GuideItemLoreUtil {
             return explicit;
         }
 
+        // Prefer the lore that is actually attached to the registered item.
+        // This is the closest match to what a player sees when holding the item,
+        // and it also preserves descriptions assembled dynamically by item code.
+        List<String> itemLore = deriveFromItemLore(slimefunItem.getItem());
+        if (!itemLore.isEmpty()) {
+            return itemLore;
+        }
+
         // Some item classes expose already-resolved runtime information. Prefer
         // it because placeholders such as {1} have already been filled in.
         if (slimefunItem instanceof ShowInfoItem showInfoItem) {
@@ -137,6 +145,28 @@ public final class GuideItemLoreUtil {
         }
 
         return wrapGray(fallbackPurpose(id, slimefunItem.getItemName()));
+    }
+
+    @Nonnull
+    private static List<String> deriveFromItemLore(@Nonnull ItemStack itemStack) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null || !meta.hasLore()) {
+            return List.of();
+        }
+
+        List<String> source = meta.getLore();
+        if (source == null || source.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String line : source) {
+            appendStableWrapped(result, line, null);
+            if (result.size() >= MAX_PURPOSE_LINES) {
+                break;
+            }
+        }
+        return result;
     }
 
     @Nonnull
@@ -355,7 +385,7 @@ public final class GuideItemLoreUtil {
                     + " recipes using FinalTECH's high-throughput machine system; supports Quantity Modules and recipe locking.";
         }
         if (id.startsWith("_FINALTECH_MATRIX_")) {
-            return "End-game Matrix-tier technology for advanced FinalTECH automation; open the item page for its specific mechanism.";
+            return "End-game Matrix-tier technology used by FinalTECH's highest-tier crafting, storage, and automation systems.";
         }
         if (id.endsWith("_CAPACITOR")) {
             return "Stores energy for the Slimefun/FinalTECH power network.";
@@ -376,7 +406,11 @@ public final class GuideItemLoreUtil {
             return "Upgrade component used by compatible FinalTECH machines to change efficiency or capacity.";
         }
 
-        return "FinalTECH progression or automation item. Open its item page for recipes and detailed mechanics.";
+        String plainName = ChatColor.stripColor(itemName);
+        if (plainName == null || plainName.isBlank()) {
+            plainName = "This item";
+        }
+        return plainName + " is used by FinalTECH's crafting, progression, or automation systems.";
     }
 
     @Nonnull
