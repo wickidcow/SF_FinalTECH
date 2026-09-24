@@ -47,7 +47,13 @@ public class VoidCurse extends AbstractEffect implements StartTask<LivingEntity>
                 livingEntity.setHealth(this.health);
             } else {
                 this.getPlugin().getServer().getScheduler().runTask(this.getPlugin(), () -> {
-                    livingEntity.kill(DamageSource.builder(DamageType.OUT_OF_WORLD).build());
+                    livingEntity.damage(
+                            Math.max(livingEntity.getHealth() + livingEntity.getAbsorptionAmount(), 1.0D),
+                            DamageSource.builder(DamageType.OUT_OF_WORLD).build()
+                    );
+                    if (!livingEntity.isDead() && livingEntity.getHealth() > 0) {
+                        livingEntity.setHealth(0);
+                    }
                 });
             }
         }
