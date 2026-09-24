@@ -4,6 +4,9 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.items.nms.ItemNameAdap
 import io.github.thebusybiscuit.slimefun4.utils.itemstack.ItemStackWrapper;
 import io.taraxacum.libs.plugin.dto.ItemAmountWrapper;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -24,6 +27,8 @@ import java.util.*;
  * @author Final_ROOT
  */
 public final class ItemStackUtil {
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
+
     public static final ItemStack AIR = new ItemStack(Material.AIR);
     public static final ItemNameAdapter itemNameAdapter = ItemNameAdapter.get();
     @Nonnull
@@ -607,10 +612,13 @@ public final class ItemStackUtil {
         if (item.hasItemMeta()) {
             ItemMeta itemMeta = item.getItemMeta();
             if (itemMeta.hasDisplayName()) {
-                return itemMeta.getDisplayName();
-            }
-            if (itemMeta.hasLocalizedName()) {
-                return itemMeta.getLocalizedName();
+                Component displayName = itemMeta.displayName();
+                if (displayName instanceof TranslatableComponent translatable) {
+                    return translatable.key();
+                }
+                if (displayName != null) {
+                    return LEGACY.serialize(displayName);
+                }
             }
         } else {
             try {
@@ -628,7 +636,7 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(itemName);
+        itemMeta.displayName(LEGACY.deserialize(itemName));
         item.setItemMeta(itemMeta);
     }
 
