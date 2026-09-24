@@ -1,13 +1,13 @@
 package io.taraxacum.finaltech.core.task.effect;
 
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.LocationUtil;
 import io.taraxacum.libs.plugin.task.StartTask;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import javax.annotation.Nonnull;
 
@@ -47,8 +47,7 @@ public class VoidCurse extends AbstractEffect implements StartTask<LivingEntity>
                 livingEntity.setHealth(this.health);
             } else {
                 this.getPlugin().getServer().getScheduler().runTask(this.getPlugin(), () -> {
-                    livingEntity.setLastDamageCause(new EntityDamageEvent(livingEntity, EntityDamageEvent.DamageCause.VOID, livingEntity.getHealth()));
-                    livingEntity.setHealth(0);
+                    livingEntity.kill(DamageSource.builder(DamageType.OUT_OF_WORLD).build());
                 });
             }
         }
