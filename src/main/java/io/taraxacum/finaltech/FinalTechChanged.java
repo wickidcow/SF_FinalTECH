@@ -12,7 +12,6 @@ import io.taraxacum.libs.plugin.dto.CustomLogger;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bukkit.Bukkit;
@@ -478,14 +477,16 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
      */
     private void saveBlockStorageCompat() {
         try {
+            Class<?> blockStorageClass = Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage");
+
             try {
-                BlockStorage.class.getMethod("saveChunks").invoke(null);
+                blockStorageClass.getMethod("saveChunks").invoke(null);
             } catch (NoSuchMethodException ignored) {
                 // Modern storage controller: no explicit global flush hook.
             }
 
             for (World world : Bukkit.getWorlds()) {
-                Object storage = BlockStorage.class.getMethod("getStorage", World.class).invoke(null, world);
+                Object storage = blockStorageClass.getMethod("getStorage", World.class).invoke(null, world);
                 if (storage == null) {
                     continue;
                 }
@@ -498,11 +499,11 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             }
 
             try {
-                BlockStorage.class.getMethod("saveChunks").invoke(null);
+                blockStorageClass.getMethod("saveChunks").invoke(null);
             } catch (NoSuchMethodException ignored) {
                 // Modern storage controller: no explicit global flush hook.
             }
-      } catch (ReflectiveOperationException | LinkageError e) {
+        } catch (ReflectiveOperationException | LinkageError e) {
             FinalTechChanged.logger().warning("Could not invoke legacy BlockStorage save hooks: " + e.getMessage());
         }
     }
