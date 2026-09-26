@@ -2,7 +2,6 @@ package io.taraxacum.finaltech.core.command;
 
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.unusable.StorageCard;
 import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
@@ -30,7 +29,7 @@ public class TransformToStorageItem implements CommandExecutor {
             FinalTechChanged.logger().info("Not support for console");
             return false;
         }
-        ItemStack item = player.getItemInHand();
+        ItemStack item = player.getInventory().getItemInMainHand();
         if (ItemStackUtil.isItemNull(item) || !FinalTechItems.STORAGE_CARD.isTargetItem(item)) {
             return false;
         }
@@ -39,7 +38,7 @@ public class TransformToStorageItem implements CommandExecutor {
             return false;
         }
         ItemStack storageCardItem = FinalTechItems.STORAGE_CARD.getValidItem(item, amount);
-        player.setItemInHand(storageCardItem);
+        player.getInventory().setItemInMainHand(storageCardItem);
         return true;
     }
 }
