@@ -7,7 +7,6 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.group.RecipeItemGroup;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import org.bukkit.command.Command;
@@ -31,7 +30,7 @@ public class ShowItemInfo implements CommandExecutor {
     @Override
     public boolean onCommand(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] strings) {
         if (commandSender instanceof Player player) {
-            ItemStack item = player.getItemInHand();
+            ItemStack item = player.getInventory().getItemInMainHand();
             SlimefunItem slimefunItem = SlimefunItem.getByItem(item);
             if (slimefunItem == null) {
                 player.sendRawMessage(FinalTechChanged.getLanguageString("message", "invalid-item"));
