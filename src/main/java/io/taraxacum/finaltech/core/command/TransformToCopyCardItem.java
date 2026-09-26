@@ -2,7 +2,6 @@ package io.taraxacum.finaltech.core.command;
 
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.unusable.CopyCard;
 import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
@@ -24,7 +23,7 @@ public class TransformToCopyCardItem implements CommandExecutor {
     @Override
     public boolean onCommand(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] strings) {
         if (commandSender instanceof Player player) {
-            ItemStack item = player.getItemInHand();
+            ItemStack item = player.getInventory().getItemInMainHand();
             if (ItemStackUtil.isItemNull(item) || !FinalTechItems.COPY_CARD.isTargetItem(item)) {
                 return false;
             }
@@ -34,7 +33,7 @@ public class TransformToCopyCardItem implements CommandExecutor {
                 return false;
             }
             ItemStack copyCardItem = FinalTechItems.COPY_CARD.getValidItem(item, amount);
-            player.setItemInHand(copyCardItem);
+            player.getInventory().setItemInMainHand(copyCardItem);
             return true;
         } else {
             FinalTechChanged.logger().info("Not support for console");
