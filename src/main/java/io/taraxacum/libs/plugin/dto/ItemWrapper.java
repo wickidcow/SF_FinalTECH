@@ -4,6 +4,7 @@ import io.github.thebusybiscuit.slimefun4.utils.itemstack.ItemStackWrapper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
@@ -127,9 +128,14 @@ public class ItemWrapper {
     public int hashCode() {
         int hash = 31 + this.itemStack.getType().hashCode();
         hash = hash * 31 + this.itemStack.getAmount();
-        hash = hash * 31 + (this.itemStack.getDurability() & 0xffff);
+        hash = hash * 31 + getDamageValue();
         hash = hash * 31 + (this.itemMeta != null ? (this.itemMeta.hashCode()) : 0);
         return hash;
+    }
+
+    protected int getDamageValue() {
+        ItemMeta stackMeta = this.itemStack.hasItemMeta() ? this.itemStack.getItemMeta() : null;
+        return stackMeta instanceof Damageable damageable ? damageable.getDamage() : 0;
     }
 
     @Override

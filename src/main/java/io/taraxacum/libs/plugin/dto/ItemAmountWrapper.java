@@ -122,7 +122,7 @@ public class ItemAmountWrapper extends ItemWrapper {
     public int hashCode() {
         int hash = 31 + this.getItemStack().getType().hashCode();
         hash = hash * 31 + this.amount;
-        hash = hash * 31 + (this.getItemStack().getDurability() & 0xffff);
+        hash = hash * 31 + getDamageValue();
         hash = hash * 31 + (this.getItemMeta() != null ? (this.getItemMeta().hashCode()) : 0);
         return hash;
     }
