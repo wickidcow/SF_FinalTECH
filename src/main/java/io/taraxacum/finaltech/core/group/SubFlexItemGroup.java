@@ -17,6 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.GuideItemLoreUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
@@ -270,7 +271,7 @@ public class SubFlexItemGroup extends FlexItemGroup {
                                 "",
                                 "§a> Click to unlock",
                                 "",
-                                "§7Cost: §b" + research.getLevelCost() + " Experience Levels");
+                                "§7Cost: §b" + LegacySlimefunApiCompat.getResearchLevelCost(research) + " Experience Levels");
                         chestMenu.addItem(MAIN_CONTENT_L[i][j], ItemStackUtil.cleanItem(icon));
                         chestMenu.addMenuClickHandler(MAIN_CONTENT_L[i][j], (p, slot, item, action) -> {
                             PlayerPreResearchEvent event = new PlayerPreResearchEvent(player, research, slimefunItem);

@@ -10,6 +10,7 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
@@ -172,7 +173,7 @@ public class CraftItemGroup extends FlexItemGroup {
                             "",
                             "§a> Click to unlock",
                             "",
-                            "§7Cost: §b" + research.getLevelCost() + " Experience Levels");
+                            "§7Cost: §b" + LegacySlimefunApiCompat.getResearchLevelCost(research) + " Experience Levels");
                     chestMenu.addItem(MAIN_CONTENT[i], ItemStackUtil.cleanItem(icon));
                     chestMenu.addMenuClickHandler(MAIN_CONTENT[i], (p, slot, item, action) -> {
                         PlayerPreResearchEvent event = new PlayerPreResearchEvent(player, research, slimefunItem);
