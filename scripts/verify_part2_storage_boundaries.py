@@ -126,6 +126,12 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/machine/ItemDismantleTableMenu.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/AbstractExpandedElectricCapacitor.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/advanced/AbstractAdvanceMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/basic/AbstractBasicMachine.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -405,6 +411,56 @@ for source, name in (
     (equivalent_exchange, "EquivalentExchangeTable"),
     (item_dismantle, "ItemDismantleTable"),
 ):
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
+    )
+
+expanded_capacitor = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/AbstractExpandedElectricCapacitor.java"
+)
+advanced_machine = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/advanced/AbstractAdvanceMachine.java"
+)
+basic_machine = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/basic/AbstractBasicMachine.java"
+)
+
+require(
+    'protected final String key = "s";' in expanded_capacitor,
+    "AbstractExpandedElectricCapacitor persisted stack key must remain s",
+)
+for expected in (
+    "LegacyBlockDataCompat.setValue(blockPlaceEvent.getBlock().getLocation(), AbstractExpandedElectricCapacitor.this.key, StringNumberUtil.ZERO)",
+    "LegacyBlockDataCompat.getMenu(block.getLocation())",
+    "LegacyBlockDataCompat.setValue(location, this.key, String.valueOf(stack))",
+):
+    require(expected in expanded_capacitor, f"AbstractExpandedElectricCapacitor lost storage behavior: {expected}")
+require(
+    "@Nonnull Config config" in expanded_capacitor,
+    "AbstractExpandedElectricCapacitor must retain the RC-37 ticker Config signature",
+)
+
+for source, name in (
+    (advanced_machine, "AbstractAdvanceMachine"),
+    (basic_machine, "AbstractBasicMachine"),
+):
+    require(
+        "LegacyBlockDataCompat.getMenu(block.getLocation())" in source,
+        f"{name} must use the compatibility menu boundary",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(blockMenu.getLocation(), MachineRecipeLock.KEY, String.valueOf(craft.getOffset()))" in source,
+        f"{name} must preserve recipe-lock persisted writes",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(blockMenu.getLocation(), this.offsetKey, String.valueOf(craft.getOffset()))" in source,
+        f"{name} must preserve recipe-offset writes",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(blockMenu.getLocation(), this.offsetKey, null)" in source,
+        f"{name} must preserve recipe-offset clearing",
+    )
     require(
         "@Nonnull Config config" in source,
         f"{name} must retain the RC-37 ticker Config signature",
