@@ -1,5 +1,7 @@
 package io.taraxacum.finaltech.core.item.usable;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -18,6 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class MagicHypnotic extends UsableSlimefunItem implements RecipeItem {
     private final int interval = ConfigUtil.getOrDefaultItemSetting(500, this, "interval");
@@ -38,8 +41,10 @@ public class MagicHypnotic extends UsableSlimefunItem implements RecipeItem {
         playerRightClickEvent.cancel();
 
         Player player = playerRightClickEvent.getPlayer();
-        PotionEffectType[] allPotionEffectType = PotionEffectType.values();
-        PotionEffectType randomPotionEffectType = allPotionEffectType[FinalTechChanged.getRandom().nextInt(allPotionEffectType.length)];
+        List<PotionEffectType> allPotionEffectTypes =
+                RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).stream().toList();
+        PotionEffectType randomPotionEffectType =
+                allPotionEffectTypes.get(FinalTechChanged.getRandom().nextInt(allPotionEffectTypes.size()));
         boolean hasPotionEffect = false;
         int time = 0;
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
@@ -55,7 +60,7 @@ public class MagicHypnotic extends UsableSlimefunItem implements RecipeItem {
             player.addPotionEffect(new PotionEffect(randomPotionEffectType, player.getLevel() + 1, 0));
         }
 
-        if (FinalTechChanged.getRandom().nextDouble() > (double) player.getActivePotionEffects().size() / PotionEffectType.values().length) {
+        if (FinalTechChanged.getRandom().nextDouble() > (double) player.getActivePotionEffects().size() / (double) allPotionEffectTypes.size()) {
             TaskTicker.applyOrAddTo(new VoidCurse(time, 1), player, LivingEntity.class);
         }
 

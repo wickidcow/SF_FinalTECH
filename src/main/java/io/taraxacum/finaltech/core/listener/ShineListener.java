@@ -3,6 +3,7 @@ package io.taraxacum.finaltech.core.listener;
 import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
+import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -68,7 +69,9 @@ public class ShineListener implements Listener {
 
         if (inCurse || inLowPlace) {
             if (player.getLastDamageCause() != null && EntityDamageEvent.DamageCause.VOID.equals(player.getLastDamageCause().getCause())) {
-                playerDeathEvent.setDeathMessage(FinalTechChanged.getLanguageString("effect", "VOID_CURSE", "message", "death").replace("{1}", player.getName()));
+                playerDeathEvent.deathMessage(LegacyTextCompat.fromLegacy(
+                        FinalTechChanged.getLanguageString("effect", "VOID_CURSE", "message", "death")
+                                .replace("{1}", player.getName())));
             }
         }
     }

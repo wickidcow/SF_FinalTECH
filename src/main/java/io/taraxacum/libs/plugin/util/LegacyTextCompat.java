@@ -27,6 +27,11 @@ public final class LegacyTextCompat {
     private LegacyTextCompat() {
     }
 
+    @Nonnull
+    public static Component fromLegacy(@Nonnull String value) {
+        return LEGACY.deserialize(value);
+    }
+
     @Nullable
     public static String getDisplayName(@Nonnull ItemMeta itemMeta) {
         Component name = itemMeta.displayName();
