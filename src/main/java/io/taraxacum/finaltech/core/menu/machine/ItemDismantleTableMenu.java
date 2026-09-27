@@ -14,6 +14,7 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
@@ -133,9 +134,9 @@ public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
                     FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()));
 
             if (StringNumberUtil.compare(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()) >= 0) {
-                item.setType(Material.GREEN_STAINED_GLASS_PANE);
+                LegacyItemStackCompat.setType(item, Material.GREEN_STAINED_GLASS_PANE);
             } else {
-                item.setType(Material.RED_STAINED_GLASS_PANE);
+                LegacyItemStackCompat.setType(item, Material.RED_STAINED_GLASS_PANE);
             }
         }
 

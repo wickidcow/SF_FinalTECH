@@ -13,6 +13,7 @@ import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.taraxacum.libs.plugin.util.StringItemUtil;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -765,7 +766,7 @@ public class CardOperationPortMenu extends AbstractManualMachineMenu {
         boolean canCraft(@Nullable ItemStack item1, @Nullable ItemStack item2);
 
         default void doUpdateIcon(@Nonnull ItemStack iconItem) {
-            iconItem.setType(Material.GREEN_STAINED_GLASS_PANE);
+            LegacyItemStackCompat.setType(iconItem, Material.GREEN_STAINED_GLASS_PANE);
             ItemStackUtil.setItemName(iconItem, this.getInfoName());
             ItemStackUtil.setLore(iconItem, this.getInfoLore());
         }

@@ -21,6 +21,7 @@ import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.plugin.util.StringItemUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
@@ -167,7 +168,7 @@ public abstract class AbstractCubeElectricGenerator extends AbstractCubeMachine 
         MenuUpdater.super.updateMenu(blockMenu, slot, slimefunItem, text);
         ItemStack itemStack = blockMenu.getItemInSlot(slot);
         if (text.length > 0) {
-            itemStack.setType(StringNumberUtil.ZERO.equals(text[0]) ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE);
+            LegacyItemStackCompat.setType(itemStack, StringNumberUtil.ZERO.equals(text[0]) ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE);
         }
     }
 
