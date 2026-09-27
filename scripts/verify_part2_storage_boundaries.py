@@ -142,6 +142,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/manual/ManualCraftMachineMenu.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -549,6 +553,41 @@ require(
 require(
     "add(l, KEY, get(l, KEY_L[finalSlotP]))" in manual_craft_menu,
     "ManualCraftMachineMenu must preserve left-slot recipe selection semantics",
+)
+
+position_info = read(
+    "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java"
+)
+slot_search_line = read(
+    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java"
+)
+
+require(
+    position_info.count("LegacyBlockDataCompat.getValue(") == 6
+    and position_info.count("LegacyBlockDataCompat.setValue(") == 1,
+    "PositionInfo must preserve all cargo position-map reads and its serialized write through the compatibility boundary",
+)
+require(
+    "BlockStorageHelper.ID_CARGO" in position_info,
+    "PositionInfo must retain the existing cargo helper id and serialized cargo state contract",
+)
+require(
+    "BlockStorage." not in position_info,
+    "PositionInfo must not reintroduce direct deprecated BlockStorage access",
+)
+
+require(
+    slot_search_line.count("LegacyBlockDataCompat.getValue(") == 6
+    and slot_search_line.count("LegacyBlockDataCompat.setValue(") == 1,
+    "SlotSearchLine must preserve all slot-search map reads and its serialized write through the compatibility boundary",
+)
+require(
+    "BlockStorageHelper.ID_CARGO" in slot_search_line,
+    "SlotSearchLine must retain the existing cargo helper id and serialized cargo state contract",
+)
+require(
+    "BlockStorage." not in slot_search_line,
+    "SlotSearchLine must not reintroduce direct deprecated BlockStorage access",
 )
 
 for marker in (
