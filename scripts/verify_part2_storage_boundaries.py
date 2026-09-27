@@ -164,6 +164,12 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java":
         "LegacySlimefunApiCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/AbstractMachineMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireCapacitor.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireResistance.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -821,6 +827,64 @@ require(
     "BlockStorage." not in altered_energy_net,
     "AlteredEnergyNet must not reintroduce direct deprecated BlockStorage access",
 )
+
+abstract_machine_menu = read(
+    "src/main/java/io/taraxacum/finaltech/core/menu/AbstractMachineMenu.java"
+)
+variable_wire_capacitor = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireCapacitor.java"
+)
+variable_wire_resistance = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireResistance.java"
+)
+
+require(
+    "LegacyBlockDataCompat.setSlimefunId(location, this.slimefunItem.getId())" in abstract_machine_menu,
+    "AbstractMachineMenu data-loss repair must recreate the Slimefun identity through the dedicated identity boundary",
+)
+require(
+    "ConstantTableUtil.CONFIG_ID" not in abstract_machine_menu
+    and "BlockStorage." not in abstract_machine_menu,
+    "AbstractMachineMenu must not treat Slimefun id as ordinary persisted data",
+)
+
+for source, name, target_id in (
+    (
+        variable_wire_capacitor,
+        "VariableWireCapacitor",
+        "FinalTechItemStacks.VARIABLE_WIRE_RESISTANCE.getItemId()",
+    ),
+    (
+        variable_wire_resistance,
+        "VariableWireResistance",
+        "FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getItemId()",
+    ),
+):
+    require(
+        "LegacyBlockDataCompat.removeBlock(location)" in source,
+        f"{name} must preserve its remove-before-recreate identity swap",
+    )
+    require(
+        f"LegacyBlockDataCompat.setSlimefunId(location, {target_id})" in source,
+        f"{name} must recreate the target Slimefun identity through the dedicated boundary",
+    )
+    require(
+        f"{target_id}.equals(LegacyBlockDataCompat.getSlimefunId(location))" in source,
+        f"{name} must verify the recreated identity through getSlimefunId",
+    )
+    require(
+        "BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);" in source,
+        f"{name} must route status-menu access through the compatibility boundary",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
+    )
+    require(
+        "ConstantTableUtil.CONFIG_ID" not in source
+        and "BlockStorage." not in source,
+        f"{name} must not reintroduce generic or direct special-id storage calls",
+    )
 
 for marker in (
     'getMethod("getDatabaseManager")',

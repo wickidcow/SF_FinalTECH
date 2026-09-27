@@ -8,9 +8,8 @@ import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.helper.Icon;
 import io.taraxacum.finaltech.core.item.machine.AbstractMachine;
-import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.inventory.DirtyChestMenu;
@@ -71,7 +70,7 @@ public abstract class AbstractMachineMenu extends BlockMenuPreset {
                 FinalTechChanged.logger().warning("Data Loss Fix For " + FinalTechChanged.getInstance().getName() + ": location " + location + " seems loss its data. There should be " + this.slimefunItem.getId());
 
                 // TODO
-                BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, this.slimefunItem.getId());
+                LegacyBlockDataCompat.setSlimefunId(location, this.slimefunItem.getId());
                 FinalTechChanged.logger().info("Data Loss Fix For " + FinalTechChanged.getInstance().getName() + ": added location info to location: " + location);
             }
         }
