@@ -21,7 +21,6 @@ import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -72,8 +71,8 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
         ItemStack itemStack = blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_INPUT_SLOT[0]);
 
         if (ItemStackUtil.isItemNull(itemStack)) {
-            BlockStorage.addBlockInfo(location, keyItem, null);
-            BlockStorage.addBlockInfo(location, keyCount, "0");
+            LegacyTickerDataCompat.setValue(data, keyItem, null);
+            LegacyTickerDataCompat.setValue(data, keyCount, "0");
             if (blockMenu.hasViewer()) {
                 this.updateMenu(blockMenu, MatrixReactorMenu.STATUS_SLOT, this,
                         "0",
@@ -81,8 +80,8 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
             }
             return;
         } else if (!this.allowedItem(itemStack)) {
-            BlockStorage.addBlockInfo(location, keyItem, null);
-            BlockStorage.addBlockInfo(location, keyCount, "0");
+            LegacyTickerDataCompat.setValue(data, keyItem, null);
+            LegacyTickerDataCompat.setValue(data, keyCount, "0");
             if (blockMenu.hasViewer()) {
                 this.updateMenu(blockMenu, MatrixReactorMenu.STATUS_SLOT, this,
                         "0",
@@ -136,7 +135,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
         if (!match) {
             int count = LegacyTickerDataCompat.contains(data, keyCount) ? Integer.parseInt(LegacyTickerDataCompat.getString(data, keyCount)) : 0;
             count = count > 0 ? count - 1 : 0;
-            BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
+            LegacyTickerDataCompat.setValue(data, keyCount, String.valueOf(count));
         } else {
             orderedDustItemCount = amount;
             for (int slot : orderedDustItemSlots) {
@@ -161,7 +160,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
             }
 
             if (ItemStackUtil.isItemNull(stringItem) || !ItemStackUtil.isItemSimilar(itemStack, stringItem) || itemStack.getAmount() != stringItem.getAmount()) {
-                BlockStorage.addBlockInfo(location, keyItem, ItemStackUtil.itemStackToString(itemStack));
+                LegacyTickerDataCompat.setValue(data, keyItem, ItemStackUtil.itemStackToString(itemStack));
 
                 int count;
                 if (FinalTechItems.ITEM_PHONY.verifyItem(blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0]))) {
@@ -172,7 +171,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
                     count = FinalTechChanged.getRandom().nextBoolean() ? 1 : 0;
                 }
 
-                BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
+                LegacyTickerDataCompat.setValue(data, keyCount, String.valueOf(count));
             } else {
                 int count = LegacyTickerDataCompat.contains(data, keyCount) ? Integer.parseInt(LegacyTickerDataCompat.getString(data, keyCount)) : 0;
                 if (FinalTechItems.ITEM_PHONY.verifyItem(blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0])) && blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0]).getAmount() >= amount + count && amount + count <= ConstantTableUtil.ITEM_MAX_STACK) {
@@ -189,8 +188,8 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
                         ItemStack outputItem = ItemStackUtil.cloneItem(itemStack);
                         outputItem.setAmount(1);
                         blockMenu.replaceExistingItem(this.getOutputSlot()[0], outputItem);
-                        BlockStorage.addBlockInfo(location, keyItem, null);
-                        BlockStorage.addBlockInfo(location, keyCount, "0");
+                        LegacyTickerDataCompat.setValue(data, keyItem, null);
+                        LegacyTickerDataCompat.setValue(data, keyCount, "0");
                         if (blockMenu.hasViewer()) {
                             this.updateMenu(blockMenu, MatrixReactorMenu.STATUS_SLOT, this,
                                     "0",
@@ -199,8 +198,8 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
                         return;
                     } else if (existedItem.getAmount() < existedItem.getMaxStackSize() && ItemStackUtil.isItemSimilar(existedItem, itemStack)) {
                         existedItem.setAmount(existedItem.getAmount() + 1);
-                        BlockStorage.addBlockInfo(location, keyItem, null);
-                        BlockStorage.addBlockInfo(location, keyCount, "0");
+                        LegacyTickerDataCompat.setValue(data, keyItem, null);
+                        LegacyTickerDataCompat.setValue(data, keyCount, "0");
                         if (blockMenu.hasViewer()) {
                             this.updateMenu(blockMenu, MatrixReactorMenu.STATUS_SLOT, this,
                                     "0",
@@ -212,7 +211,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
                 }
 
                 count = Math.max(count, 0);
-                BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
+                LegacyTickerDataCompat.setValue(data, keyCount, String.valueOf(count));
             }
         }
 
