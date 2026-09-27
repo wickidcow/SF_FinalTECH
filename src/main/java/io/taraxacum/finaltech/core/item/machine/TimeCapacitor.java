@@ -19,6 +19,7 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -62,7 +63,7 @@ public class TimeCapacitor extends AbstractTickerDataMachine implements EnergyNe
     protected void tickWithData(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data) {
         Location location = block.getLocation();
         World world = location.getWorld();
-        int charge = this.getCharge(location);
+        int charge = LegacySlimefunApiCompat.getCharge(this, location);
 
         if (world != null) {
             long time = world.getTime() / this.interval;
@@ -74,7 +75,7 @@ public class TimeCapacitor extends AbstractTickerDataMachine implements EnergyNe
         }
 
         charge = charge > this.capacity ? 0 : charge;
-        this.setCharge(location, charge);
+        LegacySlimefunApiCompat.setCharge(this, location, charge);
 
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
         if (blockMenu.hasViewer()) {
