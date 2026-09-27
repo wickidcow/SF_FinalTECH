@@ -25,8 +25,8 @@ import io.taraxacum.libs.plugin.dto.InvWithSlots;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.AdvancedCraft;
 import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
@@ -40,7 +40,7 @@ import java.util.List;
  * @author Final_ROOT
  * @since 2.2
  */
-public class MultiFrameMachine extends AbstractMachine implements RecipeItem {
+public class MultiFrameMachine extends AbstractTickerDataMachine implements RecipeItem {
     private final String[] offsetKeys = new String[]{"offset1", "offset2", "offset3", "offset4", "offset5", "offset6"};
     private final List<String> allowedIdList = ConfigUtil.getItemStringList(this, "allowed-id");
 
@@ -67,8 +67,8 @@ public class MultiFrameMachine extends AbstractMachine implements RecipeItem {
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+    protected void tickWithData(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data) {
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();
 
         int point = 0;
@@ -92,7 +92,9 @@ public class MultiFrameMachine extends AbstractMachine implements RecipeItem {
                     MachineUtil.stockSlots(inventory, MultiFrameMachineMenu.WORK_INPUT_SLOT[point][i]);
 
                     if (MachineUtil.slotCount(inventory, MultiFrameMachineMenu.WORK_OUTPUT_SLOT[point][i]) < MultiFrameMachineMenu.WORK_OUTPUT_SLOT[point][i].length) {
-                        offset = config.contains(this.offsetKeys[i]) ? Integer.parseInt(config.getString(this.offsetKeys[i])) : 0;
+                        offset = LegacyTickerDataCompat.contains(data, this.offsetKeys[i])
+                                ? Integer.parseInt(LegacyTickerDataCompat.getString(data, this.offsetKeys[i]))
+                                : 0;
                         availableRecipe = MachineRecipeFactory.getInstance().getAdvancedRecipe(machineSfItem.getId());
                         advancedCraft = AdvancedCraft.craftAsc(inventory, MultiFrameMachineMenu.WORK_INPUT_SLOT[point][i], availableRecipe, machineItem.getAmount(), offset);
                         if (advancedCraft != null) {
@@ -102,7 +104,7 @@ public class MultiFrameMachine extends AbstractMachine implements RecipeItem {
                                 for (ItemStack itemStack : advancedCraft.calMachineRecipe(0).getOutput()) {
                                     blockMenu.pushItem(ItemStackUtil.cloneItem(itemStack), MultiFrameMachineMenu.WORK_OUTPUT_SLOT[point][i]);
                                 }
-                                config.setValue(this.offsetKeys[i], String.valueOf(advancedCraft.getOffset()));
+                                LegacyTickerDataCompat.setValue(data, this.offsetKeys[i], String.valueOf(advancedCraft.getOffset()));
                             }
                         }
                     }

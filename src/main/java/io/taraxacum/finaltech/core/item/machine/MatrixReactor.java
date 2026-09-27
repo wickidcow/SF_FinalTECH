@@ -19,7 +19,8 @@ import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUpdater {
+public class MatrixReactor extends AbstractTickerDataMachine implements RecipeItem, MenuUpdater {
     private final String keyItem = "item";
     private final String keyCount = "count";
     private final int difficulty = ConfigUtil.getOrDefaultItemSetting(80, this, "difficulty");
@@ -65,8 +66,8 @@ public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUp
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+    protected void tickWithData(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data) {
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
         ItemStack itemStack = blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_INPUT_SLOT[0]);
 
@@ -93,8 +94,8 @@ public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUp
         }
 
         ItemStack stringItem = null;
-        if (config.contains(keyItem)) {
-            String itemString = config.getString(keyItem);
+        if (LegacyTickerDataCompat.contains(data, keyItem)) {
+            String itemString = LegacyTickerDataCompat.getString(data, keyItem);
             stringItem = ItemStackUtil.stringToItemStack(itemString);
         }
 
@@ -133,7 +134,7 @@ public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUp
         }
 
         if (!match) {
-            int count = config.contains(keyCount) ? Integer.parseInt(config.getString(keyCount)) : 0;
+            int count = LegacyTickerDataCompat.contains(data, keyCount) ? Integer.parseInt(LegacyTickerDataCompat.getString(data, keyCount)) : 0;
             count = count > 0 ? count - 1 : 0;
             BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
         } else {
@@ -173,7 +174,7 @@ public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUp
 
                 BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
             } else {
-                int count = config.contains(keyCount) ? Integer.parseInt(config.getString(keyCount)) : 0;
+                int count = LegacyTickerDataCompat.contains(data, keyCount) ? Integer.parseInt(LegacyTickerDataCompat.getString(data, keyCount)) : 0;
                 if (FinalTechItems.ITEM_PHONY.verifyItem(blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0])) && blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0]).getAmount() >= amount + count && amount + count <= ConstantTableUtil.ITEM_MAX_STACK) {
                     ItemStack itemPhony = blockMenu.getItemInSlot(MatrixReactorMenu.ITEM_PHONY_INPUT_SLOT[0]);
                     itemPhony.setAmount(itemPhony.getAmount() - count - amount);
@@ -217,7 +218,7 @@ public class MatrixReactor extends AbstractMachine implements RecipeItem, MenuUp
 
         if (blockMenu.hasViewer()) {
             this.updateMenu(blockMenu, MatrixReactorMenu.STATUS_SLOT, this,
-                    config.getString(keyCount) == null ? "0" : config.getString(keyCount),
+                    LegacyTickerDataCompat.getString(data, keyCount) == null ? "0" : LegacyTickerDataCompat.getString(data, keyCount),
                     String.valueOf(difficulty));
         }
     }
