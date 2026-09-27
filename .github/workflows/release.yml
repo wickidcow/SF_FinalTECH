@@ -81,6 +81,9 @@ jobs:
       - name: Verify legacy text compatibility
         run: python3 scripts/verify_legacy_text_compat.py
 
+      - name: Verify modern entity APIs
+        run: python3 scripts/verify_entity_api_compat.py
+
       - name: Verify Paper 1.21.11 baseline compilation
         run: >-
           mvn -B --no-transfer-progress -DskipTests
