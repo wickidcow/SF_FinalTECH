@@ -133,6 +133,7 @@ public class PositionInfo {
     }
 
     @Nonnull
+    @SuppressWarnings("deprecation")
     public static BlockFace[] getBlockFaces(@Nonnull Config config, @Nonnull String... values) {
         String string = JavaUtil.getFirstNotNull(config.getString(KEY), "");
         return PositionInfo.getBlockFaces(string, values);
@@ -165,6 +166,7 @@ public class PositionInfo {
 
         @Nonnull
         @Override
+        @SuppressWarnings("deprecation")
         public String getOrDefaultValue(@Nonnull Config config) {
             String valueMap = config.getString(this.getKey());
             KeyValueStringHelper keyValueStringHelper = MAP_EXAMPLE.parseString(valueMap);

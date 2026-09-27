@@ -23,6 +23,12 @@ import javax.annotation.Nullable;
  * @since 1.0
  */
 // TODO: Optimization
+/**
+ * RC-37 ticker compatibility bridge. The deprecated Config/BlockTicker tick
+ * signatures are intentionally retained here; gameplay storage access is
+ * routed through dedicated compatibility helpers elsewhere.
+ */
+@SuppressWarnings("deprecation")
 public abstract class AbstractMachine extends AbstractMySlimefunItem {
     private AbstractMachineMenu menu;
 

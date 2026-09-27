@@ -21,6 +21,11 @@ import java.lang.reflect.Method;
  * @author Final_ROOT
  * @since 2.4
  */
+/**
+ * Compatibility ticker wrapper that intentionally retains the RC-37 Config
+ * callback contract.
+ */
+@SuppressWarnings("deprecation")
 public class EnergyRegulatorBlockTicker extends BlockTicker implements MenuUpdater {
     private boolean init = false;
 

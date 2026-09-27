@@ -94,7 +94,7 @@ public final class LegacyBlockDataCompat {
      * servers naturally skip this legacy-only recovery scan.</p>
      */
     @Nullable
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "deprecation"})
     public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world) {
         me.mrCookieSlime.Slimefun.api.BlockStorage storage =
                 me.mrCookieSlime.Slimefun.api.BlockStorage.getStorage(world);

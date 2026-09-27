@@ -104,6 +104,7 @@ public class SlotSearchLine {
 
         @Nonnull
         @Override
+        @SuppressWarnings("deprecation")
         public String getOrDefaultValue(@Nonnull Config config) {
             String valueMap = config.getString(KEY);
             KeyValueStringHelper keyValueStringHelper = MAP_EXAMPLE.parseString(valueMap);

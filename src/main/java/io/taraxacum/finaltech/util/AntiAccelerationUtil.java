@@ -15,6 +15,7 @@ public class AntiAccelerationUtil {
      * @param config The storage info in the machine location
      * @return whether a machine can work
      */
+    @SuppressWarnings("deprecation")
     public static boolean isAccelerated(@Nonnull Config config) {
         String s = config.getString(KEY);
         if (s != null && Integer.parseInt(s) == FinalTechChanged.getSlimefunTickCount()) {

@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
  * @since 2.4
  */
 public class BlockStorageConfigUtil {
+    @SuppressWarnings("deprecation")
     public static boolean isEmptyConfig(@Nonnull Config config) {
         return config.getString(ConstantTableUtil.CONFIG_ID) == null;
     }

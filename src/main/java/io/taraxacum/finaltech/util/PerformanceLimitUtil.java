@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 public class PerformanceLimitUtil {
     public static String KEY = "tps-charge";
 
+    @SuppressWarnings("deprecation")
     public static boolean charge(@Nonnull Config config) {
         int charge = config.contains(KEY) ? Integer.parseInt(config.getString(KEY)) : 0;
         charge += FinalTechChanged.getTps();

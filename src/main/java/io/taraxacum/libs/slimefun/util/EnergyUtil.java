@@ -13,6 +13,11 @@ import org.bukkit.Location;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+/**
+ * Legacy Config overloads are retained for RC-37 compatibility; location-based
+ * energy access uses the maintained compatibility adapter.
+ */
+@SuppressWarnings("deprecation")
 public class EnergyUtil {
     @Nonnull
     public static String getCharge(@Nonnull Location location) {

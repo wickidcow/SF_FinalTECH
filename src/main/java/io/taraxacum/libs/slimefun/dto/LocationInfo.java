@@ -13,6 +13,10 @@ import javax.annotation.Nullable;
  * @author Final_ROOT
  * @since 2.4
  */
+/**
+ * Legacy ticker-data DTO retained for RC-37 source/binary compatibility.
+ */
+@SuppressWarnings("deprecation")
 public class LocationInfo {
     private Location location;
     private Config config;

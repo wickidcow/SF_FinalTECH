@@ -17,6 +17,10 @@ import java.util.Map;
  * @author Final_ROOT
  * @since 2.0
  */
+/**
+ * Helper contract retained for RC-37 Config-backed ticker data.
+ */
+@SuppressWarnings("deprecation")
 public abstract class BlockStorageHelper {
     public static final String ID_CARGO = "cargo";
     protected static final Map<String, Map<String, BlockStorageHelper>> BLOCK_STORAGE_HELPER_FACTORY = new HashMap<>();

@@ -49,6 +49,7 @@ public class PermissionUtil {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Config config, @Nonnull Location... targetLocations) {
         return PermissionUtil.checkOfflinePermission(
                 sourceLocation,
