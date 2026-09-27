@@ -2,6 +2,7 @@ package io.taraxacum.finaltech.util;
 
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.libs.plugin.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -121,7 +122,7 @@ public class LocationUtil {
             if (location != null) {
                 List<String> loreList = new ArrayList<>();
                 loreList.add(TextUtil.colorRandomString(location.getWorld().getName()));
-                itemMeta.setLore(loreList);
+                LegacyTextCompat.setLore(itemMeta, loreList);
                 item.setItemMeta(itemMeta);
                 return true;
             }

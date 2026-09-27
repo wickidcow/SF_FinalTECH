@@ -19,6 +19,7 @@ import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.libs.plugin.util.TextUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
@@ -26,7 +27,6 @@ import io.taraxacum.libs.slimefun.util.ResearchUtil;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemFlag;
@@ -119,7 +119,7 @@ public final class SetupUtil {
         String currentName = languageManager.containPath("helper", "ICON", "wiki-icon", "name")
                 ? languageManager.getString("helper", "ICON", "wiki-icon", "name")
                 : "";
-        String plainName = ChatColor.stripColor(currentName);
+        String plainName = LegacyTextCompat.stripColor(currentName);
 
         if (plainName == null
                 || plainName.isBlank()

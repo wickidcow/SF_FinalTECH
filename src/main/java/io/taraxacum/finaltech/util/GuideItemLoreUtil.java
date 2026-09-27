@@ -5,9 +5,9 @@ import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.libs.slimefun.interfaces.ShowInfoItem;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -85,16 +85,16 @@ public final class GuideItemLoreUtil {
 
         lore.addAll(getPurposeLore(slimefunItem));
         lore.add("");
-        lore.add(ChatColor.DARK_GRAY + slimefunItem.getId());
+        lore.add(LegacyTextCompat.DARK_GRAY + slimefunItem.getId());
 
         if (cheatMode) {
             lore.add("");
-            lore.add(ChatColor.GREEN + "Left-click: Give 1");
-            lore.add(ChatColor.GREEN + "Right-click: Give a full stack");
-            lore.add(ChatColor.YELLOW + "Shift-click: Bookmark");
+            lore.add(LegacyTextCompat.GREEN + "Left-click: Give 1");
+            lore.add(LegacyTextCompat.GREEN + "Right-click: Give a full stack");
+            lore.add(LegacyTextCompat.YELLOW + "Shift-click: Bookmark");
         }
 
-        meta.setLore(lore);
+        LegacyTextCompat.setLore(meta, lore);
         icon.setItemMeta(meta);
         return icon;
     }
@@ -157,7 +157,7 @@ public final class GuideItemLoreUtil {
             return List.of();
         }
 
-        List<String> source = meta.getLore();
+        List<String> source = LegacyTextCompat.getLore(meta);
         if (source == null || source.isEmpty()) {
             return List.of();
         }
@@ -186,12 +186,12 @@ public final class GuideItemLoreUtil {
                     continue;
                 }
 
-                String heading = ChatColor.stripColor(meta.getDisplayName());
+                String heading = LegacyTextCompat.stripColor(LegacyTextCompat.getDisplayName(meta));
                 if (heading == null || heading.isBlank()) {
                     continue;
                 }
 
-                List<String> lines = stableWrappedLines(meta.getLore());
+                List<String> lines = stableWrappedLines(LegacyTextCompat.getLore(meta));
                 if (lines.isEmpty()) {
                     continue;
                 }
@@ -407,7 +407,7 @@ public final class GuideItemLoreUtil {
                 continue;
             }
 
-            String plain = ChatColor.stripColor(line);
+            String plain = LegacyTextCompat.stripColor(line);
             if (plain == null) {
                 continue;
             }
@@ -449,7 +449,7 @@ public final class GuideItemLoreUtil {
                 continue;
             }
 
-            String heading = ChatColor.stripColor(languageManager.getString("items", id, "info", section, "name"));
+            String heading = LegacyTextCompat.stripColor(languageManager.getString("items", id, "info", section, "name"));
             String normalizedHeading = heading == null ? "" : heading.trim().toLowerCase(Locale.ROOT);
             if (isPurposeHeading(normalizedHeading)) {
                 return lines;
@@ -510,7 +510,7 @@ public final class GuideItemLoreUtil {
         if (!isUsableText(value, rawPath)) {
             return;
         }
-        appendWrappedGray(result, ChatColor.stripColor(value));
+        appendWrappedGray(result, LegacyTextCompat.stripColor(value));
     }
 
     private static boolean isUsableText(String value, String rawPath) {
@@ -518,7 +518,7 @@ public final class GuideItemLoreUtil {
             return false;
         }
 
-        String plain = ChatColor.stripColor(value);
+        String plain = LegacyTextCompat.stripColor(value);
         if (plain == null) {
             return false;
         }
@@ -542,7 +542,7 @@ public final class GuideItemLoreUtil {
         StringBuilder current = new StringBuilder();
         for (String word : value.trim().split("\\s+")) {
             if (current.length() > 0 && current.length() + 1 + word.length() > MAX_LINE_LENGTH) {
-                result.add(ChatColor.GRAY + current.toString());
+                result.add(LegacyTextCompat.GRAY + current.toString());
                 current.setLength(0);
                 if (result.size() >= MAX_PURPOSE_LINES) {
                     return;
@@ -554,7 +554,7 @@ public final class GuideItemLoreUtil {
             current.append(word);
         }
         if (current.length() > 0 && result.size() < MAX_PURPOSE_LINES) {
-            result.add(ChatColor.GRAY + current.toString());
+            result.add(LegacyTextCompat.GRAY + current.toString());
         }
     }
 
@@ -632,7 +632,7 @@ public final class GuideItemLoreUtil {
             return "Upgrade component used by compatible FinalTECH machines to change efficiency or capacity.";
         }
 
-        String plainName = ChatColor.stripColor(itemName);
+        String plainName = LegacyTextCompat.stripColor(itemName);
         if (plainName == null || plainName.isBlank()) {
             plainName = "This item";
         }
@@ -641,7 +641,7 @@ public final class GuideItemLoreUtil {
 
     @Nonnull
     private static String stripPrefix(@Nonnull String itemName, @Nonnull String prefix) {
-        String plain = ChatColor.stripColor(itemName);
+        String plain = LegacyTextCompat.stripColor(itemName);
         if (plain == null || plain.isBlank()) {
             return "this machine";
         }
