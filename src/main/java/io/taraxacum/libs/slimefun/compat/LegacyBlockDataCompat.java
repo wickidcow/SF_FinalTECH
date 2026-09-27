@@ -1,6 +1,7 @@
 package io.taraxacum.libs.slimefun.compat;
 
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -46,6 +47,17 @@ public final class LegacyBlockDataCompat {
     }
 
     @Nullable
+    public static BlockMenu getMenu(@Nonnull Location location) {
+        if (MODERN != null) {
+            Object menu = MODERN.getMenu(location);
+            if (menu != ModernAccess.NO_RECORD_OBJECT) {
+                return (BlockMenu) menu;
+            }
+        }
+        return LegacyAccess.getMenu(location);
+    }
+
+    @Nullable
     private static ModernAccess createModernAccess() {
         try {
             Method getDatabaseManager = Slimefun.class.getMethod("getDatabaseManager");
@@ -59,6 +71,7 @@ public final class LegacyBlockDataCompat {
             Method getData = blockDataType.getMethod("getData", String.class);
             Method setData = blockDataType.getMethod("setData", String.class, String.class);
             Method removeData = blockDataType.getMethod("removeData", String.class);
+            Method getBlockMenu = blockDataType.getMethod("getBlockMenu");
 
             return new ModernAccess(
                     getDatabaseManager,
@@ -68,7 +81,8 @@ public final class LegacyBlockDataCompat {
                     loadBlockData,
                     getData,
                     setData,
-                    removeData);
+                    removeData,
+                    getBlockMenu);
         } catch (NoSuchMethodException | LinkageError ignored) {
             return null;
         }
@@ -82,9 +96,11 @@ public final class LegacyBlockDataCompat {
             Method loadBlockData,
             Method getData,
             Method setData,
-            Method removeData) {
+            Method removeData,
+            Method getBlockMenu) {
 
         private static final String NO_RECORD = new String("FINALTECH_NO_BLOCK_DATA_RECORD");
+        private static final Object NO_RECORD_OBJECT = new Object();
 
         private Object getLoadedData(@Nonnull Location location)
                 throws IllegalAccessException, InvocationTargetException {
@@ -109,6 +125,21 @@ public final class LegacyBlockDataCompat {
                 throw new IllegalStateException("Could not access Slimefun Legacy block-data API", exception);
             } catch (InvocationTargetException exception) {
                 throw unwrap("read", exception);
+            }
+        }
+
+        @Nullable
+        private Object getMenu(@Nonnull Location location) {
+            try {
+                Object blockData = getLoadedData(location);
+                if (blockData == null) {
+                    return NO_RECORD_OBJECT;
+                }
+                return getBlockMenu.invoke(blockData);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block-menu API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("read menu", exception);
             }
         }
 
@@ -165,6 +196,11 @@ public final class LegacyBlockDataCompat {
                 @Nonnull String key,
                 @Nullable String value) {
             me.mrCookieSlime.Slimefun.api.BlockStorage.addBlockInfo(location, key, value);
+        }
+
+        @Nullable
+        private static BlockMenu getMenu(@Nonnull Location location) {
+            return me.mrCookieSlime.Slimefun.api.BlockStorage.getInventory(location);
         }
     }
 }
