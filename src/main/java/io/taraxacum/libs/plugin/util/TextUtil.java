@@ -3,11 +3,20 @@ package io.taraxacum.libs.plugin.util;
 import org.bukkit.Color;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class TextUtil {
+    public static final String LEGACY_DARK_GRAY = "§8";
+    public static final String LEGACY_GREEN = "§a";
+    public static final String LEGACY_YELLOW = "§e";
+    public static final String LEGACY_GRAY = "§7";
+
+    private static final Pattern LEGACY_FORMAT_CODE = Pattern.compile("(?i)§[0-9A-FK-ORX]");
+
     public static final String COLOR_NORMAL = "§x§8§8§f§f§f§f";
     public static final String COLOR_STRESS = "§x§f§f§f§f§8§8";
     public static final String COLOR_ACTION = "§x§f§f§8§8§0§0";
@@ -22,6 +31,11 @@ public class TextUtil {
     public static final Color WHITE_COLOR = Color.fromRGB(255, 255, 255);
 
     private static long COUNT = 0;
+
+    @Nullable
+    public static String stripColor(@Nullable String value) {
+        return value == null ? null : LEGACY_FORMAT_CODE.matcher(value).replaceAll("");
+    }
 
     @Nonnull
     public static String colorString(@Nonnull String string, @Nonnull List<Color> colorList) {
