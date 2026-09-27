@@ -52,6 +52,26 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ExpandedConsumableRemoteAccessorMenu.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedLocationTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/LocationTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/MatrixCraftingTable.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/ConfigurationCopier.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/ConfigurationPaster.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/NormalConfigurableElectricityShootPile.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/NormalConsumableElectricityShootPile.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/MatrixGenerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/line/pile/AbstractElectricityShootPile.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/EnergizedOperationAccelerator.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -196,6 +216,28 @@ for path in (
     require(
         "BlockStorage.hasInventory" not in source,
         f"{path} must not retain the deprecated inventory-existence probe",
+    )
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedLocationTransfer.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/LocationTransfer.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/MatrixCraftingTable.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/ConfigurationCopier.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/ConfigurationPaster.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/NormalConfigurableElectricityShootPile.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/NormalConsumableElectricityShootPile.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/MatrixGenerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/line/pile/AbstractElectricityShootPile.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/EnergizedOperationAccelerator.java",
+):
+    source = read(path)
+    require(
+        "LegacyBlockDataCompat.getMenu(block.getLocation())" in source,
+        f"{path} must route its ticker menu lookup through the compatibility boundary",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{path} must retain the RC-37 ticker Config signature",
     )
 
 for marker in (
