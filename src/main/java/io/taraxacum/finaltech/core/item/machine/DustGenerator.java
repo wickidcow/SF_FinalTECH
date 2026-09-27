@@ -8,6 +8,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.taraxacum.common.util.MathUtil;
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -97,14 +98,14 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
 
         BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
         if (count > 0) {
-            this.addCharge(location, charge);
+            LegacySlimefunApiCompat.addCharge(this, location, charge);
         }
 
         if (blockMenu.hasViewer()) {
             this.updateMenu(blockMenu, DustGeneratorMenu.STATUS_SLOT, this,
                     String.valueOf(count),
                     String.valueOf(charge),
-                    String.valueOf(this.getCharge(location)));
+                    String.valueOf(LegacySlimefunApiCompat.getCharge(this, location)));
         }
     }
 
@@ -121,9 +122,9 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
 
     @Override
     public int getGeneratedOutput(@Nonnull Location location, @Nonnull Config config) {
-        int charge = this.getCharge(location);
-        this.setCharge(location, 0);
-        return charge;
+        int storedCharge = LegacySlimefunApiCompat.getCharge(this, location);
+        LegacySlimefunApiCompat.setCharge(this, location, 0);
+        return storedCharge;
     }
 
     @Override
