@@ -14,7 +14,6 @@ import io.taraxacum.finaltech.core.menu.cargo.AdvancedAutoCraftFrameMenu;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -23,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
  
-public class AdvancedAutoCraftFrame extends AbstractMachine implements RecipeItem {
+public class AdvancedAutoCraftFrame extends AbstractConfigFreeMachine implements RecipeItem {
     private AdvancedAutoCraftFrameMenu advancedAutoCraftFrameMenu = null;
 
     public AdvancedAutoCraftFrame(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -50,7 +49,7 @@ public class AdvancedAutoCraftFrame extends AbstractMachine implements RecipeIte
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         Location location = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
 

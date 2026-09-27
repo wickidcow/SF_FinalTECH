@@ -18,7 +18,6 @@ import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.RecipeTypeRegistry;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
@@ -28,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MatrixItemDismantleTable extends AbstractMachine implements RecipeItem {
+public class MatrixItemDismantleTable extends AbstractConfigFreeMachine implements RecipeItem {
     private final Set<String> notAllowedRecipeType = new HashSet<>(ConfigUtil.getItemStringList(this, "not-allowed-recipe-type"));
     private final Set<String> allowedId = new HashSet<>(ConfigUtil.getItemStringList(this, "allowed-id"));
     private final Set<String> notAllowedId = new HashSet<>(ConfigUtil.getItemStringList(this, "not-allowed-id"));
@@ -56,7 +55,7 @@ public class MatrixItemDismantleTable extends AbstractMachine implements RecipeI
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (MachineUtil.isEmpty(blockMenu.toInventory(), this.getOutputSlot())) {
             ItemStack itemStack = blockMenu.getItemInSlot(this.getInputSlot()[0]);
