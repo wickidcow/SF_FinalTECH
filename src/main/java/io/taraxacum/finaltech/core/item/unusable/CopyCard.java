@@ -18,7 +18,6 @@ import io.taraxacum.libs.plugin.util.StringItemUtil;
 import io.taraxacum.libs.plugin.util.TextUtil;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
@@ -61,7 +60,7 @@ public class CopyCard extends UnusableSlimefunItem implements RecipeItem, ValidI
         ItemMeta itemMeta = itemStack.getItemMeta();
         List<String> lore = null;
         if (itemMeta != null) {
-            lore = itemMeta.getLore();
+            lore = ItemStackUtil.getLore(itemMeta);
 
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
             String itemString = persistentDataContainer.get(ITEM_KEY, PersistentDataType.STRING);
@@ -82,7 +81,7 @@ public class CopyCard extends UnusableSlimefunItem implements RecipeItem, ValidI
         }
 
         for (String l : lore) {
-            if (this.itemLoreWithoutColor.equals(ChatColor.stripColor(l))) {
+            if (this.itemLoreWithoutColor.equals(TextUtil.stripColor(l))) {
                 return true;
             }
         }
