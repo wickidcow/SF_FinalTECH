@@ -18,7 +18,8 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -116,52 +117,52 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
         try  {
             if (FinalTechChanged.y) {
                 FinalTechChanged.getInstance().getServer().getScheduler().runTask(FinalTechChanged.getInstance(), () -> block.setType(Material.AIR));
-                BlockStorage.clearBlockInfo(block.getLocation());
+                LegacyBlockDataCompat.removeBlock(block.getLocation());
                 return ;
             }
-            if (BlockStorage.getLocationInfo(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP) != null) {
-                String sleepStr = BlockStorage.getLocationInfo(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP);
+            if (LegacyBlockDataCompat.getValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP) != null) {
+                String sleepStr = LegacyBlockDataCompat.getValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP);
                 if (sleepStr != null) {
                     double sleep = Double.parseDouble(sleepStr) - 1;
                     if (sleep > 0) {
-                        BlockStorage.addBlockInfo(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
+                        LegacyBlockDataCompat.setValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
                         return;
                     } else {
-                        BlockStorage.addBlockInfo(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP, String.valueOf(0));
+                        LegacyBlockDataCompat.setValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP, String.valueOf(0));
 
                     }
                 }
             }
             Location l = block.getLocation();
-            double life = (BlockStorage.getLocationInfo(block.getLocation(), KEY_LIFE) != null) ? Double.parseDouble(BlockStorage.getLocationInfo(l, KEY_LIFE)) : 0;
+            double life = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_LIFE) != null) ? Double.parseDouble(LegacyBlockDataCompat.getValue(l, KEY_LIFE)) : 0;
             if (life < 1) {
                 Location location = block.getLocation();
-                BlockStorage.addBlockInfo(location, KEY_LIFE, "0");
-                BlockStorage.addBlockInfo(location, KEY_RANGE, "0");
-                BlockStorage.addBlockInfo(l, ConstantTableUtil.CONFIG_SLEEP, "0");
-                BlockStorage.clearBlockInfo(location);
+                LegacyBlockDataCompat.setValue(location, KEY_LIFE, "0");
+                LegacyBlockDataCompat.setValue(location, KEY_RANGE, "0");
+                LegacyBlockDataCompat.setValue(l, ConstantTableUtil.CONFIG_SLEEP, "0");
+                LegacyBlockDataCompat.removeBlock(location);
                 JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
                 javaPlugin.getServer().getScheduler().runTaskLaterAsynchronously(javaPlugin, () -> {
-                    if (!location.getBlock().getType().isAir() && BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID) == null) {
-                        BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, FinalTechItemStacks.JUSTIFIABILITY.getItemId(), true);
+                    if (!location.getBlock().getType().isAir() && LegacyBlockDataCompat.getSlimefunId(location) == null) {
+                        LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId());
                     }
                 }, Slimefun.getTickerTask().getTickRate() + 1);
                 return;
             }
 
-            final int range = (BlockStorage.getLocationInfo(block.getLocation(), KEY_RANGE) != null) ? Integer.parseInt(BlockStorage.getLocationInfo(l, KEY_RANGE)) : this.range;
+            final int range = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_RANGE) != null) ? Integer.parseInt(LegacyBlockDataCompat.getValue(l, KEY_RANGE)) : this.range;
 
             while (life > 1) {
                 final double finalLife = life--;
                 this.pointFunction(block, range, location -> {
                     FinalTechChanged.getLocationRunnableFactory().waitThenRun(() -> {
                         Block targetBlock = location.getBlock();
-                        if (!BlockStorage.hasBlockInfo(location)) {
+                        if (!LegacyBlockDataCompat.hasBlockData(location)) {
                             if (targetBlock.getType() == Material.AIR) {
-                                BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, EquivalentConcept.this.getId(), true);
-                                BlockStorage.addBlockInfo(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
-                                BlockStorage.addBlockInfo(location, KEY_RANGE, String.valueOf(range + 1));
-                                BlockTickerUtil.setSleep(BlockStorage.getLocationInfo(location), String.valueOf(EquivalentConcept.this.life - finalLife));
+                                LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId());
+                                LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
+                                LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1));
+                                BlockTickerUtil.setSleep(LegacyTickerDataCompat.getConfig(location), String.valueOf(EquivalentConcept.this.life - finalLife));
                                 JavaPlugin javaPlugin = EquivalentConcept.this.getAddon().getJavaPlugin();
                                 javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> targetBlock.setType(EquivalentConcept.this.getItem().getType()));
                             }
@@ -171,7 +172,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
                 });
             }
 
-            BlockStorage.addBlockInfo(block, KEY_LIFE, String.valueOf(0));
+            LegacyBlockDataCompat.setValue(block.getLocation(), KEY_LIFE, String.valueOf(0));
         } catch (Exception e) {
             FinalTechChanged.getInstance().getLogger().warning("[FinalTECH] Equivalent Concept encountered an expected exception; normal operation will continue.");
         }

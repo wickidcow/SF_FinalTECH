@@ -5,7 +5,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.RecipeDisplayItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
-import io.taraxacum.common.util.ReflectionUtil;
 import io.taraxacum.common.util.StringUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.command.ShowItemInfo;
@@ -25,7 +24,7 @@ import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.util.ResearchUtil;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -1018,48 +1017,45 @@ public final class SetupUtil {
 
     public static void dataLossFix() {
         for (World world : FinalTechChanged.getInstance().getServer().getWorlds()) {
-            BlockStorage storage = BlockStorage.getStorage(world);
-            if (storage != null) {
-                try {
-                    Map<Location, BlockMenu> inventories = ReflectionUtil.getProperty(storage, BlockStorage.class, "inventories");
-                    if (inventories != null) {
-                        int count = 0;
-                        FinalTechChanged.logger().info("Data Loss Fix: start work for world: " + world.getName());
-                        for (Map.Entry<Location, BlockMenu> entry : inventories.entrySet()) {
-                            Location location = entry.getKey();
-                            if (location.getBlock().getType().isAir()) {
-                                continue;
-                            }
-                            LocationInfo locationInfo = LocationInfo.get(location);
-                            if (locationInfo == null) {
-                                String id = entry.getValue().getPreset().getID();
-                                SlimefunItem slimefunItem = SlimefunItem.getById(id);
-                                if (slimefunItem != null && !(slimefunItem instanceof AbstractMachine) && slimefunItem.getItem().getType().equals(location.getBlock().getType())) {
-                                    FinalTechChanged.logger().warning("Data Loss Fix: location " + location + " seems loss its data. There should be " + id + " (" + slimefunItem.getItemName() + ")");
-                                    Map<String, String> configMap = FinalTechChanged.getDataLossFixCustomMap(id);
-                                    if (configMap == null) {
-                                        FinalTechChanged.logger().warning("Data Loss Fix: I don't know how to fix it. Config me in config.yml with path: " + "data-loss-fix-custom" + "." + "config" + "." + id);
-                                        continue;
-                                    }
-
-                                    BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, id);
-                                    for (Map.Entry<String, String> configEntry : configMap.entrySet()) {
-                                        BlockStorage.addBlockInfo(location, configEntry.getKey(), configEntry.getValue());
-                                    }
-                                    FinalTechChanged.logger().info("Data Loss Fix: added location info to location: " + location);
-                                    count++;
-                                }
-                            }
+            try {
+                Map<Location, BlockMenu> inventories = LegacyBlockDataCompat.getLegacyWorldInventories(world);
+                if (inventories != null) {
+                    int count = 0;
+                    FinalTechChanged.logger().info("Data Loss Fix: start work for world: " + world.getName());
+                    for (Map.Entry<Location, BlockMenu> entry : inventories.entrySet()) {
+                        Location location = entry.getKey();
+                        if (location.getBlock().getType().isAir()) {
+                            continue;
                         }
-                        if (count > 0) {
-                            FinalTechChanged.logger().info("Data Loss Fix: totally " + count + " block" + (count == 1 ? " is" : "s are") + " fixed");
-                        } else {
-                            FinalTechChanged.logger().info("Data Loss Fix: nothing changed! This is the best situation!");
+                        LocationInfo locationInfo = LocationInfo.get(location);
+                        if (locationInfo == null) {
+                            String id = entry.getValue().getPreset().getID();
+                            SlimefunItem slimefunItem = SlimefunItem.getById(id);
+                            if (slimefunItem != null && !(slimefunItem instanceof AbstractMachine) && slimefunItem.getItem().getType().equals(location.getBlock().getType())) {
+                                FinalTechChanged.logger().warning("Data Loss Fix: location " + location + " seems loss its data. There should be " + id + " (" + slimefunItem.getItemName() + ")");
+                                Map<String, String> configMap = FinalTechChanged.getDataLossFixCustomMap(id);
+                                if (configMap == null) {
+                                    FinalTechChanged.logger().warning("Data Loss Fix: I don't know how to fix it. Config me in config.yml with path: " + "data-loss-fix-custom" + "." + "config" + "." + id);
+                                    continue;
+                                }
+
+                                LegacyBlockDataCompat.setSlimefunId(location, id);
+                                for (Map.Entry<String, String> configEntry : configMap.entrySet()) {
+                                    LegacyBlockDataCompat.setValue(location, configEntry.getKey(), configEntry.getValue());
+                                }
+                                FinalTechChanged.logger().info("Data Loss Fix: added location info to location: " + location);
+                                count++;
+                            }
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    if (count > 0) {
+                        FinalTechChanged.logger().info("Data Loss Fix: totally " + count + " block" + (count == 1 ? " is" : "s are") + " fixed");
+                    } else {
+                        FinalTechChanged.logger().info("Data Loss Fix: nothing changed! This is the best situation!");
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

@@ -3,11 +3,14 @@ package io.taraxacum.libs.slimefun.compat;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Compatibility boundary for FinalTECH's persisted Slimefun block-data access.
@@ -66,6 +69,46 @@ public final class LegacyBlockDataCompat {
             }
         }
         return LegacyAccess.getMenu(location);
+    }
+
+    public static boolean hasBlockData(@Nonnull Location location) {
+        if (MODERN != null) {
+            return MODERN.hasBlockData(location);
+        }
+        return LegacyAccess.hasBlockData(location);
+    }
+
+    public static boolean hasMenu(@Nonnull Location location) {
+        if (MODERN != null) {
+            return MODERN.hasMenu(location);
+        }
+        return LegacyAccess.hasMenu(location);
+    }
+
+    /**
+     * Exposes the historical per-world BlockStorage inventory map used only by
+     * FinalTECH's RC-37 data-loss recovery path.
+     *
+     * <p>Current Slimefun Legacy no longer owns this registry and returns
+     * {@code null} from {@code BlockStorage.getStorage(world)}, so modern
+     * servers naturally skip this legacy-only recovery scan.</p>
+     */
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world) {
+        me.mrCookieSlime.Slimefun.api.BlockStorage storage =
+                me.mrCookieSlime.Slimefun.api.BlockStorage.getStorage(world);
+        if (storage == null) {
+            return null;
+        }
+
+        try {
+            Field inventories = me.mrCookieSlime.Slimefun.api.BlockStorage.class.getDeclaredField("inventories");
+            inventories.setAccessible(true);
+            return (Map<Location, BlockMenu>) inventories.get(storage);
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Could not access legacy BlockStorage inventory registry", exception);
+        }
     }
 
     /**
@@ -207,6 +250,15 @@ public final class LegacyBlockDataCompat {
             }
         }
 
+        private boolean hasBlockData(@Nonnull Location location) {
+            return getLoadedData(location) != null;
+        }
+
+        private boolean hasMenu(@Nonnull Location location) {
+            Object menu = getMenu(location);
+            return menu != NO_RECORD_OBJECT && menu != null;
+        }
+
         private boolean setValue(
                 @Nonnull Location location,
                 @Nonnull String key,
@@ -294,6 +346,14 @@ public final class LegacyBlockDataCompat {
         @Nullable
         private static BlockMenu getMenu(@Nonnull Location location) {
             return me.mrCookieSlime.Slimefun.api.BlockStorage.getInventory(location);
+        }
+
+        private static boolean hasBlockData(@Nonnull Location location) {
+            return me.mrCookieSlime.Slimefun.api.BlockStorage.hasBlockInfo(location);
+        }
+
+        private static boolean hasMenu(@Nonnull Location location) {
+            return me.mrCookieSlime.Slimefun.api.BlockStorage.hasInventory(location.getBlock());
         }
 
         private static void setSlimefunId(@Nonnull Location location, @Nonnull String slimefunId) {

@@ -174,6 +174,26 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/util/ItemConfigurationUtil.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/util/CargoUtil.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/AreaAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/PointTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedPointTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/LineTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedLineTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/MeshTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedMeshTransfer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/EquivalentConcept.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -942,6 +962,158 @@ require(
 require(
     "BlockStorage." not in item_configuration,
     "ItemConfigurationUtil must not directly use deprecated BlockStorage",
+)
+
+cargo_util = read(
+    "src/main/java/io/taraxacum/finaltech/util/CargoUtil.java"
+)
+area_accessor_menu = read(
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/AreaAccessorMenu.java"
+)
+point_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/PointTransfer.java"
+)
+advanced_point_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedPointTransfer.java"
+)
+line_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/LineTransfer.java"
+)
+advanced_line_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedLineTransfer.java"
+)
+mesh_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/MeshTransfer.java"
+)
+advanced_mesh_transfer = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedMeshTransfer.java"
+)
+equivalent_concept = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/EquivalentConcept.java"
+)
+setup_util = read(
+    "src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java"
+)
+
+for expected in (
+    "public static boolean hasBlockData(@Nonnull Location location)",
+    "public static boolean hasMenu(@Nonnull Location location)",
+    "return MODERN.hasBlockData(location);",
+    "return MODERN.hasMenu(location);",
+    "BlockStorage.hasBlockInfo(location)",
+    "BlockStorage.hasInventory(location.getBlock())",
+):
+    require(
+        expected in legacy_block_data,
+        f"LegacyBlockDataCompat lost topology-existence compatibility behavior: {expected}",
+    )
+require(
+    "return getLoadedData(location) != null;" in legacy_block_data,
+    "LegacyBlockDataCompat.hasBlockData must preserve legacy data-loading existence semantics",
+)
+require(
+    "Object menu = getMenu(location);" in legacy_block_data
+    and "menu != NO_RECORD_OBJECT && menu != null" in legacy_block_data,
+    "LegacyBlockDataCompat.hasMenu must distinguish absent records from menu-less Slimefun blocks",
+)
+require(
+    "public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world)" in legacy_block_data
+    and 'BlockStorage.class.getDeclaredField("inventories")' in legacy_block_data
+    and "BlockStorage.getStorage(world)" in legacy_block_data,
+    "LegacyBlockDataCompat must isolate the RC-37 world-inventory registry used by data-loss recovery",
+)
+
+require(
+    cargo_util.count("LegacyBlockDataCompat.hasMenu(") == 6
+    and cargo_util.count("LegacyBlockDataCompat.getMenu(") == 1,
+    "CargoUtil must route all Slimefun-menu existence/retrieval checks through the compatibility boundary",
+)
+require("BlockStorage." not in cargo_util, "CargoUtil must not directly use deprecated BlockStorage")
+
+require(
+    area_accessor_menu.count("LegacyBlockDataCompat.hasBlockData(") == 2
+    and area_accessor_menu.count("LegacyBlockDataCompat.hasMenu(") == 2
+    and area_accessor_menu.count("LegacyBlockDataCompat.getMenu(") == 1,
+    "AreaAccessorMenu must preserve scan/click block-data and menu-existence semantics",
+)
+require("BlockStorage." not in area_accessor_menu, "AreaAccessorMenu must not directly use deprecated BlockStorage")
+
+for source, name, has_menu_count, get_menu_count in (
+    (point_transfer, "PointTransfer", 3, 1),
+    (advanced_point_transfer, "AdvancedPointTransfer", 3, 1),
+    (line_transfer, "LineTransfer", 7, 2),
+    (advanced_line_transfer, "AdvancedLineTransfer", 7, 2),
+    (mesh_transfer, "MeshTransfer", 5, 2),
+    (advanced_mesh_transfer, "AdvancedMeshTransfer", 5, 2),
+):
+    require(
+        source.count("LegacyBlockDataCompat.hasBlockData(location)") == 1,
+        f"{name} must preserve its block-data existence gate",
+    )
+    require(
+        source.count("LegacyBlockDataCompat.hasMenu(") == has_menu_count,
+        f"{name} lost one or more menu-existence topology checks",
+    )
+    require(
+        source.count("LegacyBlockDataCompat.getMenu(") == get_menu_count,
+        f"{name} lost one or more validated menu retrievals",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString())" in source,
+        f"{name} must preserve owner UUID persistence",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
+    )
+
+for source, name in (
+    (mesh_transfer, "MeshTransfer"),
+    (advanced_mesh_transfer, "AdvancedMeshTransfer"),
+):
+    require(
+        'LegacyBlockDataCompat.setValue(block.getLocation(), PositionInfo.KEY, "")' in source,
+        f"{name} must preserve empty mesh-position state initialization",
+    )
+
+require(
+    'public static final String KEY_LIFE = "l";' in equivalent_concept
+    and 'public static final String KEY_RANGE = "r";' in equivalent_concept,
+    "EquivalentConcept life/range persistence keys must remain unchanged",
+)
+for expected in (
+    "LegacyBlockDataCompat.hasBlockData(location)",
+    "LegacyBlockDataCompat.getSlimefunId(location) == null",
+    "LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId())",
+    "LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId())",
+    "LegacyTickerDataCompat.getConfig(location)",
+    "LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate))",
+    "LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1))",
+):
+    require(expected in equivalent_concept, f"EquivalentConcept lost state/topology behavior: {expected}")
+require(
+    equivalent_concept.count("LegacyBlockDataCompat.removeBlock(") == 2,
+    "EquivalentConcept must preserve both full block-data removal transitions",
+)
+require(
+    "@Nonnull Config config" in equivalent_concept,
+    "EquivalentConcept must retain the RC-37 ticker Config signature",
+)
+require("BlockStorage." not in equivalent_concept, "EquivalentConcept must not directly use deprecated BlockStorage")
+
+require(
+    "LegacyBlockDataCompat.getLegacyWorldInventories(world)" in setup_util,
+    "SetupUtil must route RC-37 world-inventory recovery through the compatibility boundary",
+)
+require(
+    "LegacyBlockDataCompat.setSlimefunId(location, id)" in setup_util
+    and "LegacyBlockDataCompat.setValue(location, configEntry.getKey(), configEntry.getValue())" in setup_util,
+    "SetupUtil data-loss repair must preserve identity and custom state restoration",
+)
+require(
+    "ReflectionUtil" not in setup_util
+    and "BlockStorage." not in setup_util,
+    "SetupUtil must not directly access the deprecated BlockStorage registry",
 )
 
 for marker in (

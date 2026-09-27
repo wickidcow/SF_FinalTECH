@@ -23,7 +23,7 @@ import io.taraxacum.libs.plugin.dto.InvWithSlots;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -66,7 +66,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
                 Location location = block.getLocation();
 
                 IgnorePermission.HELPER.checkOrSetBlockStorage(location);
-                BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString());
+                LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString());
 
                 CargoFilter.HELPER.checkOrSetBlockStorage(location);
                 CargoMode.HELPER.checkOrSetBlockStorage(location);
@@ -92,7 +92,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
 
     @Override
     public void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
         boolean primaryThread = javaPlugin.getServer().isPrimaryThread();
@@ -149,7 +149,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
                 Inventory outputInventory = CargoUtil.getVanillaInventory(outputBlock);
 
                 ServerRunnableLockFactory.getInstance(javaPlugin, Location.class).waitThenRun(() -> {
-                    if (!BlockStorage.hasBlockInfo(location)) {
+                    if (!LegacyBlockDataCompat.hasBlockData(location)) {
                         return;
                     }
 
@@ -166,7 +166,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
                     String cargoMode = CargoMode.HELPER.getOrDefaultValue(config);
 
                     InvWithSlots inputMap;
-                    if (BlockStorage.hasInventory(inputBlock)) {
+                    if (LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
                         if (CargoMode.VALUE_OUTPUT_MAIN.equals(cargoMode)) {
                             inputMap = null;
                         } else {
@@ -179,7 +179,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
                     }
 
                     InvWithSlots outputMap;
-                    if (BlockStorage.hasInventory(outputBlock)) {
+                    if (LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
                         if (CargoMode.VALUE_INPUT_MAIN.equals(cargoMode)) {
                             outputMap = null;
                         } else {
@@ -222,7 +222,7 @@ public class PointTransfer extends AbstractCargo implements RecipeItem {
         Set<Location> locationSet = new HashSet<>();
         locationSet.add(begin.getLocation());
         while (true) {
-            if (BlockStorage.hasInventory(result) && !result.getType().equals(FinalTechItemStacks.POINT_TRANSFER.getType())) {
+            if (LegacyBlockDataCompat.hasMenu(result.getLocation()) && !result.getType().equals(FinalTechItemStacks.POINT_TRANSFER.getType())) {
                 particleLocationList.add(LocationUtil.getCenterLocation(result));
                 break;
             }

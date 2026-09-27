@@ -13,7 +13,7 @@ import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -114,7 +114,7 @@ public class AreaAccessorMenu extends AbstractClickerMenu {
                 tempLocation.setY(y);
                 for (int z = minZ; z <= maxZ; z++) {
                     tempLocation.setZ(z);
-                    if (BlockStorage.hasBlockInfo(tempLocation) && BlockStorage.hasInventory(tempLocation.getBlock())) {
+                    if (LegacyBlockDataCompat.hasBlockData(tempLocation) && LegacyBlockDataCompat.hasMenu(tempLocation)) {
                         int distance = Math.abs(tempLocation.getBlockX() - location.getBlockX()) + Math.abs(tempLocation.getBlockY() - location.getBlockY()) + Math.abs(tempLocation.getBlockZ() - location.getBlockZ());
                         List<Location> locationList = distanceLocationMap.computeIfAbsent(distance, d -> new ArrayList<>(d * d * 4 + 2));
                         locationList.add(tempLocation.clone());
@@ -140,7 +140,7 @@ public class AreaAccessorMenu extends AbstractClickerMenu {
             Location l = locationList.get((i + page * TEMP_CONTENT.length) % locationList.size());
             LocationInfo locationInfo = LocationInfo.get(l);
             if (locationInfo != null) {
-                BlockMenu blockMenu = BlockStorage.getInventory(l);
+                BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(l);
                 if (blockMenu != null) {
                     ItemStack icon = new CustomItemStack(locationInfo.getSlimefunItem().getItem(), locationInfo.getSlimefunItem().getItemName(), FinalTechChanged.getLanguageManager().replaceStringArray(FinalTechChanged.getLanguageStringArray("items", SfItemUtil.getIdFormatName(AreaAccessor.class), "temp-icon", "lore"),
                             String.valueOf(l.getBlockX() - location.getBlockX()),
@@ -149,7 +149,7 @@ public class AreaAccessorMenu extends AbstractClickerMenu {
                     chestMenu.addItem(TEMP_CONTENT[i], ItemStackUtil.cleanItem(icon));
                     chestMenu.addMenuClickHandler(TEMP_CONTENT[i], (p, slot, item, action) -> {
                         // BlockMenu may be updated after the menu generated.
-                        if (BlockStorage.hasBlockInfo(l) && BlockStorage.hasInventory(l.getBlock()) && blockMenu.canOpen(l.getBlock(), player)) {
+                        if (LegacyBlockDataCompat.hasBlockData(l) && LegacyBlockDataCompat.hasMenu(l) && blockMenu.canOpen(l.getBlock(), player)) {
                             JavaPlugin javaPlugin = AreaAccessorMenu.this.getSlimefunItem().getAddon().getJavaPlugin();
                             javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.WAX_OFF, 0, blockMenu.getBlock()));
                             javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawLineByDistance(javaPlugin, Particle.WAX_OFF, 0, 0.25, LocationUtil.getCenterLocation(location.getBlock()), LocationUtil.getCenterLocation(blockMenu.getBlock())));

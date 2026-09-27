@@ -19,7 +19,7 @@ import io.taraxacum.libs.plugin.dto.InvWithSlots;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -57,7 +57,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                 Location location = block.getLocation();
 
                 IgnorePermission.HELPER.checkOrSetBlockStorage(location);
-                BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString());
+                LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString());
 
                 CargoFilter.HELPER.checkOrSetBlockStorage(location);
                 BlockSearchMode.MESH_INPUT_HELPER.checkOrSetBlockStorage(location);
@@ -75,7 +75,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                 SlotSearchOrder.OUTPUT_HELPER.checkOrSetBlockStorage(location);
                 CargoLimit.OUTPUT_HELPER.checkOrSetBlockStorage(location);
 
-                BlockStorage.addBlockInfo(block, PositionInfo.KEY, "");
+                LegacyBlockDataCompat.setValue(block.getLocation(), PositionInfo.KEY, "");
             }
         };
     }
@@ -94,7 +94,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
 
     @Override
     public void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
         boolean primaryThread = javaPlugin.getServer().isPrimaryThread();
@@ -163,7 +163,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
 
             for (Block outputBlock : outputBlocks) {
                 InvWithSlots outputMap;
-                if (BlockStorage.hasInventory(outputBlock)) {
+                if (LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
                     outputMap = null;
                 } else {
                     outputMap = CargoUtil.getInvWithSlots(outputBlock, outputSize, outputOrder);
@@ -215,7 +215,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
 
             for (Block inputBlock : inputBlocks) {
                 InvWithSlots inputMap;
-                if (BlockStorage.hasInventory(inputBlock)) {
+                if (LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
                     inputMap = null;
                 } else {
                     inputMap = CargoUtil.getInvWithSlots(inputBlock, inputSize, inputOrder);
@@ -262,7 +262,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                 }
                 locations[locations.length - 1] = block.getLocation();
                 ServerRunnableLockFactory.getInstance(javaPlugin, Location.class).waitThenRun(() -> {
-                    if (!BlockStorage.hasBlockInfo(location)) {
+                    if (!LegacyBlockDataCompat.hasBlockData(location)) {
                         return;
                     }
 
@@ -311,7 +311,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                     for (int i = 0; i < outputBlocks.length; i++) {
                         Block outputBlock = outputBlocks[i];
                         InvWithSlots outputMap;
-                        if (BlockStorage.hasInventory(outputBlock)) {
+                        if (LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
                             outputMap = null;
                         } else if (outputVanillaInventories[i] != null) {
                             outputMap = CargoUtil.calInvWithSlots(outputVanillaInventories[i], outputOrder);
@@ -361,7 +361,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                     for (int i = 0; i < inputBlocks.length; i++) {
                         Block inputBlock = inputBlocks[i];
                         InvWithSlots inputMap;
-                        if (BlockStorage.hasInventory(inputBlock)) {
+                        if (LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
                             inputMap = null;
                         } else if (inputVanillaInventories[i] != null) {
                             inputMap = CargoUtil.calInvWithSlots(inputVanillaInventories[i], inputOrder);
@@ -403,7 +403,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
                 result = result.getRelative(blockFace);
                 continue;
             }
-            if (BlockSearchMode.VALUE_PENETRATE.equals(searchMode) && BlockStorage.hasInventory(result) && BlockStorage.getInventory(result).getPreset().getID().equals(FinalTechItemStacks.MESH_TRANSFER.getItemId())) {
+            if (BlockSearchMode.VALUE_PENETRATE.equals(searchMode) && LegacyBlockDataCompat.hasMenu(result.getLocation()) && LegacyBlockDataCompat.getMenu(result.getLocation()).getPreset().getID().equals(FinalTechItemStacks.MESH_TRANSFER.getItemId())) {
                 result = result.getRelative(blockFace);
                 continue;
             }
