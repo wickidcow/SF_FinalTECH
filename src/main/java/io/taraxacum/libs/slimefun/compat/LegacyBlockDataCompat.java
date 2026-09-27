@@ -68,6 +68,35 @@ public final class LegacyBlockDataCompat {
         return LegacyAccess.getMenu(location);
     }
 
+    /**
+     * Creates/recreates the Slimefun identity record at this location.
+     *
+     * <p>The special Slimefun id is deliberately not exposed through
+     * {@link #setValue(Location, String, String)} because it is identity, not
+     * ordinary persisted key/value data.</p>
+     */
+    public static void setSlimefunId(@Nonnull Location location, @Nonnull String slimefunId) {
+        if (MODERN != null) {
+            MODERN.createBlock(location, slimefunId);
+            return;
+        }
+        LegacyAccess.setSlimefunId(location, slimefunId);
+    }
+
+    /**
+     * Removes the complete Slimefun block-data record at this location.
+     *
+     * <p>This preserves the historical {@code BlockStorage.clearBlockInfo}
+     * semantics while using the current block-data controller when available.</p>
+     */
+    public static void removeBlock(@Nonnull Location location) {
+        if (MODERN != null) {
+            MODERN.removeBlock(location);
+            return;
+        }
+        LegacyAccess.removeBlock(location);
+    }
+
     @Nullable
     private static ModernAccess createModernAccess() {
         try {
@@ -84,6 +113,8 @@ public final class LegacyBlockDataCompat {
             Method setData = blockDataType.getMethod("setData", String.class, String.class);
             Method removeData = blockDataType.getMethod("removeData", String.class);
             Method getBlockMenu = blockDataType.getMethod("getBlockMenu");
+            Method createBlock = controllerType.getMethod("createBlock", Location.class, String.class);
+            Method removeBlock = controllerType.getMethod("removeBlock", Location.class);
 
             return new ModernAccess(
                     getDatabaseManager,
@@ -95,7 +126,9 @@ public final class LegacyBlockDataCompat {
                     getSfId,
                     setData,
                     removeData,
-                    getBlockMenu);
+                    getBlockMenu,
+                    createBlock,
+                    removeBlock);
         } catch (NoSuchMethodException | LinkageError ignored) {
             return null;
         }
@@ -111,7 +144,9 @@ public final class LegacyBlockDataCompat {
             Method getSfId,
             Method setData,
             Method removeData,
-            Method getBlockMenu) {
+            Method getBlockMenu,
+            Method createBlock,
+            Method removeBlock) {
 
         private static final String NO_RECORD = new String("FINALTECH_NO_BLOCK_DATA_RECORD");
         private static final Object NO_RECORD_OBJECT = new Object();
@@ -194,6 +229,30 @@ public final class LegacyBlockDataCompat {
             }
         }
 
+        private void createBlock(@Nonnull Location location, @Nonnull String slimefunId) {
+            try {
+                Object databaseManager = getDatabaseManager.invoke(null);
+                Object controller = getBlockDataController.invoke(databaseManager);
+                createBlock.invoke(controller, location, slimefunId);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block identity API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("create block", exception);
+            }
+        }
+
+        private void removeBlock(@Nonnull Location location) {
+            try {
+                Object databaseManager = getDatabaseManager.invoke(null);
+                Object controller = getBlockDataController.invoke(databaseManager);
+                removeBlock.invoke(controller, location);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block-data removal API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("remove block", exception);
+            }
+        }
+
         private static RuntimeException unwrap(String operation, InvocationTargetException exception) {
             Throwable cause = exception.getCause();
             if (cause instanceof RuntimeException runtimeException) {
@@ -235,6 +294,14 @@ public final class LegacyBlockDataCompat {
         @Nullable
         private static BlockMenu getMenu(@Nonnull Location location) {
             return me.mrCookieSlime.Slimefun.api.BlockStorage.getInventory(location);
+        }
+
+        private static void setSlimefunId(@Nonnull Location location, @Nonnull String slimefunId) {
+            me.mrCookieSlime.Slimefun.api.BlockStorage.addBlockInfo(location, "id", slimefunId, true);
+        }
+
+        private static void removeBlock(@Nonnull Location location) {
+            me.mrCookieSlime.Slimefun.api.BlockStorage.clearBlockInfo(location);
         }
     }
 }

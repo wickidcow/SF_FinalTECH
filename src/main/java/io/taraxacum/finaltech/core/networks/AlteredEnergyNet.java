@@ -10,9 +10,11 @@ import io.github.thebusybiscuit.slimefun4.utils.NumberUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.ConfigUtil;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -117,6 +119,7 @@ public class AlteredEnergyNet extends EnergyNet {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public Summary tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
 
@@ -142,7 +145,7 @@ public class AlteredEnergyNet extends EnergyNet {
         Iterator<Map.Entry<Location, EnergyNetComponent>> consumerIterator = this.consumers.entrySet().iterator();
         List<Location> removeList = new ArrayList<>();
 
-        Map<Location, Config> generatorConfigMap = new HashMap<>(this.generators.size());
+        Map<Location, Object> generatorConfigMap = new HashMap<>(this.generators.size());
 
         AtomicLong timestamp = new AtomicLong(Slimefun.getProfiler().newEntry());
 
@@ -150,8 +153,8 @@ public class AlteredEnergyNet extends EnergyNet {
         while (consumerIterator.hasNext()) {
             Map.Entry<Location, EnergyNetComponent> consumerEntry = consumerIterator.next();
             EnergyNetComponent consumer = consumerEntry.getValue();
-            Config consumerConfig = BlockStorage.getLocationInfo(consumerEntry.getKey());
-            int consumerEnergy = consumer.getCharge(consumerEntry.getKey(), consumerConfig);
+            Object consumerConfig = LegacyTickerDataCompat.getConfig(consumerEntry.getKey());
+            int consumerEnergy = LegacySlimefunApiCompat.getCharge(consumer, consumerEntry.getKey(), consumerConfig);
             int consumerCapacity = consumer.getCapacity();
 
             int leftEnergy = consumerCapacity - consumerEnergy;
@@ -171,19 +174,19 @@ public class AlteredEnergyNet extends EnergyNet {
                     if (GENERATED_ENERGY_MAP.containsKey(generatorEntry.getKey())) {
                         continue;
                     }
-                    Config generatorConfig;
+                    Object generatorConfig;
                     if (generatorConfigMap.containsKey(generatorEntry.getKey())) {
                         generatorConfig = generatorConfigMap.get(generatorEntry.getKey());
                     } else {
-                        generatorConfig = BlockStorage.getLocationInfo(generatorEntry.getKey());
+                        generatorConfig = LegacyTickerDataCompat.getConfig(generatorEntry.getKey());
                         generatorConfigMap.put(generatorEntry.getKey(), generatorConfig);
                     }
                     long t1 = Slimefun.getProfiler().newEntry();
-                    sourceEnergy = generatorEntry.getValue().getGeneratedOutput(generatorEntry.getKey(), generatorConfig);
+                    sourceEnergy = LegacySlimefunApiCompat.getGeneratedOutput(generatorEntry.getValue(), generatorEntry.getKey(), generatorConfig);
                     long t2 = Slimefun.getProfiler().closeEntry(generatorEntry.getKey(), (SlimefunItem) generatorEntry.getValue(), t1);
                     timestamp.getAndAdd(t2);
-                    if (generatorEntry.getValue().willExplode(generatorEntry.getKey(), generatorConfig)) {
-                        BlockStorage.clearBlockInfo(generatorEntry.getKey());
+                    if (LegacySlimefunApiCompat.willExplode(generatorEntry.getValue(), generatorEntry.getKey(), generatorConfig)) {
+                        LegacyBlockDataCompat.removeBlock(generatorEntry.getKey());
                         Location generatorLocation = generatorEntry.getKey();
                         Slimefun.runSync(() -> {
                             generatorLocation.getBlock().setType(Material.LAVA);
@@ -205,45 +208,45 @@ public class AlteredEnergyNet extends EnergyNet {
 
                 while (leftEnergy > 0 && generatorIterator2.hasNext()) {
                     Map.Entry<Location, EnergyNetProvider> generatorEntry = generatorIterator2.next();
-                    Config generatorConfig;
+                    Object generatorConfig;
                     if (generatorConfigMap.containsKey(generatorEntry.getKey())) {
                         generatorConfig = generatorConfigMap.get(generatorEntry.getKey());
                     } else {
-                        generatorConfig = BlockStorage.getLocationInfo(generatorEntry.getKey());
+                        generatorConfig = LegacyTickerDataCompat.getConfig(generatorEntry.getKey());
                         generatorConfigMap.put(generatorEntry.getKey(), generatorConfig);
                     }
-                    sourceEnergy = generatorEntry.getValue().getCharge(generatorEntry.getKey(), generatorConfig);
+                    sourceEnergy = LegacySlimefunApiCompat.getCharge(generatorEntry.getValue(), generatorEntry.getKey(), generatorConfig);
                     summary.generatorCapacity += generatorEntry.getValue().getCapacity();
                     if (sourceEnergy > 0) {
                         transferEnergy = Math.min(leftEnergy, sourceEnergy);
                         leftEnergy -= transferEnergy;
                         sourceEnergy -= transferEnergy;
                         summary.generatorEnergy += sourceEnergy;
-                        generatorEntry.getValue().setCharge(generatorEntry.getKey(), sourceEnergy);
+                        LegacySlimefunApiCompat.setCharge(generatorEntry.getValue(), generatorEntry.getKey(), sourceEnergy);
                     }
                 }
 
                 while (leftEnergy > 0 && capacitorIterator.hasNext()) {
                     Map.Entry<Location, EnergyNetComponent> capacitorEntry = capacitorIterator.next();
-                    Config generatorConfig;
+                    Object generatorConfig;
                     if (generatorConfigMap.containsKey(capacitorEntry.getKey())) {
                         generatorConfig = generatorConfigMap.get(capacitorEntry.getKey());
                     } else {
-                        generatorConfig = BlockStorage.getLocationInfo(capacitorEntry.getKey());
+                        generatorConfig = LegacyTickerDataCompat.getConfig(capacitorEntry.getKey());
                         generatorConfigMap.put(capacitorEntry.getKey(), generatorConfig);
                     }
-                    sourceEnergy = capacitorEntry.getValue().getCharge(capacitorEntry.getKey(), generatorConfig);
+                    sourceEnergy = LegacySlimefunApiCompat.getCharge(capacitorEntry.getValue(), capacitorEntry.getKey(), generatorConfig);
                     summary.capacitorCapacity += capacitorEntry.getValue().getCapacity();
                     if (sourceEnergy > 0) {
                         transferEnergy = Math.min(leftEnergy, sourceEnergy);
                         leftEnergy -= transferEnergy;
                         sourceEnergy -= transferEnergy;
                         summary.capacitorEnergy += sourceEnergy;
-                        capacitorEntry.getValue().setCharge(capacitorEntry.getKey(), sourceEnergy);
+                        LegacySlimefunApiCompat.setCharge(capacitorEntry.getValue(), capacitorEntry.getKey(), sourceEnergy);
                     }
                 }
 
-                consumerEntry.getValue().setCharge(consumerEntry.getKey(), consumerCapacity - leftEnergy);
+                LegacySlimefunApiCompat.setCharge(consumerEntry.getValue(), consumerEntry.getKey(), consumerCapacity - leftEnergy);
             }
 
             int consumed = consumerCapacity - leftEnergy - consumerEnergy;
@@ -260,14 +263,14 @@ public class AlteredEnergyNet extends EnergyNet {
 
         while (capacitorIterator.hasNext()) {
             Map.Entry<Location, EnergyNetComponent> capacitorEntry = capacitorIterator.next();
-            Config generatorConfig;
+            Object generatorConfig;
             if (generatorConfigMap.containsKey(capacitorEntry.getKey())) {
                 generatorConfig = generatorConfigMap.get(capacitorEntry.getKey());
             } else {
-                generatorConfig = BlockStorage.getLocationInfo(capacitorEntry.getKey());
+                generatorConfig = LegacyTickerDataCompat.getConfig(capacitorEntry.getKey());
                 generatorConfigMap.put(capacitorEntry.getKey(), generatorConfig);
             }
-            energy = capacitorEntry.getValue().getCharge(capacitorEntry.getKey(), generatorConfig);
+            energy = LegacySlimefunApiCompat.getCharge(capacitorEntry.getValue(), capacitorEntry.getKey(), generatorConfig);
             capacity = capacitorEntry.getValue().getCapacity();
             summary.capacitorCapacity += capacitorEntry.getValue().getCapacity();
 
@@ -286,19 +289,19 @@ public class AlteredEnergyNet extends EnergyNet {
                     if (GENERATED_ENERGY_MAP.containsKey(generatorOutputEntry.getKey())) {
                         continue;
                     }
-                    Config generatorOutputConfig;
+                    Object generatorOutputConfig;
                     if (generatorConfigMap.containsKey(generatorOutputEntry.getKey())) {
                         generatorOutputConfig = generatorConfigMap.get(generatorOutputEntry.getKey());
                     } else {
-                        generatorOutputConfig = BlockStorage.getLocationInfo(generatorOutputEntry.getKey());
+                        generatorOutputConfig = LegacyTickerDataCompat.getConfig(generatorOutputEntry.getKey());
                         generatorConfigMap.put(generatorOutputEntry.getKey(), generatorOutputConfig);
                     }
                     long t1 = Slimefun.getProfiler().newEntry();
-                    sourceEnergy = generatorOutputEntry.getValue().getGeneratedOutput(generatorOutputEntry.getKey(), generatorOutputConfig);
+                    sourceEnergy = LegacySlimefunApiCompat.getGeneratedOutput(generatorOutputEntry.getValue(), generatorOutputEntry.getKey(), generatorOutputConfig);
                     long t2 = Slimefun.getProfiler().closeEntry(generatorOutputEntry.getKey(), (SlimefunItem) generatorOutputEntry.getValue(), t1);
                     timestamp.getAndAdd(t2);
-                    if (generatorOutputEntry.getValue().willExplode(generatorOutputEntry.getKey(), generatorOutputConfig)) {
-                        BlockStorage.clearBlockInfo(generatorOutputEntry.getKey());
+                    if (LegacySlimefunApiCompat.willExplode(generatorOutputEntry.getValue(), generatorOutputEntry.getKey(), generatorOutputConfig)) {
+                        LegacyBlockDataCompat.removeBlock(generatorOutputEntry.getKey());
                         Location generatorLocation = generatorOutputEntry.getKey();
                         Slimefun.runSync(() -> {
                             generatorLocation.getBlock().setType(Material.LAVA);
@@ -319,7 +322,7 @@ public class AlteredEnergyNet extends EnergyNet {
                 }
 
                 summary.capacitorEnergy += capacity - leftEnergy;
-                capacitorEntry.getValue().setCharge(capacitorEntry.getKey(), capacity - leftEnergy);
+                LegacySlimefunApiCompat.setCharge(capacitorEntry.getValue(), capacitorEntry.getKey(), capacity - leftEnergy);
             } else {
                 summary.capacitorEnergy += energy;
             }
@@ -331,15 +334,15 @@ public class AlteredEnergyNet extends EnergyNet {
                 continue;
             }
 
-            Config generatorConfig;
+            Object generatorConfig;
             if (generatorConfigMap.containsKey(generatorEntry.getKey())) {
                 generatorConfig = generatorConfigMap.get(generatorEntry.getKey());
             } else {
-                generatorConfig = BlockStorage.getLocationInfo(generatorEntry.getKey());
+                generatorConfig = LegacyTickerDataCompat.getConfig(generatorEntry.getKey());
                 generatorConfigMap.put(generatorEntry.getKey(), generatorConfig);
             }
 
-            energy = generatorEntry.getValue().getCharge(generatorEntry.getKey(), generatorConfig);
+            energy = LegacySlimefunApiCompat.getCharge(generatorEntry.getValue(), generatorEntry.getKey(), generatorConfig);
             capacity = generatorEntry.getValue().getCapacity();
             summary.generatorCapacity += capacity;
 
@@ -358,19 +361,19 @@ public class AlteredEnergyNet extends EnergyNet {
                     if (GENERATED_ENERGY_MAP.containsKey(generatorOutputEntry.getKey())) {
                         continue;
                     }
-                    Config generatorOutputConfig;
+                    Object generatorOutputConfig;
                     if (generatorConfigMap.containsKey(generatorOutputEntry.getKey())) {
                         generatorOutputConfig = generatorConfigMap.get(generatorOutputEntry.getKey());
                     } else {
-                        generatorOutputConfig = BlockStorage.getLocationInfo(generatorOutputEntry.getKey());
+                        generatorOutputConfig = LegacyTickerDataCompat.getConfig(generatorOutputEntry.getKey());
                         generatorConfigMap.put(generatorOutputEntry.getKey(), generatorOutputConfig);
                     }
                     long t1 = Slimefun.getProfiler().newEntry();
-                    sourceEnergy = generatorOutputEntry.getValue().getGeneratedOutput(generatorOutputEntry.getKey(), generatorOutputConfig);
+                    sourceEnergy = LegacySlimefunApiCompat.getGeneratedOutput(generatorOutputEntry.getValue(), generatorOutputEntry.getKey(), generatorOutputConfig);
                     long t2 = Slimefun.getProfiler().closeEntry(generatorOutputEntry.getKey(), (SlimefunItem) generatorOutputEntry.getValue(), t1);
                     timestamp.getAndAdd(t2);
-                    if (generatorOutputEntry.getValue().willExplode(generatorOutputEntry.getKey(), generatorOutputConfig)) {
-                        BlockStorage.clearBlockInfo(generatorOutputEntry.getKey());
+                    if (LegacySlimefunApiCompat.willExplode(generatorOutputEntry.getValue(), generatorOutputEntry.getKey(), generatorOutputConfig)) {
+                        LegacyBlockDataCompat.removeBlock(generatorOutputEntry.getKey());
                         Location generatorLocation = generatorOutputEntry.getKey();
                         Slimefun.runSync(() -> {
                             generatorLocation.getBlock().setType(Material.LAVA);
@@ -391,7 +394,7 @@ public class AlteredEnergyNet extends EnergyNet {
                 }
 
                 summary.generatorEnergy += capacity - leftEnergy;
-                generatorEntry.getValue().setCharge(generatorEntry.getKey(), capacity - leftEnergy);
+                LegacySlimefunApiCompat.setCharge(generatorEntry.getValue(), generatorEntry.getKey(), capacity - leftEnergy);
             } else {
                 summary.generatorEnergy += energy;
             }

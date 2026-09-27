@@ -2,6 +2,8 @@ package io.taraxacum.libs.slimefun.compat;
 
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
+import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
+import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -39,6 +41,27 @@ public final class LegacySlimefunApiCompat {
             @Nonnull EnergyNetComponent component,
             @Nonnull Location location) {
         return component.getCharge(location);
+    }
+
+    public static int getCharge(
+            @Nonnull EnergyNetComponent component,
+            @Nonnull Location location,
+            @Nonnull Object data) {
+        return component.getCharge(location, (Config) data);
+    }
+
+    public static int getGeneratedOutput(
+            @Nonnull EnergyNetProvider provider,
+            @Nonnull Location location,
+            @Nonnull Object data) {
+        return provider.getGeneratedOutput(location, (Config) data);
+    }
+
+    public static boolean willExplode(
+            @Nonnull EnergyNetProvider provider,
+            @Nonnull Location location,
+            @Nonnull Object data) {
+        return provider.willExplode(location, (Config) data);
     }
 
     public static void setCharge(

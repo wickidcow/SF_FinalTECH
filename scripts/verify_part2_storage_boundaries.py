@@ -160,6 +160,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/storage/StorageInteractPort.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/util/BlockTickerUtil.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java":
+        "LegacySlimefunApiCompat",
 }
 
 
@@ -739,6 +743,83 @@ require(
 require(
     "Config config" in storage_interact_port,
     "StorageInteractPort must retain the RC-37 ticker Config signature",
+)
+
+legacy_block_data = read(
+    "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java"
+)
+legacy_slimefun_api = read(
+    "src/main/java/io/taraxacum/libs/slimefun/compat/LegacySlimefunApiCompat.java"
+)
+block_ticker_util = read(
+    "src/main/java/io/taraxacum/finaltech/util/BlockTickerUtil.java"
+)
+altered_energy_net = read(
+    "src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java"
+)
+
+require(
+    "public static void removeBlock(@Nonnull Location location)" in legacy_block_data
+    and 'controllerType.getMethod("removeBlock", Location.class)' in legacy_block_data
+    and "BlockStorage.clearBlockInfo(location)" in legacy_block_data,
+    "LegacyBlockDataCompat must preserve modern-controller removal with an RC-37 BlockStorage fallback",
+)
+
+for expected in (
+    "public static int getCharge(",
+    "public static int getGeneratedOutput(",
+    "public static boolean willExplode(",
+):
+    require(
+        expected in legacy_slimefun_api,
+        f"LegacySlimefunApiCompat lost required energy compatibility adapter: {expected}",
+    )
+require(
+    '@SuppressWarnings("deprecation")' in legacy_slimefun_api,
+    "LegacySlimefunApiCompat must explicitly isolate intentional deprecated energy calls",
+)
+
+require(
+    "LegacyBlockDataCompat.getSlimefunId(location)" in block_ticker_util
+    and "LegacyBlockDataCompat.removeBlock(block.getLocation())" in block_ticker_util,
+    "BlockTickerUtil must route identity/removal through the block-data compatibility boundary",
+)
+require(
+    '@SuppressWarnings("deprecation")' in block_ticker_util,
+    "BlockTickerUtil must document/suppress its intentionally retained RC-37 Config callback signatures",
+)
+require(
+    "BlockStorage." not in block_ticker_util,
+    "BlockTickerUtil must not directly use deprecated BlockStorage",
+)
+
+require(
+    "Map<Location, Object> generatorConfigMap" in altered_energy_net,
+    "AlteredEnergyNet must keep legacy provider data behind an opaque compatibility object",
+)
+require(
+    "LegacyTickerDataCompat.getConfig(" in altered_energy_net
+    and "LegacyBlockDataCompat.removeBlock(" in altered_energy_net,
+    "AlteredEnergyNet must route ticker data and block removal through compatibility boundaries",
+)
+for expected in (
+    "LegacySlimefunApiCompat.getCharge(",
+    "LegacySlimefunApiCompat.setCharge(",
+    "LegacySlimefunApiCompat.getGeneratedOutput(",
+    "LegacySlimefunApiCompat.willExplode(",
+):
+    require(
+        expected in altered_energy_net,
+        f"AlteredEnergyNet lost compatibility-routed energy call: {expected}",
+    )
+require(
+    '@SuppressWarnings("deprecation")' in altered_energy_net
+    and "public Summary tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config)" in altered_energy_net,
+    "AlteredEnergyNet must retain its RC-37 Config-facing tick bridge",
+)
+require(
+    "BlockStorage." not in altered_energy_net,
+    "AlteredEnergyNet must not reintroduce direct deprecated BlockStorage access",
 )
 
 for marker in (

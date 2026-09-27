@@ -9,7 +9,7 @@ import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
  
+/**
+ * Ticker wrappers intentionally retain the RC-37 {@link Config} callback
+ * signatures. Deprecated calls outside that compatibility contract are routed
+ * through the dedicated Slimefun compatibility boundaries.
+ */
+@SuppressWarnings("deprecation")
 public class BlockTickerUtil {
     @SafeVarargs
     public static <T> void runTask(@Nonnull ServerRunnableLockFactory<T> serverRunnableLockFactory, boolean async, @Nonnull Runnable runnable, T... locks) {
@@ -163,13 +169,13 @@ public class BlockTickerUtil {
                                     }
                                 }
                                 if (canBreak) {
-                                    String storedItemId = BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID);
+                                    String storedItemId = LegacyBlockDataCompat.getSlimefunId(location);
                                     boolean shouldDropSelf = dropSelf && item.getId().equals(storedItemId);
 
                                     if (item instanceof MachineProcessHolder machineProcessHolder) {
                                         machineProcessHolder.getMachineProcessor().endOperation(block);
                                     }
-                                    BlockStorage.clearBlockInfo(block);
+                                    LegacyBlockDataCompat.removeBlock(block.getLocation());
                                     block.setType(Material.AIR);
 
                                     if (shouldDropSelf) {
