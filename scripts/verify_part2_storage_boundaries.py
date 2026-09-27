@@ -150,6 +150,12 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/MatrixItemSerializationConstructor.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/libs/slimefun/dto/LocationInfo.java":
+        "LegacyTickerDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineAccelerateCard.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineActivateCard.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -630,6 +636,62 @@ for source, name in (
     require(
         "BlockStorage." not in source,
         f"{name} must not reintroduce direct deprecated BlockStorage access",
+    )
+
+legacy_ticker_data = read(
+    "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java"
+)
+location_info = read(
+    "src/main/java/io/taraxacum/libs/slimefun/dto/LocationInfo.java"
+)
+accelerate_card = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineAccelerateCard.java"
+)
+activate_card = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineActivateCard.java"
+)
+
+require(
+    "public static Config getConfig(@Nonnull Location location)" in legacy_ticker_data
+    and "me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location)" in legacy_ticker_data,
+    "LegacyTickerDataCompat must isolate the intentional RC-37 location-to-Config bridge",
+)
+require(
+    '@SuppressWarnings("deprecation")' in legacy_ticker_data,
+    "LegacyTickerDataCompat must explicitly mark its intentional deprecated compatibility surface",
+)
+
+require(
+    location_info.count("LegacyTickerDataCompat.getConfig(location)") == 2
+    and location_info.count("LegacyBlockDataCompat.getSlimefunId(location)") == 2,
+    "LocationInfo must route Config and identity retrieval through the compatibility boundaries",
+)
+require(
+    "BlockStorage." not in location_info,
+    "LocationInfo must not reintroduce direct deprecated BlockStorage access",
+)
+
+for source, name, config_calls in (
+    (accelerate_card, "AbstractMachineAccelerateCard", 1),
+    (activate_card, "AbstractMachineActivateCard", 2),
+):
+    require(
+        "String slimefunId = LegacyBlockDataCompat.getSlimefunId(location);" in source
+        and "SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);" in source,
+        f"{name} must resolve machine identity once through the dedicated Slimefun-id boundary",
+    )
+    require(
+        "BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);" in source,
+        f"{name} must route menu permission checks through the compatibility boundary",
+    )
+    require(
+        source.count("LegacyTickerDataCompat.getConfig(location)") == config_calls,
+        f"{name} must route legacy ticker Config retrieval through LegacyTickerDataCompat",
+    )
+    require(
+        "BlockStorage." not in source
+        and "ConstantTableUtil.CONFIG_ID" not in source,
+        f"{name} must not reintroduce direct deprecated storage identity access",
     )
 
 for marker in (

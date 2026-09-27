@@ -2,7 +2,8 @@ package io.taraxacum.libs.slimefun.dto;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -27,8 +28,8 @@ public class LocationInfo {
 
     @Nullable
     public static LocationInfo get(@Nonnull Location location) {
-        Config config = BlockStorage.getLocationInfo(location);
-        String id = BlockStorage.getLocationInfo(location, "id");
+        Config config = LegacyTickerDataCompat.getConfig(location);
+        String id = LegacyBlockDataCompat.getSlimefunId(location);
         if (id != null) {
             SlimefunItem slimefunItem = SlimefunItem.getById(id);
             if (slimefunItem != null) {
@@ -67,8 +68,8 @@ public class LocationInfo {
      * @return false if there is no location info
      */
     public boolean newInstance(@Nonnull Location location) {
-        Config config = BlockStorage.getLocationInfo(location);
-        String id = config.getString("id");
+        Config config = LegacyTickerDataCompat.getConfig(location);
+        String id = LegacyBlockDataCompat.getSlimefunId(location);
         if (id == null) {
             return false;
         }

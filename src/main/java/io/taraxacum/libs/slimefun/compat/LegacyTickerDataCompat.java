@@ -1,6 +1,7 @@
 package io.taraxacum.libs.slimefun.compat;
 
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,6 +22,19 @@ public final class LegacyTickerDataCompat {
 
     private static Config config(@Nonnull Object data) {
         return (Config) data;
+    }
+
+    /**
+     * Returns the legacy ticker data view for a block location.
+     *
+     * <p>On current Slimefun Legacy this is a BlockDataConfigWrapper over the
+     * canonical block-data record. On RC-37 it preserves the historical Config
+     * object. Keeping this call here intentionally isolates the deprecated
+     * compatibility facade from gameplay classes.</p>
+     */
+    @Nonnull
+    public static Config getConfig(@Nonnull Location location) {
+        return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location);
     }
 
     public static boolean contains(@Nonnull Object data, @Nonnull String key) {

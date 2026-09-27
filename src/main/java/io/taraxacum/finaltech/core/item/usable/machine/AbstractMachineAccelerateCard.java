@@ -8,12 +8,11 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.usable.UsableSlimefunItem;
-import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.PermissionUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -44,11 +43,8 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
         }
 
         Location location = block.getLocation();
-        if (!BlockStorage.hasBlockInfo(location)) {
-            return;
-        }
-
-        if (BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID) == null) {
+        String slimefunId = LegacyBlockDataCompat.getSlimefunId(location);
+        if (slimefunId == null) {
             return;
         }
 
@@ -57,12 +53,10 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
             return;
         }
 
-        if (BlockStorage.hasInventory(block)) {
-            BlockMenu blockMenu = BlockStorage.getInventory(location);
-            if (!blockMenu.canOpen(block, player)) {
-                player.sendRawMessage(FinalTechChanged.getLanguageString("message", "no-permission", "location"));
-                return;
-            }
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
+        if (blockMenu != null && !blockMenu.canOpen(block, player)) {
+            player.sendRawMessage(FinalTechChanged.getLanguageString("message", "no-permission", "location"));
+            return;
         }
 
         if (!this.conditionMatch(player)) {
@@ -70,7 +64,7 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
             return;
         }
 
-        SlimefunItem slimefunItem = SlimefunItem.getById(BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID));
+        SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);
         if (slimefunItem == null || FinalTechChanged.isAntiAccelerateSlimefunItem(slimefunItem.getId())) {
             return;
         }
@@ -98,7 +92,7 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
 
         Runnable runnable = () -> {
             for (int i = 0; i < time; i++) {
-                blockTicker.tick(block, slimefunItem, BlockStorage.getLocationInfo(location));
+                blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location));
             }
         };
 
