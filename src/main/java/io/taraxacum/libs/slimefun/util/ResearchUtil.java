@@ -4,6 +4,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +22,7 @@ public class ResearchUtil {
             research.addItems(slimefunItem);
             research.register();
             if (forceCost) {
-                research.setCost(cost);
+                LegacySlimefunApiCompat.setResearchLevelCost(research, cost);
             }
             return research;
         }
@@ -33,7 +34,7 @@ public class ResearchUtil {
         Research research = new Research(new NamespacedKey(javaPlugin, key), id, defaultName, defaultCost);
         research.addItems(itemStacks).register();
         if (forceCost) {
-            research.setCost(defaultCost);
+            LegacySlimefunApiCompat.setResearchLevelCost(research, defaultCost);
         }
         return research;
     }
@@ -42,7 +43,7 @@ public class ResearchUtil {
         Research research = new Research(new NamespacedKey(languageManager.getPlugin(), key), key.hashCode(), languageManager.getString("research", key), defaultCost);
         research.addItems(itemStacks).register();
         if (forceCost) {
-            research.setCost(defaultCost);
+            LegacySlimefunApiCompat.setResearchLevelCost(research, defaultCost);
         }
         return research;
     }
