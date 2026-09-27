@@ -13,13 +13,16 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.core.multiblocks.MultiBlockMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.GuideItemLoreUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.util.GuideUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -34,6 +37,8 @@ import java.util.Map;
  
 // TODO: abstract as lib
 public class SubFlexItemGroup extends FlexItemGroup {
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
+    private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
     private static final int BACK_SLOT = 1;
     private static final int PREVIOUS_SLOT = 3;
     private static final int NEXT_SLOT = 5;
@@ -87,18 +92,18 @@ public class SubFlexItemGroup extends FlexItemGroup {
             return displayItem;
         }
 
-        List<String> categoryLore = this.item.getItemMeta().getLore();
+        List<Component> categoryLore = this.item.getItemMeta().lore();
         if (categoryLore == null || categoryLore.isEmpty()) {
             return displayItem;
         }
 
         var displayMeta = displayItem.getItemMeta();
-        List<String> combinedLore = new ArrayList<>(categoryLore);
-        List<String> actionLore = displayMeta.getLore();
+        List<Component> combinedLore = new ArrayList<>(categoryLore);
+        List<Component> actionLore = displayMeta.lore();
         if (actionLore != null) {
             combinedLore.addAll(actionLore);
         }
-        displayMeta.setLore(combinedLore);
+        displayMeta.lore(combinedLore);
         displayItem.setItemMeta(displayMeta);
         return displayItem;
     }
@@ -326,16 +331,19 @@ public class SubFlexItemGroup extends FlexItemGroup {
                     .getMethod("toggle", java.util.UUID.class, String.class)
                     .invoke(bookmarks, player.getUniqueId(), slimefunItem.getId());
         } catch (ReflectiveOperationException | LinkageError exception) {
-            player.sendMessage(ChatColor.RED + "Bookmarks are unavailable in this Slimefun guide.");
+            player.sendMessage(Component.text("Bookmarks are unavailable in this Slimefun guide.", NamedTextColor.RED));
             return;
         }
 
+        String itemName = PLAIN.serialize(LEGACY.deserialize(slimefunItem.getItemName()));
         player.sendMessage(
                 added
-                        ? ChatColor.GOLD + "★ Added " + ChatColor.WHITE + ChatColor.stripColor(slimefunItem.getItemName())
-                                + ChatColor.GOLD + " to your bookmarks."
-                        : ChatColor.YELLOW + "Removed " + ChatColor.WHITE + ChatColor.stripColor(slimefunItem.getItemName())
-                                + ChatColor.YELLOW + " from your bookmarks.");
+                        ? Component.text("★ Added ", NamedTextColor.GOLD)
+                                .append(Component.text(itemName, NamedTextColor.WHITE))
+                                .append(Component.text(" to your bookmarks.", NamedTextColor.GOLD))
+                        : Component.text("Removed ", NamedTextColor.YELLOW)
+                                .append(Component.text(itemName, NamedTextColor.WHITE))
+                                .append(Component.text(" from your bookmarks.", NamedTextColor.YELLOW)));
     }
 
     @Nonnull

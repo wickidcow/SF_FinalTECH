@@ -9,7 +9,7 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
-import io.taraxacum.finaltech.FinalTechChanged;
+import net.kyori.adventure.text.Component;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.TextUtil;
@@ -67,18 +67,18 @@ public class MainItemGroup extends FlexItemGroup {
             return displayItem;
         }
 
-        List<String> categoryLore = this.item.getItemMeta().getLore();
+        List<Component> categoryLore = this.item.getItemMeta().lore();
         if (categoryLore == null || categoryLore.isEmpty()) {
             return displayItem;
         }
 
         var displayMeta = displayItem.getItemMeta();
-        List<String> combinedLore = new ArrayList<>(categoryLore);
-        List<String> actionLore = displayMeta.getLore();
+        List<Component> combinedLore = new ArrayList<>(categoryLore);
+        List<Component> actionLore = displayMeta.lore();
         if (actionLore != null) {
             combinedLore.addAll(actionLore);
         }
-        displayMeta.setLore(combinedLore);
+        displayMeta.lore(combinedLore);
         displayItem.setItemMeta(displayMeta);
         return displayItem;
     }

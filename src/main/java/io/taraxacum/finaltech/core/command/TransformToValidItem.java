@@ -14,12 +14,12 @@ public class TransformToValidItem implements CommandExecutor {
     @Override
     public boolean onCommand(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] strings) {
         if (commandSender instanceof Player player) {
-            ItemStack itemStack = player.getItemInHand();
+            ItemStack itemStack = player.getInventory().getItemInMainHand();
             SlimefunItem slimefunItem = SlimefunItem.getByItem(itemStack);
             if (slimefunItem instanceof SimpleValidItem simpleValidItem) {
                 ItemStack validItem = simpleValidItem.getValidItem();
                 validItem.setAmount(itemStack.getAmount());
-                player.setItemInHand(validItem);
+                player.getInventory().setItemInMainHand(validItem);
                 return true;
             }
         }
