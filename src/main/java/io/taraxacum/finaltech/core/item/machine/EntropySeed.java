@@ -13,9 +13,8 @@ import io.taraxacum.finaltech.core.item.machine.range.point.EquivalentConcept;
 import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
 import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.util.ConfigUtil;
-import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -43,7 +42,7 @@ public class EntropySeed extends AbstractConfigFreeMachine implements RecipeItem
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 Location location = e.getBlock().getLocation();
-                BlockStorage.addBlockInfo(location, EntropySeed.this.key, EntropySeed.this.value);
+                LegacyBlockDataCompat.setValue(location, EntropySeed.this.key, EntropySeed.this.value);
             }
         };
     }
@@ -71,26 +70,26 @@ public class EntropySeed extends AbstractConfigFreeMachine implements RecipeItem
         // TODO optimization
 
         Location location = block.getLocation();
-        if (BlockStorage.getLocationInfo(block.getLocation(), this.key) != null && this.value.equals(BlockStorage.getLocationInfo(block.getLocation(), this.key))) {
-            BlockStorage.addBlockInfo(location, this.key, null);
+        if (LegacyBlockDataCompat.getValue(block.getLocation(), this.key) != null && this.value.equals(LegacyBlockDataCompat.getValue(block.getLocation(), this.key))) {
+            LegacyBlockDataCompat.setValue(location, this.key, null);
             SlimefunItem sfItem = SlimefunItem.getByItem(FinalTechItemStacks.EQUIVALENT_CONCEPT);
             if (sfItem != null) {
-                BlockStorage.clearBlockInfo(location);
+                LegacyBlockDataCompat.removeBlock(location);
                 JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
                 javaPlugin.getServer().getScheduler().runTaskLaterAsynchronously(javaPlugin, () -> {
                     if (location.getBlock().getType().equals(EntropySeed.this.getItem().getType())) {
-                        BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, FinalTechItemStacks.EQUIVALENT_CONCEPT.getItemId(), true);
-                        BlockStorage.addBlockInfo(location, EquivalentConcept.KEY_LIFE, String.valueOf(EntropySeed.this.equivalentConceptLife));
-                        BlockStorage.addBlockInfo(location, EquivalentConcept.KEY_RANGE, String.valueOf(EntropySeed.this.equivalentConceptRange));
+                        LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.EQUIVALENT_CONCEPT.getItemId());
+                        LegacyBlockDataCompat.setValue(location, EquivalentConcept.KEY_LIFE, String.valueOf(EntropySeed.this.equivalentConceptLife));
+                        LegacyBlockDataCompat.setValue(location, EquivalentConcept.KEY_RANGE, String.valueOf(EntropySeed.this.equivalentConceptRange));
                     }
                 }, Slimefun.getTickerTask().getTickRate() + 1);
             }
         } else {
-            BlockStorage.clearBlockInfo(location);
+            LegacyBlockDataCompat.removeBlock(location);
             JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
             javaPlugin.getServer().getScheduler().runTaskLaterAsynchronously(javaPlugin, () -> {
                 if (location.getBlock().getType().equals(EntropySeed.this.getItem().getType())) {
-                    BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, FinalTechItemStacks.JUSTIFIABILITY.getItemId(), true);
+                    LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId());
                 }
             }, Slimefun.getTickerTask().getTickRate() + 1);
         }

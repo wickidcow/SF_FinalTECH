@@ -170,6 +170,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireResistance.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EntropySeed.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/util/ItemConfigurationUtil.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -885,6 +889,60 @@ for source, name, target_id in (
         and "BlockStorage." not in source,
         f"{name} must not reintroduce generic or direct special-id storage calls",
     )
+
+entropy_seed = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EntropySeed.java"
+)
+item_configuration = read(
+    "src/main/java/io/taraxacum/finaltech/util/ItemConfigurationUtil.java"
+)
+
+require(
+    'private final String key = "key";' in entropy_seed
+    and 'private final String value = "value";' in entropy_seed,
+    "EntropySeed trigger key/value must remain unchanged",
+)
+for expected in (
+    "LegacyBlockDataCompat.setValue(location, EntropySeed.this.key, EntropySeed.this.value)",
+    "LegacyBlockDataCompat.getValue(block.getLocation(), this.key)",
+    "LegacyBlockDataCompat.setValue(location, this.key, null)",
+    "LegacyBlockDataCompat.removeBlock(location)",
+    "LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.EQUIVALENT_CONCEPT.getItemId())",
+    "LegacyBlockDataCompat.setValue(location, EquivalentConcept.KEY_LIFE, String.valueOf(EntropySeed.this.equivalentConceptLife))",
+    "LegacyBlockDataCompat.setValue(location, EquivalentConcept.KEY_RANGE, String.valueOf(EntropySeed.this.equivalentConceptRange))",
+    "LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId())",
+):
+    require(expected in entropy_seed, f"EntropySeed lost identity/state behavior: {expected}")
+require(
+    "BlockStorage." not in entropy_seed
+    and "ConstantTableUtil.CONFIG_ID" not in entropy_seed,
+    "EntropySeed must not reintroduce direct/generic special-id storage access",
+)
+
+require(
+    '"_FINALTECH_CONFIGURATION"' in item_configuration
+    and '"_FINALTECH_BLOCK_STORAGE_ID"' in item_configuration,
+    "ItemConfigurationUtil item PDC keys must remain unchanged",
+)
+require(
+    "ConstantTableUtil.CONFIG_ID.equals(key)" in item_configuration
+    and "LegacyBlockDataCompat.getSlimefunId(l)" in item_configuration
+    and "LegacyBlockDataCompat.getValue(l, key)" in item_configuration,
+    "ItemConfigurationUtil must distinguish Slimefun identity from ordinary values",
+)
+require(
+    "LegacyTickerDataCompat.getConfig(location).getKeys()" in item_configuration,
+    "ItemConfigurationUtil must enumerate legacy-compatible config keys through LegacyTickerDataCompat",
+)
+require(
+    "LegacyBlockDataCompat.setValue(location, entry.getKey(), entry.getValue())" in item_configuration
+    and "LegacyBlockDataCompat.setValue(locationInfo.getLocation(), entry.getKey(), entry.getValue())" in item_configuration,
+    "ItemConfigurationUtil must preserve both configuration restore paths",
+)
+require(
+    "BlockStorage." not in item_configuration,
+    "ItemConfigurationUtil must not directly use deprecated BlockStorage",
+)
 
 for marker in (
     'getMethod("getDatabaseManager")',
