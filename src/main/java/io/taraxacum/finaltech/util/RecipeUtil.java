@@ -16,6 +16,7 @@ import io.taraxacum.finaltech.core.item.unusable.ReplaceableCard;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.RandomMachineRecipe;
+import io.taraxacum.libs.slimefun.compat.LegacyRecipeApiCompat;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -180,7 +181,7 @@ public class RecipeUtil {
             for (GoldPanDrop goldPanDrop : goldPanDrops) {
                 randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{goldPanDrop.getOutput()}, goldPanDrop.getValue()));
             }
-            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(goldPan.getInputMaterial())}, randomOutputList));
+            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(goldPan))}, randomOutputList));
         } catch (Exception e) {
             e.printStackTrace();
             List<RandomMachineRecipe.RandomOutput> randomOutputList = new ArrayList<>();
@@ -188,7 +189,7 @@ public class RecipeUtil {
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{new ItemStack(Material.CLAY_BALL)}, 20));
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{SlimefunItems.SIFTED_ORE}, 35));
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{new ItemStack(Material.IRON_NUGGET)}, 5));
-            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(goldPan.getInputMaterial())}, randomOutputList));
+            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(goldPan))}, randomOutputList));
         }
     }
 
@@ -202,7 +203,7 @@ public class RecipeUtil {
             for (GoldPanDrop goldPanDrop : goldPanDrops) {
                 randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{goldPanDrop.getOutput()}, goldPanDrop.getValue()));
             }
-            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(netherGoldPan.getInputMaterial())}, randomOutputList));
+            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(netherGoldPan))}, randomOutputList));
         } catch (Exception e) {
             e.printStackTrace();
             List<RandomMachineRecipe.RandomOutput> randomOutputList = new ArrayList<>();
@@ -210,7 +211,7 @@ public class RecipeUtil {
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{new ItemStack(Material.CLAY_BALL)}, 20));
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{SlimefunItems.SIFTED_ORE}, 35));
             randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{new ItemStack(Material.IRON_NUGGET)}, 5));
-            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(netherGoldPan.getInputMaterial())}, randomOutputList));
+            recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(netherGoldPan))}, randomOutputList));
         }
     }
 
