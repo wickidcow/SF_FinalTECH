@@ -19,7 +19,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.RecipeTypeRegistry;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +57,7 @@ public class AutoItemDismantleTable extends AbstractMachine implements RecipeIte
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (MachineUtil.isEmpty(blockMenu.toInventory(), this.getOutputSlot())) {
             ItemStack itemStack = blockMenu.getItemInSlot(this.getInputSlot()[0]);
             SlimefunItem sfItem = SlimefunItem.getByItem(itemStack);

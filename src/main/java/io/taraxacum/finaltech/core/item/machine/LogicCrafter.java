@@ -18,7 +18,7 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
@@ -52,7 +52,7 @@ public class LogicCrafter extends AbstractMachine implements RecipeItem {
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         int digit = 0;
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();
         if (MachineUtil.slotCount(inventory, this.getOutputSlot()) == this.getOutputSlot().length) {
             return;
