@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.item.machine.electric.capacitor.expanded;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -126,6 +127,6 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
 
         BlockStorage.addBlockInfo(location, this.key, String.valueOf(stack));
         //BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_CHARGE, String.valueOf(lastEnergy));
-        this.setCharge(location, (int) (lastEnergy % Integer.MAX_VALUE));
+        LegacySlimefunApiCompat.setCharge(this, location, (int) (lastEnergy % Integer.MAX_VALUE));
     }
 }
