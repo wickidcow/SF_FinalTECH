@@ -3,6 +3,7 @@ package io.taraxacum.finaltech.core.item.usable.machine;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;
@@ -59,7 +60,7 @@ public class MatrixMachineActivateCard extends AbstractMachineActivateCard imple
                 player.setGameMode(gameMode);
                 return true;
             }
-            player.damage(player.getMaxHealth());
+            player.damage(EntityAttributeCompat.getMaxHealth(player));
             if (player.isDead()) {
                 player.setGameMode(gameMode);
                 return true;
