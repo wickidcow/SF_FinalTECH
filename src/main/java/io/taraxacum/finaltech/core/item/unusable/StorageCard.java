@@ -9,10 +9,10 @@ import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.libs.plugin.util.StringItemUtil;
 import io.taraxacum.libs.plugin.util.TextUtil;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
@@ -56,8 +56,8 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
         if (!itemMeta.hasLore()) {
             return false;
         }
-        List<String> lore = itemMeta.getLore();
-        return !lore.isEmpty() && this.itemLoreWithoutColor.equals(ChatColor.stripColor(lore.get(0)));
+        List<String> lore = LegacyTextCompat.getLore(itemMeta);
+        return !lore.isEmpty() && this.itemLoreWithoutColor.equals(LegacyTextCompat.stripColor(lore.get(0)));
     }
 
     @Nonnull
@@ -103,7 +103,7 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
         List<String> lore;
         if (persistentDataContainer.has(StringItemUtil.AMOUNT_KEY, PersistentDataType.STRING)) {
             String amount = persistentDataContainer.get(StringItemUtil.AMOUNT_KEY, PersistentDataType.STRING);
-            lore = cardItemMeta.getLore();
+            lore = LegacyTextCompat.getLore(cardItemMeta);
             if (lore == null || lore.isEmpty()) {
                 lore = new ArrayList<>(4);
                 lore.add(this.itemLore);
@@ -120,6 +120,6 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
             lore = new ArrayList<>(1);
             lore.add(this.itemLore);
         }
-        cardItemMeta.setLore(lore);
+        LegacyTextCompat.setLore(cardItemMeta, lore);
     }
 }
