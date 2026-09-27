@@ -15,7 +15,6 @@ import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
@@ -23,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class EntropyConstructor extends AbstractMachine implements RecipeItem {
+public class EntropyConstructor extends AbstractConfigFreeMachine implements RecipeItem {
     public EntropyConstructor(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
     }
@@ -47,7 +46,7 @@ public class EntropyConstructor extends AbstractMachine implements RecipeItem {
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         ItemStack entropy = ItemStackUtil.cloneItem(FinalTechItemStacks.ENTROPY);
         for (int slot : this.getOutputSlot()) {

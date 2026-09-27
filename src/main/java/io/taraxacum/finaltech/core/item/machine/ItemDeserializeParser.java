@@ -17,7 +17,6 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.StringItemUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
@@ -35,7 +34,7 @@ import javax.annotation.Nonnull;
  * @author Final_ROOT
  * @since 1.0
  */
-public class ItemDeserializeParser extends AbstractMachine implements RecipeItem {
+public class ItemDeserializeParser extends AbstractConfigFreeMachine implements RecipeItem {
     public ItemDeserializeParser(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
     }
@@ -59,7 +58,7 @@ public class ItemDeserializeParser extends AbstractMachine implements RecipeItem
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();
         if (MachineUtil.slotCount(inventory, this.getOutputSlot()) == this.getOutputSlot().length) {

@@ -13,7 +13,6 @@ import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Material;
@@ -22,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
  
-public class CobbleStoneFactory extends AbstractMachine implements RecipeItem {
+public class CobbleStoneFactory extends AbstractConfigFreeMachine implements RecipeItem {
     private final ItemWrapper cobbleStone = new ItemWrapper(new ItemStack(Material.COBBLESTONE));
 
     public CobbleStoneFactory(@Nonnull ItemGroup itemGroup, @Nonnull SlimefunItemStack item, @Nonnull RecipeType recipeType, @Nonnull ItemStack[] recipe) {
@@ -48,7 +47,7 @@ public class CobbleStoneFactory extends AbstractMachine implements RecipeItem {
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         for (int slot : this.getInputSlot()) {
             ItemStack item = blockMenu.getItemInSlot(slot);
