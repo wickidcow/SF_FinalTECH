@@ -44,6 +44,8 @@
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs>
                         <arg>-Xlint:deprecation</arg>
+                        <arg>-Xmaxwarns</arg>
+                        <arg>1000</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
