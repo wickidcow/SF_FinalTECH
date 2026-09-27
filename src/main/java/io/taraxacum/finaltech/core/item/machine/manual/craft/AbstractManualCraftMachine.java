@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.item.machine.manual.craft;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -70,14 +71,14 @@ public abstract class AbstractManualCraftMachine extends AbstractManualMachine i
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        int charge = ((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id")))).getCharge(location);
+        int charge = LegacySlimefunApiCompat.getCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"))), location);
 
         int intCharge = charge + this.charge;
         if (intCharge > this.capacity / 2) {
             intCharge /= 2;
         }
 
-        ((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id")))).setCharge(block.getLocation(), Math.min(intCharge, this.capacity));
+        LegacySlimefunApiCompat.setCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"))), block.getLocation(), Math.min(intCharge, this.capacity));
 
         BlockMenu blockMenu = BlockStorage.getInventory(block);
         Inventory inv = blockMenu.toInventory();

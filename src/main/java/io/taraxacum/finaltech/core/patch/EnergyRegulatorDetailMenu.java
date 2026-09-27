@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.patch;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNet;
@@ -217,7 +218,7 @@ public class EnergyRegulatorDetailMenu extends ChestMenu {
                 loreList.addAll(languageManager.replaceStringList(languageManager.getStringList("items", "ENERGY_REGULATOR", "statistics", "lore-type"), energyTypeName));
 
                 if (energyNetComponent.isChargeable()) {
-                    int charge = energyNetComponent.getCharge(componentLocation);
+                    int charge = LegacySlimefunApiCompat.getCharge(energyNetComponent, componentLocation);
                     int capacity = energyNetComponent.getCapacity();
                     loreList.addAll(languageManager.replaceStringList(languageManager.getStringList("items", "ENERGY_REGULATOR", "statistics", "lore-energy"),
                             String.valueOf(charge),

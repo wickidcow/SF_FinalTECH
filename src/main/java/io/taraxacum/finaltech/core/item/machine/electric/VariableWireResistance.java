@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.item.machine.electric;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -53,7 +54,7 @@ public class VariableWireResistance extends AbstractElectricMachine implements R
                 BlockStorage.deleteLocationInfoUnsafely(location, true);
                 BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_ID, FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getItemId(), true);
                 //BlockStorage.addBlockInfo(location, ConstantTableUtil.CONFIG_CHARGE, String.valueOf(this.getCapacity()));
-                ((EnergyNetComponent) FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR).setCharge(location, this.getCapacity());
+                LegacySlimefunApiCompat.setCharge((EnergyNetComponent) FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR, location, this.getCapacity());
                 Slimefun.getNetworkManager().updateAllNetworks(location);
                 javaPlugin.getServer().getScheduler().runTaskLater(javaPlugin, () -> {
                     if (!location.getBlock().getType().isAir() && FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getItemId().equals(BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID))) {

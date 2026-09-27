@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.item.usable.machine;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -114,9 +115,9 @@ public abstract class AbstractMachineActivateCard extends UsableSlimefunItem {
                     chargeEnergy *= playerRightClickEvent.getItem().getAmount();
                 }
                 for (int i = 0; i < time; i++) {
-                    int storedEnergy = energyNetComponent.getCharge(location);
+                    int storedEnergy = LegacySlimefunApiCompat.getCharge(energyNetComponent, location);
                     storedEnergy = chargeEnergy / 2 + storedEnergy / 2 > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE : chargeEnergy + storedEnergy;
-                    energyNetComponent.setCharge(location, Math.min(capacity, storedEnergy));
+                    LegacySlimefunApiCompat.setCharge(energyNetComponent, location, Math.min(capacity, storedEnergy));
                     blockTicker.tick(block, slimefunItem, BlockStorage.getLocationInfo(location));
                 }
             };
@@ -164,9 +165,9 @@ public abstract class AbstractMachineActivateCard extends UsableSlimefunItem {
             if (!this.consume()) {
                 chargeEnergy *= playerRightClickEvent.getItem().getAmount();
             }
-            int storedEnergy = energyNetComponent.getCharge(location);
+            int storedEnergy = LegacySlimefunApiCompat.getCharge(energyNetComponent, location);
             chargeEnergy = chargeEnergy / 2 + storedEnergy / 2 > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE : chargeEnergy + storedEnergy;
-            energyNetComponent.setCharge(location, Math.min(capacity, chargeEnergy));
+            LegacySlimefunApiCompat.setCharge(energyNetComponent, location, Math.min(capacity, chargeEnergy));
         }
     }
 

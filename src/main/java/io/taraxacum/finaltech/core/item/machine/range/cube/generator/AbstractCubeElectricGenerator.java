@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.item.machine.range.cube.generator;
 
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -124,7 +125,7 @@ public abstract class AbstractCubeElectricGenerator extends AbstractCubeMachine 
         if (energy < capacity) {
             int transferEnergy = Math.min(capacity - energy, chargeEnergy);
             if (transferEnergy > 0) {
-                energyNetComponent.setCharge(locationInfo.getLocation(), energy + transferEnergy);
+                LegacySlimefunApiCompat.setCharge(energyNetComponent, locationInfo.getLocation(), energy + transferEnergy);
             }
         }
     }
