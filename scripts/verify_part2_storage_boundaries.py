@@ -1153,21 +1153,31 @@ direct_storage_allowlist = {
     "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
 }
 
+global_violations = []
+
 for java_path in java_root.rglob("*.java"):
     relative = java_path.relative_to(java_root).as_posix()
     source = java_path.read_text(encoding="utf-8")
 
-    if relative not in direct_storage_allowlist:
-        require(
-            "me.mrCookieSlime.Slimefun.api.BlockStorage" not in source
-            and "BlockStorage." not in source,
-            f"{relative} reintroduced direct deprecated BlockStorage access",
+    if relative not in direct_storage_allowlist and (
+        "me.mrCookieSlime.Slimefun.api.BlockStorage" in source
+        or "BlockStorage." in source
+    ):
+        global_violations.append(
+            f"{relative} reintroduced direct deprecated BlockStorage access"
         )
 
-    if "import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;" in source:
-        require(
-            '@SuppressWarnings("deprecation")' in source,
-            f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression",
+    if (
+        "import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;" in source
+        and '@SuppressWarnings("deprecation")' not in source
+    ):
+        global_violations.append(
+            f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression"
         )
+
+require(
+    not global_violations,
+    "Part 2 global compatibility violations:\n- " + "\n- ".join(global_violations),
+)
 
 print("FinalTECH Part 2 storage boundaries: PASS")
