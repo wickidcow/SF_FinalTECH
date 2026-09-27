@@ -2,6 +2,7 @@ package io.taraxacum.libs.slimefun.compat;
 
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -138,6 +139,44 @@ public final class LegacyBlockDataCompat {
             return;
         }
         LegacyAccess.removeBlock(location);
+    }
+
+    /**
+     * Invokes the explicit storage flush hooks used by older Slimefun releases
+     * when those hooks exist. Current Slimefun Legacy persists through its
+     * storage controller and therefore requires no explicit flush.
+     */
+    public static void flushLegacyStorage() {
+        try {
+            Class<?> blockStorageClass = Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage");
+
+            try {
+                blockStorageClass.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
+            }
+
+            for (World world : Bukkit.getWorlds()) {
+                Object storage = blockStorageClass.getMethod("getStorage", World.class).invoke(null, world);
+                if (storage == null) {
+                    continue;
+                }
+
+                try {
+                    storage.getClass().getMethod("save").invoke(storage);
+                } catch (NoSuchMethodException ignored) {
+                    // Modern storage controller: persistence is managed centrally.
+                }
+            }
+
+            try {
+                blockStorageClass.getMethod("saveChunks").invoke(null);
+            } catch (NoSuchMethodException ignored) {
+                // Modern storage controller: no explicit global flush hook.
+            }
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            throw new IllegalStateException("Could not invoke legacy storage save hooks", exception);
+        }
     }
 
     @Nullable

@@ -11,12 +11,12 @@ import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.CustomLogger;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -470,41 +470,14 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
     }
 
     /**
-     * Older Slimefun builds exposed explicit BlockStorage save hooks. Modern
-     * Slimefun Legacy persists through its storage controller instead. Invoke
-     * the legacy hooks only when they exist so the same addon remains usable
-     * across the supported server generations.
+     * Flushes storage only on legacy Slimefun builds that still expose explicit
+     * save hooks. Current Slimefun Legacy persists through its storage controller.
      */
     private void saveBlockStorageCompat() {
         try {
-            Class<?> blockStorageClass = Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage");
-
-            try {
-                blockStorageClass.getMethod("saveChunks").invoke(null);
-            } catch (NoSuchMethodException ignored) {
-                // Modern storage controller: no explicit global flush hook.
-            }
-
-            for (World world : Bukkit.getWorlds()) {
-                Object storage = blockStorageClass.getMethod("getStorage", World.class).invoke(null, world);
-                if (storage == null) {
-                    continue;
-                }
-
-                try {
-                    storage.getClass().getMethod("save").invoke(storage);
-                } catch (NoSuchMethodException ignored) {
-                    // Modern storage controller: persistence is managed centrally.
-                }
-            }
-
-            try {
-                blockStorageClass.getMethod("saveChunks").invoke(null);
-            } catch (NoSuchMethodException ignored) {
-                // Modern storage controller: no explicit global flush hook.
-            }
-        } catch (ReflectiveOperationException | LinkageError e) {
-            FinalTechChanged.logger().warning("Could not invoke legacy BlockStorage save hooks: " + e.getMessage());
+            LegacyBlockDataCompat.flushLegacyStorage();
+        } catch (RuntimeException exception) {
+            FinalTechChanged.logger().warning("Could not invoke legacy storage save hooks: " + exception.getMessage());
         }
     }
 

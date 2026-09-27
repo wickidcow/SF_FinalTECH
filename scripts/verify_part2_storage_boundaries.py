@@ -1128,6 +1128,24 @@ for marker in (
 ):
     require(marker in compat, f"storage compatibility boundary is missing: {marker}")
 
+finaltech_changed = read(
+    "src/main/java/io/taraxacum/finaltech/FinalTechChanged.java"
+)
+require(
+    "public static void flushLegacyStorage()" in legacy_block_data
+    and 'Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage")' in legacy_block_data,
+    "LegacyBlockDataCompat must isolate the optional RC-37 shutdown storage flush hooks",
+)
+require(
+    "LegacyBlockDataCompat.flushLegacyStorage()" in finaltech_changed,
+    "FinalTechChanged must delegate legacy shutdown persistence to the compatibility boundary",
+)
+require(
+    "me.mrCookieSlime.Slimefun.api.BlockStorage" not in finaltech_changed
+    and "BlockStorage." not in finaltech_changed,
+    "FinalTechChanged must not directly reference legacy BlockStorage",
+)
+
 # Global regression guards for the completed Part 2 cleanup.
 java_root = ROOT / "src/main/java"
 direct_storage_allowlist = {
