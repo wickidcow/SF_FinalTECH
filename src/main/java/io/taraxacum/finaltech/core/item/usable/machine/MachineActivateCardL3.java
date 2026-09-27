@@ -3,6 +3,7 @@ package io.taraxacum.finaltech.core.item.usable.machine;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;
@@ -38,8 +39,8 @@ public class MachineActivateCardL3 extends AbstractMachineActivateCard implement
 
     @Override
     protected boolean conditionMatch(@Nonnull Player player) {
-        if (player.getHealth() > player.getMaxHealth() * 0.1 && player.getLevel() > 1) {
-            player.setHealth(player.getHealth() - player.getMaxHealth() * 0.1);
+        if (player.getHealth() > EntityAttributeCompat.getMaxHealth(player) * 0.1 && player.getLevel() > 1) {
+            player.setHealth(player.getHealth() - EntityAttributeCompat.getMaxHealth(player) * 0.1);
             player.setLevel(player.getLevel() - 1);
             return true;
         }

@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.task.effect;
 
+import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.LocationUtil;
 import io.taraxacum.libs.plugin.task.StartTask;
@@ -38,7 +39,7 @@ public class VoidCurse extends AbstractEffect implements StartTask<LivingEntity>
     public void tick(@Nonnull LivingEntity livingEntity) {
         double nowHealth = livingEntity.getHealth();
         if (this.health <= 0) {
-            this.health = livingEntity.getMaxHealth() / 3 * 2;
+            this.health = EntityAttributeCompat.getMaxHealth(livingEntity) / 3 * 2;
         } else if (this.health < livingEntity.getHealth()) {
             Location location = livingEntity.getLocation();
             location.getWorld().spawnParticle(Particle.FALLING_LAVA, LocationUtil.fromRandom(location, FinalTechChanged.getRandom(), 0.4), 1);

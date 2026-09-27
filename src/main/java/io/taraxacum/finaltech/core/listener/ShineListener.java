@@ -2,6 +2,7 @@ package io.taraxacum.finaltech.core.listener;
 
 import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
+import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -129,8 +130,8 @@ public class ShineListener implements Listener {
                     TaskTicker.applyOrAddTo(new VoidCurse(this.baseEffectTime + deathCount * this.deathMulEffectTime + obtain * this.obtainMulEffectTime, 1), player, LivingEntity.class);
 
                     double health = player.getHealth();
-                    double expectedHealth = Math.max(0, player.getHealth() - player.getMaxHealth() * this.damage);
-                    entityDamageEvent.setDamage(player.getMaxHealth() * this.damage);
+                    double expectedHealth = Math.max(0, player.getHealth() - EntityAttributeCompat.getMaxHealth(player) * this.damage);
+                    entityDamageEvent.setDamage(EntityAttributeCompat.getMaxHealth(player) * this.damage);
                     FinalTechChanged.getInstance().getServer().getScheduler().runTaskLater(FinalTechChanged.getInstance(), () -> {
                         if (player.isDead()) {
                             return;
