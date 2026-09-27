@@ -664,6 +664,23 @@ public final class ItemStackUtil {
         return "unknown";
     }
 
+    @Nullable
+    public static List<String> getLore(@Nullable ItemStack item) {
+        if (ItemStackUtil.isItemNull(item) || !item.hasItemMeta()) {
+            return null;
+        }
+        return getLegacyLore(item.getItemMeta());
+    }
+
+    @Nullable
+    public static List<String> getLore(@Nonnull ItemMeta itemMeta) {
+        return getLegacyLore(itemMeta);
+    }
+
+    public static void setLore(@Nonnull ItemMeta itemMeta, @Nullable List<String> lore) {
+        setLegacyLore(itemMeta, lore);
+    }
+
     public static void setItemName(@Nonnull ItemStack item, @Nonnull String itemName) {
         if (!item.hasItemMeta()) {
             return;
