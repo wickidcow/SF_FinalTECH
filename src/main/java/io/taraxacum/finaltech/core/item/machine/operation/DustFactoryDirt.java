@@ -18,7 +18,7 @@ import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -51,7 +51,7 @@ public class DustFactoryDirt extends AbstractOperationMachine implements RecipeI
             @Override
             public void onPlayerBreak(@Nonnull BlockBreakEvent blockBreakEvent, @Nonnull ItemStack item, @Nonnull List<ItemStack> drops) {
                 Location location = blockBreakEvent.getBlock().getLocation();
-                BlockMenu blockMenu = BlockStorage.getInventory(location);
+                BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
                 blockMenu.dropItems(location, DustFactoryDirt.this.getInputSlot());
                 blockMenu.dropItems(location, DustFactoryDirt.this.getOutputSlot());
 
@@ -68,7 +68,7 @@ public class DustFactoryDirt extends AbstractOperationMachine implements RecipeI
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         DustFactoryOperation operation = (DustFactoryOperation) this.getMachineProcessor().getOperation(block);
 
         for (int slot : this.getInputSlot()) {

@@ -19,7 +19,7 @@ import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -66,7 +66,7 @@ public class ConsumableSimulateClickMachine extends AbstractTower implements Rec
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
 
         ItemStack itemStack = blockMenu.getItemInSlot(this.getInputSlot()[0]);
 
@@ -91,7 +91,7 @@ public class ConsumableSimulateClickMachine extends AbstractTower implements Rec
 
                 JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
                 javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> {
-                    BlockMenu targetBlockMenu = BlockStorage.getInventory(location);
+                    BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(location);
                     if (targetBlockMenu != null) {
                         Block targetBlock = location.getBlock();
                         for (Entity entity : location.getWorld().getNearbyEntities(LocationUtil.getCenterLocation(targetBlock), range, range, range, entity -> entity instanceof Player)) {

@@ -92,6 +92,26 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DistributeRightStorageUnit.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DividedStackStorageUnit.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/LimitedStackStorageUnit.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/StackStorageUnit.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/BasicGenerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/AbstractCubeElectricGenerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/EnergizedChargeBase.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OverloadedChargeBase.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/ConsumableSimulateClickMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/SimulateClickMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/DustFactoryDirt.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -276,6 +296,28 @@ for path in (
     require(
         "LegacyBlockDataCompat.getMenu(" in source,
         f"{path} must route its ticker menu lookup through the compatibility boundary",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{path} must retain the RC-37 ticker Config signature",
+    )
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DividedStackStorageUnit.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/LimitedStackStorageUnit.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/StackStorageUnit.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/BasicGenerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/generator/AbstractCubeElectricGenerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/EnergizedChargeBase.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OverloadedChargeBase.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/ConsumableSimulateClickMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/SimulateClickMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/DustFactoryDirt.java",
+):
+    source = read(path)
+    require(
+        "LegacyBlockDataCompat.getMenu(" in source,
+        f"{path} must route its menu lookup through the compatibility boundary",
     )
     require(
         "@Nonnull Config config" in source,
