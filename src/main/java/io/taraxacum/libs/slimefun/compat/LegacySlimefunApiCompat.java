@@ -24,6 +24,10 @@ public final class LegacySlimefunApiCompat {
         return research.getCost();
     }
 
+    public static void setResearchLevelCost(@Nonnull Research research, int cost) {
+        research.setCost(cost);
+    }
+
     public static void addCharge(
             @Nonnull EnergyNetComponent component,
             @Nonnull Location location,
