@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.helper;
 
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.taraxacum.common.util.JavaUtil;
@@ -180,7 +181,7 @@ public class PositionInfo {
         @Override
         public boolean setIcon(@Nonnull ItemStack iconItem, @Nullable String value) {
             if (BlockStorageLoreMaterialHelper.this.validValue(value) && valueMaterialMap.containsKey(value)) {
-                iconItem.setType(valueMaterialMap.get(value));
+                LegacyItemStackCompat.setType(iconItem, valueMaterialMap.get(value));
             }
             return BlockStorageLoreMaterialHelper.super.setIcon(iconItem, value);
         }
@@ -188,7 +189,7 @@ public class PositionInfo {
         @Override
         public boolean setIcon(@Nonnull ItemStack iconItem, @Nullable String value, @Nonnull SlimefunItem slimefunItem) {
             if (BlockStorageLoreMaterialHelper.this.validValue(value) && valueMaterialMap.containsKey(value)) {
-                iconItem.setType(valueMaterialMap.get(value));
+                LegacyItemStackCompat.setType(iconItem, valueMaterialMap.get(value));
             }
             return BlockStorageLoreMaterialHelper.super.setIcon(iconItem, value, slimefunItem);
         }

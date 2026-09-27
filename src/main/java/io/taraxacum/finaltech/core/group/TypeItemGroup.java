@@ -174,7 +174,7 @@ public class TypeItemGroup extends FlexItemGroup {
                             "",
                             "§a> Click to unlock",
                             "",
-                            "§7Cost: §b" + research.getCost() + " Experience Levels");
+                            "§7Cost: §b" + research.getLevelCost() + " Experience Levels");
                     chestMenu.addItem(MAIN_CONTENT[i], ItemStackUtil.cleanItem(icon));
                     chestMenu.addMenuClickHandler(MAIN_CONTENT[i], (p, slot, item, action) -> {
                         PlayerPreResearchEvent event = new PlayerPreResearchEvent(player, research, slimefunItem);

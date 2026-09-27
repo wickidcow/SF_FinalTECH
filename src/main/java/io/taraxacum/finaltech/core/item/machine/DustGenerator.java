@@ -97,14 +97,14 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
 
         BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
         if (count > 0) {
-            this.addCharge(location, charge);
+            this.addCharge(location, (long) charge);
         }
 
         if (blockMenu.hasViewer()) {
             this.updateMenu(blockMenu, DustGeneratorMenu.STATUS_SLOT, this,
                     String.valueOf(count),
                     String.valueOf(charge),
-                    String.valueOf(this.getCharge(location)));
+                    String.valueOf(this.getChargeLong(location)));
         }
     }
 
@@ -121,9 +121,9 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
 
     @Override
     public int getGeneratedOutput(@Nonnull Location location, @Nonnull Config config) {
-        int charge = this.getCharge(location);
-        this.setCharge(location, 0);
-        return charge;
+        long storedCharge = this.getChargeLong(location);
+        this.setCharge(location, 0L);
+        return (int) Math.min(Integer.MAX_VALUE, storedCharge);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.taraxacum.finaltech.core.helper;
 
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -43,10 +44,10 @@ public final class MachineMaxStack {
         @Override
         public boolean setIcon(@Nonnull ItemStack iconItem, @Nullable String value) {
             if (Objects.equals(this.defaultValue(), value)) {
-                iconItem.setType(Material.CHEST);
+                LegacyItemStackCompat.setType(iconItem, Material.CHEST);
                 iconItem.setAmount(1);
             } else if (value != null) {
-                iconItem.setType(Material.HOPPER);
+                LegacyItemStackCompat.setType(iconItem, Material.HOPPER);
                 iconItem.setAmount(Integer.parseInt(value));
             } else {
                 return false;
