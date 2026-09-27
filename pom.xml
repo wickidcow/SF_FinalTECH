@@ -42,6 +42,7 @@
                     <release>${maven.compiler.release}</release>
                     <encoding>UTF-8</encoding>
                     <showDeprecation>true</showDeprecation>
+                    <failOnWarning>true</failOnWarning>
                     <compilerArgs>
                         <arg>-Xlint:deprecation</arg>
                         <arg>-Xmaxwarns</arg>
@@ -68,6 +69,7 @@
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
                         </filter>
                     </filters>
