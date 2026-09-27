@@ -2,7 +2,7 @@ package io.taraxacum.libs.slimefun.dto;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.FinalTechBlockStorage;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -99,7 +99,7 @@ public abstract class BlockStorageHelper {
 
     @Nonnull
     public String getOrDefaultValue(@Nonnull Location location) {
-        String value = BlockStorage.getLocationInfo(location, this.getKey());
+        String value = FinalTechBlockStorage.getLocationInfo(location, this.getKey());
         return value == null ? this.defaultValue() : value;
     }
 
@@ -109,7 +109,7 @@ public abstract class BlockStorageHelper {
     }
 
     public void setOrClearValue(@Nonnull Location location, @Nullable String value) {
-        BlockStorage.addBlockInfo(location, this.getKey(), value);
+        FinalTechBlockStorage.addBlockInfo(location, this.getKey(), value);
     }
 
     public void setOrClearValue(@Nonnull Config config, @Nullable String value) {
@@ -145,8 +145,8 @@ public abstract class BlockStorageHelper {
     }
 
     public boolean checkOrSetBlockStorage(@Nonnull Location location) {
-        if (BlockStorage.getLocationInfo(location, this.getKey()) == null) {
-            BlockStorage.addBlockInfo(location, this.getKey(), this.defaultValue());
+        if (FinalTechBlockStorage.getLocationInfo(location, this.getKey()) == null) {
+            FinalTechBlockStorage.addBlockInfo(location, this.getKey(), this.defaultValue());
             return false;
         }
         return true;
