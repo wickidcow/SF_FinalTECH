@@ -22,7 +22,7 @@ import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -69,7 +69,7 @@ public class MatrixAccelerator extends AbstractCubeMachine implements RecipeItem
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location blockLocation = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(blockLocation);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(blockLocation);
         boolean hasViewer = blockMenu.hasViewer();
 
         int accelerate = 0;

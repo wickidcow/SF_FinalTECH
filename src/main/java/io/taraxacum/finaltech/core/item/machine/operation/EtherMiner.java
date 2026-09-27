@@ -20,7 +20,7 @@ import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -55,7 +55,7 @@ public class EtherMiner extends AbstractOperationMachine implements RecipeItem, 
             @Override
             public void onPlayerBreak(@Nonnull BlockBreakEvent blockBreakEvent, @Nonnull ItemStack itemStack, @Nonnull List<ItemStack> drops) {
                 Location location = blockBreakEvent.getBlock().getLocation();
-                BlockMenu blockMenu = BlockStorage.getInventory(location);
+                BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
                 blockMenu.dropItems(location, EtherMiner.this.getInputSlot());
                 blockMenu.dropItems(location, EtherMiner.this.getOutputSlot());
 
@@ -73,7 +73,7 @@ public class EtherMiner extends AbstractOperationMachine implements RecipeItem, 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
 
         OptionalInt supplies = Slimefun.getGPSNetwork().getResourceManager().getSupplies(FinalTechItems.ETHER, block.getWorld(), block.getX() >> 4, block.getZ() >> 4);
         int etherAmount = supplies.isPresent() ? supplies.getAsInt() : -1;

@@ -9,7 +9,7 @@ import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.finaltech.core.networks.AlteredEnergyNet;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -79,7 +79,7 @@ public class EnergyRegulatorBlockTicker extends BlockTicker implements MenuUpdat
         EnergyNet energyNetwork = AlteredEnergyNet.getNetworkFromLocationOrCreate(location);
         if (energyNetwork instanceof AlteredEnergyNet alteredEnergyNet) {
             AlteredEnergyNet.Summary summary = alteredEnergyNet.tick(block, slimefunItem, config);
-            BlockMenu blockMenu = BlockStorage.getInventory(location);
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
             if (blockMenu != null && blockMenu.hasViewer()) {
                 this.updateMenu(blockMenu, StatusMenu.STATUS_SLOT, slimefunItem,
                         String.valueOf(summary.getConsumerAmount()),

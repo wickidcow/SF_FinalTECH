@@ -112,6 +112,12 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/DustFactoryDirt.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorBlockTicker.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/EtherMiner.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -322,6 +328,21 @@ for path in (
     require(
         "@Nonnull Config config" in source,
         f"{path} must retain the RC-37 ticker Config signature",
+    )
+
+for path, expected_count in {
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java": 1,
+    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorBlockTicker.java": 1,
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/EtherMiner.java": 2,
+}.items():
+    source = read(path)
+    require(
+        source.count("LegacyBlockDataCompat.getMenu(") == expected_count,
+        f"{path} lost one or more validated menu compatibility lookups",
+    )
+    require(
+        "Config config" in source or "Config data" in source,
+        f"{path} must retain its RC-37 Config ticker signature",
     )
 
 for marker in (
