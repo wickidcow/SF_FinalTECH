@@ -4,7 +4,7 @@ import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.finaltech.core.item.machine.clicker.AbstractClickerMachine;
 import io.taraxacum.finaltech.util.LocationUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -72,7 +72,7 @@ public class RandomAccessorMenu extends AbstractClickerMenu {
             BlockFace blockFace = this.availableBlockFaces[i];
             targetBlock = block.getRelative(blockFace);
 
-            BlockMenu targetBlockMenu = BlockStorage.getInventory(targetBlock);
+            BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(targetBlock.getLocation());
             if (targetBlockMenu != null && targetBlockMenu.canOpen(targetBlock, player)) {
                 JavaPlugin javaPlugin = this.getSlimefunItem().getAddon().getJavaPlugin();
                 Block finalTargetBlock = targetBlock;

@@ -11,7 +11,7 @@ import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
 import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +31,7 @@ public abstract class AbstractElectricCapacitor extends AbstractElectricMachine 
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (blockMenu.hasViewer()) {
             this.updateMenu(blockMenu, StatusMenu.STATUS_SLOT, this, EnergyUtil.getCharge(config));
         }

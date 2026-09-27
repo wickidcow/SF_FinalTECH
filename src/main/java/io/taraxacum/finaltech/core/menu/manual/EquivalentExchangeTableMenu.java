@@ -10,7 +10,7 @@ import io.taraxacum.finaltech.core.item.machine.manual.EquivalentExchangeTable;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -95,6 +95,6 @@ public class EquivalentExchangeTableMenu extends AbstractManualMachineMenu {
         ItemStackUtil.setLore(iconItem, lore);
 
         iconItem = inventory.getItem(STATUS_SLOT);
-        ItemStackUtil.setLore(iconItem, FinalTechChanged.getLanguageManager().replaceStringList(FinalTechChanged.getLanguageStringList("items", this.getID(), "stored-value", "lore"), BlockStorage.getLocationInfo(location, "value")));
+        ItemStackUtil.setLore(iconItem, FinalTechChanged.getLanguageManager().replaceStringList(FinalTechChanged.getLanguageStringList("items", this.getID(), "stored-value", "lore"), LegacyBlockDataCompat.getValue(location, "value")));
     }
 }

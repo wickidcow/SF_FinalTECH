@@ -16,6 +16,24 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/util/PermissionUtil.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/MenuViewer.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/RandomAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/RemoteAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/limit/lock/AbstractLockMachineMenu.java":
+        "MachineRecipeLock.HELPER",
+    "src/main/java/io/taraxacum/finaltech/core/menu/manual/EquivalentExchangeTableMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorDetailMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -97,6 +115,39 @@ require(
     "@Nonnull Config config" in permission_util,
     "PermissionUtil must retain the RC-37 Config overload for ticker compatibility",
 )
+
+for path, expected_call in {
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/MenuViewer.java":
+        "LegacyBlockDataCompat.getMenu(location)",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/RandomAccessorMenu.java":
+        "LegacyBlockDataCompat.getMenu(targetBlock.getLocation())",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/RemoteAccessorMenu.java":
+        "LegacyBlockDataCompat.getMenu(targetBlock.getLocation())",
+    "src/main/java/io/taraxacum/finaltech/core/menu/limit/lock/AbstractLockMachineMenu.java":
+        "MachineRecipeLock.HELPER.getOrDefaultValue(location)",
+    "src/main/java/io/taraxacum/finaltech/core/menu/manual/EquivalentExchangeTableMenu.java":
+        'LegacyBlockDataCompat.getValue(location, "value")',
+    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorDetailMenu.java":
+        "LegacyBlockDataCompat.getMenu(componentLocation)",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java":
+        "LegacyBlockDataCompat.getMenu(block.getLocation())",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java":
+        "LegacyBlockDataCompat.getMenu(block.getLocation())",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java":
+        "LegacyBlockDataCompat.getMenu(block.getLocation())",
+}.items():
+    source = read(path)
+    require(expected_call in source, f"{path} lost its validated Part 2 storage boundary")
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java",
+):
+    require(
+        "@Nonnull Config config" in read(path),
+        f"{path} must retain the RC-37 ticker Config signature",
+    )
 
 for marker in (
     'getMethod("getDatabaseManager")',

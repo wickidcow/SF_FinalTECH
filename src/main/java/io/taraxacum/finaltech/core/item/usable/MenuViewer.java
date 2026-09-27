@@ -12,7 +12,7 @@ import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
@@ -49,7 +49,7 @@ public class MenuViewer extends UsableSlimefunItem implements RecipeItem {
         Player player = playerRightClickEvent.getPlayer();
         if (!playerRightClickEvent.getClickedBlock().isEmpty()) {
             Location location = playerRightClickEvent.getClickedBlock().get().getLocation();
-            BlockMenu blockMenu = BlockStorage.getInventory(location);
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
             if (blockMenu != null) {
                 BlockMenuPreset preset = blockMenu.getPreset();
                 ItemStack itemInOffHand = player.getInventory().getItemInOffHand();

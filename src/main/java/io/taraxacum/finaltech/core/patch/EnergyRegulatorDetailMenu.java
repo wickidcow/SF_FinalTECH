@@ -19,7 +19,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -240,7 +240,7 @@ public class EnergyRegulatorDetailMenu extends ChestMenu {
 
                 this.replaceExistingItem(CONTENT[i], itemStack);
                 this.addMenuClickHandler(CONTENT[i], (p, slot, item, action) -> {
-                    BlockMenu blockMenu = BlockStorage.getInventory(componentLocation);
+                    BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(componentLocation);
                     if (blockMenu != null && blockMenu.canOpen(this.location.getBlock(), p)) {
                         blockMenu.open(p);
                     }
