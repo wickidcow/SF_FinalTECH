@@ -325,9 +325,7 @@ public final class FinalTechBlockStorage {
 
         @Override
         public boolean hasInventory(Location location) {
-            me.mrCookieSlime.Slimefun.api.BlockStorage storage =
-                    me.mrCookieSlime.Slimefun.api.BlockStorage.getStorage(location.getWorld());
-            return storage != null && storage.hasInventory(location);
+            return me.mrCookieSlime.Slimefun.api.BlockStorage.hasInventory(location.getBlock());
         }
 
         @Override
