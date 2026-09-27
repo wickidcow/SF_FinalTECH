@@ -27,7 +27,7 @@ import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
 import io.taraxacum.libs.slimefun.dto.RecipeTypeRegistry;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -302,7 +302,7 @@ public class AdvancedAutoCraftMenu extends AbstractMachineMenu {
     }
 
     private void setParseFailedMenu(@Nonnull Inventory inventory, @Nonnull Location location) {
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
         LocationRecipeRegistry.getInstance().setRecipe(location, null);
         for (int slot : ITEM_INPUT_SLOT) {
             inventory.setItem(slot, ItemStackUtil.cleanItem(PARSE_FAILED_ICON));
@@ -313,7 +313,7 @@ public class AdvancedAutoCraftMenu extends AbstractMachineMenu {
     }
 
     private void setParseSuccessMenu(@Nonnull Inventory inventory, @Nonnull Location location, @Nonnull AdvancedMachineRecipe advancedMachineRecipe) {
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
         LocationRecipeRegistry.getInstance().setRecipe(location, advancedMachineRecipe);
         int i;
         for (i = 0; i < ITEM_INPUT_SLOT.length - 1; i++) {

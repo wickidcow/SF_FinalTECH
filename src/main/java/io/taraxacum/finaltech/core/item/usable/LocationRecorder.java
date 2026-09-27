@@ -15,7 +15,7 @@ import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.plugin.util.PlayerUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -70,8 +70,8 @@ public class LocationRecorder extends UsableSlimefunItem implements RecipeItem {
                 return;
             }
 
-            if (BlockStorage.hasInventory(block)) {
-                BlockMenu blockMenu = BlockStorage.getInventory(block);
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
+            if (blockMenu != null) {
                 if (blockMenu.canOpen(block, player)) {
                     blockMenu.open(player);
                 } else {

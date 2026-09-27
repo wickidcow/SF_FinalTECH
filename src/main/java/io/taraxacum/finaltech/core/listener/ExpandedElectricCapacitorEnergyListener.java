@@ -6,7 +6,7 @@ import io.taraxacum.finaltech.core.event.EnergyWithdrawEvent;
 import io.taraxacum.finaltech.core.item.machine.electric.capacitor.expanded.AbstractExpandedElectricCapacitor;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +23,7 @@ public class ExpandedElectricCapacitorEnergyListener implements Listener {
         LocationInfo locationInfo = LocationInfo.get(location);
         if (locationInfo != null && locationInfo.getSlimefunItem() instanceof AbstractExpandedElectricCapacitor expandedElectricCapacitor) {
             int energy = Integer.parseInt(EnergyUtil.getCharge(locationInfo.getLocation()));
-            int stack = Integer.parseInt(BlockStorage.getLocationInfo(locationInfo.getLocation(), "s"));
+            int stack = Integer.parseInt(LegacyBlockDataCompat.getValue(locationInfo.getLocation(), "s"));
 
             long nowEnergy = expandedElectricCapacitor.calEnergy(energy, stack);
             long availableEnergy = expandedElectricCapacitor.getMaxEnergy() - nowEnergy;
@@ -45,7 +45,7 @@ public class ExpandedElectricCapacitorEnergyListener implements Listener {
         LocationInfo locationInfo = LocationInfo.get(location);
         if (locationInfo != null && locationInfo.getSlimefunItem() instanceof AbstractExpandedElectricCapacitor expandedElectricCapacitor) {
             int energy = Integer.parseInt(EnergyUtil.getCharge(locationInfo.getLocation()));
-            int stack = Integer.parseInt(BlockStorage.getLocationInfo(locationInfo.getLocation(), "s"));
+            int stack = Integer.parseInt(LegacyBlockDataCompat.getValue(locationInfo.getLocation(), "s"));
 
 
             long nowEnergy = expandedElectricCapacitor.calEnergy(energy, stack);

@@ -34,6 +34,16 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/listener/ConfigSaveListener.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/listener/ExpandedElectricCapacitorEnergyListener.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/LocationRecorder.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/PortableEnergyStorage.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -148,6 +158,21 @@ for path in (
         "@Nonnull Config config" in read(path),
         f"{path} must retain the RC-37 ticker Config signature",
     )
+
+for path, expected_call in {
+    "src/main/java/io/taraxacum/finaltech/core/listener/ConfigSaveListener.java":
+        "LegacyBlockDataCompat.getMenu(configSaveActionEvent.getLocation())",
+    "src/main/java/io/taraxacum/finaltech/core/listener/ExpandedElectricCapacitorEnergyListener.java":
+        'LegacyBlockDataCompat.getValue(locationInfo.getLocation(), "s")',
+    "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftMenu.java":
+        "LegacyBlockDataCompat.getMenu(location)",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/LocationRecorder.java":
+        "LegacyBlockDataCompat.getMenu(location)",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/PortableEnergyStorage.java":
+        "LegacyBlockDataCompat.getMenu(location)",
+}.items():
+    source = read(path)
+    require(expected_call in source, f"{path} lost its validated Part 2 storage boundary")
 
 for marker in (
     'getMethod("getDatabaseManager")',

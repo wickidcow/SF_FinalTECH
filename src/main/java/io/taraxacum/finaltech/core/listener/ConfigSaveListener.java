@@ -8,7 +8,7 @@ import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.event.ConfigSaveActionEvent;
 import io.taraxacum.finaltech.core.item.machine.AbstractMachine;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +30,7 @@ public class ConfigSaveListener implements Listener {
 
         // Slimefun cargo node
         if (slimefunItem != null && JavaUtil.matchOnce(id, SlimefunItems.CARGO_INPUT_NODE.getItemId(), SlimefunItems.CARGO_OUTPUT_NODE.getItemId(), SlimefunItems.CARGO_OUTPUT_NODE_2.getItemId())) {
-            BlockMenu blockMenu = BlockStorage.getInventory(configSaveActionEvent.getLocation());
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(configSaveActionEvent.getLocation());
             if (blockMenu != null) {
                 Method method = ReflectionUtil.getMethod(slimefunItem.getClass(), "updateBlockMenu");
                 if (method != null) {
@@ -46,7 +46,7 @@ public class ConfigSaveListener implements Listener {
 
         // FinalTECH machines
         if (slimefunItem != null && slimefunItem.getAddon().getJavaPlugin().equals(FinalTechChanged.getInstance()) && slimefunItem instanceof AbstractMachine) {
-            BlockMenu blockMenu = BlockStorage.getInventory(configSaveActionEvent.getLocation());
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(configSaveActionEvent.getLocation());
             if (blockMenu != null) {
                 try {
                     Field field = ReflectionUtil.getField(slimefunItem.getClass(), "menu");
