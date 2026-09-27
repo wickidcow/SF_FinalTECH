@@ -36,6 +36,17 @@ public final class LegacyBlockDataCompat {
         return LegacyAccess.getValue(location, key);
     }
 
+    @Nullable
+    public static String getSlimefunId(@Nonnull Location location) {
+        if (MODERN != null) {
+            String id = MODERN.getSlimefunId(location);
+            if (id != ModernAccess.NO_RECORD) {
+                return id;
+            }
+        }
+        return LegacyAccess.getSlimefunId(location);
+    }
+
     public static void setValue(
             @Nonnull Location location,
             @Nonnull String key,
@@ -69,6 +80,7 @@ public final class LegacyBlockDataCompat {
             Method isDataLoaded = blockDataType.getMethod("isDataLoaded");
             Method loadBlockData = controllerType.getMethod("loadBlockData", blockDataType);
             Method getData = blockDataType.getMethod("getData", String.class);
+            Method getSfId = blockDataType.getMethod("getSfId");
             Method setData = blockDataType.getMethod("setData", String.class, String.class);
             Method removeData = blockDataType.getMethod("removeData", String.class);
             Method getBlockMenu = blockDataType.getMethod("getBlockMenu");
@@ -80,6 +92,7 @@ public final class LegacyBlockDataCompat {
                     isDataLoaded,
                     loadBlockData,
                     getData,
+                    getSfId,
                     setData,
                     removeData,
                     getBlockMenu);
@@ -95,6 +108,7 @@ public final class LegacyBlockDataCompat {
             Method isDataLoaded,
             Method loadBlockData,
             Method getData,
+            Method getSfId,
             Method setData,
             Method removeData,
             Method getBlockMenu) {
@@ -125,6 +139,21 @@ public final class LegacyBlockDataCompat {
                 throw new IllegalStateException("Could not access Slimefun Legacy block-data API", exception);
             } catch (InvocationTargetException exception) {
                 throw unwrap("read", exception);
+            }
+        }
+
+        @Nullable
+        private String getSlimefunId(@Nonnull Location location) {
+            try {
+                Object blockData = getLoadedData(location);
+                if (blockData == null) {
+                    return NO_RECORD;
+                }
+                return (String) getSfId.invoke(blockData);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block identity API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("read identity", exception);
             }
         }
 
@@ -189,6 +218,11 @@ public final class LegacyBlockDataCompat {
         @Nullable
         private static String getValue(@Nonnull Location location, @Nonnull String key) {
             return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location, key);
+        }
+
+        @Nullable
+        private static String getSlimefunId(@Nonnull Location location) {
+            return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location, "id");
         }
 
         private static void setValue(

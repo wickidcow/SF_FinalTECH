@@ -5,8 +5,9 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.util.ConstantTableUtil;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -15,10 +16,10 @@ import java.util.Objects;
 public class EnergyUtil {
     @Nonnull
     public static String getCharge(@Nonnull Location location) {
-        SlimefunItem it = SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"));
+        SlimefunItem it = SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location));
         if (it != null)
             if (it instanceof EnergyNetComponent)
-                return String.valueOf(((EnergyNetComponent) it).getCharge(location));
+                return String.valueOf(LegacySlimefunApiCompat.getCharge((EnergyNetComponent) it, location));
         return "0";
     }
 
@@ -28,17 +29,17 @@ public class EnergyUtil {
     }
 
     public static void setCharge(@Nonnull Location location, @Nonnull String energy) {
-        SlimefunItem it = SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"));
+        SlimefunItem it = SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location));
         if (it != null)
             if (it instanceof EnergyNetComponent)
-                ((EnergyNetComponent) it).setCharge(location, Integer.parseInt(energy));
+                LegacySlimefunApiCompat.setCharge((EnergyNetComponent) it, location, Integer.parseInt(energy));
     }
 
     public static void setCharge(@Nonnull Location location, int energy) {
-        SlimefunItem it = SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"));
+        SlimefunItem it = SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location));
         if (it != null)
             if (it instanceof EnergyNetComponent)
-                ((EnergyNetComponent) it).setCharge(location, energy);
+                LegacySlimefunApiCompat.setCharge((EnergyNetComponent) it, location, energy);
     }
 
     public static void setCharge(@Nonnull Config config, @Nonnull String energy) {
