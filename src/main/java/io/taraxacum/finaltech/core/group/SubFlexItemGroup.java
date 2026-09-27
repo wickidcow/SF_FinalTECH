@@ -270,7 +270,7 @@ public class SubFlexItemGroup extends FlexItemGroup {
                                 "",
                                 "§a> Click to unlock",
                                 "",
-                                "§7Cost: §b" + research.getLevelCost() + " Experience Levels");
+                                "§7Cost: §b" + research.getCost() + " Experience Levels");
                         chestMenu.addItem(MAIN_CONTENT_L[i][j], ItemStackUtil.cleanItem(icon));
                         chestMenu.addMenuClickHandler(MAIN_CONTENT_L[i][j], (p, slot, item, action) -> {
                             PlayerPreResearchEvent event = new PlayerPreResearchEvent(player, research, slimefunItem);
