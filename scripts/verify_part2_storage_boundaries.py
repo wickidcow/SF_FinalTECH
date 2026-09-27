@@ -1128,4 +1128,28 @@ for marker in (
 ):
     require(marker in compat, f"storage compatibility boundary is missing: {marker}")
 
+# Global regression guards for the completed Part 2 cleanup.
+java_root = ROOT / "src/main/java"
+direct_storage_allowlist = {
+    "io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java",
+    "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
+}
+
+for java_path in java_root.rglob("*.java"):
+    relative = java_path.relative_to(java_root).as_posix()
+    source = java_path.read_text(encoding="utf-8")
+
+    if relative not in direct_storage_allowlist:
+        require(
+            "me.mrCookieSlime.Slimefun.api.BlockStorage" not in source
+            and "BlockStorage." not in source,
+            f"{relative} reintroduced direct deprecated BlockStorage access",
+        )
+
+    if "import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;" in source:
+        require(
+            '@SuppressWarnings("deprecation")' in source,
+            f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression",
+        )
+
 print("FinalTECH Part 2 storage boundaries: PASS")
