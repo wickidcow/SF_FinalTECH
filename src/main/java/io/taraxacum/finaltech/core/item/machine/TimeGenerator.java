@@ -4,7 +4,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
@@ -17,8 +16,9 @@ import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  * @author Final_ROOT
  * @since 2.2
  */
-public class TimeGenerator extends AbstractMachine implements EnergyNetProvider, RecipeItem, MenuUpdater {
+public class TimeGenerator extends AbstractEnergyProviderMachine implements RecipeItem, MenuUpdater {
     private final String key = "time";
     private final int interval = ConfigUtil.getOrDefaultItemSetting(1600, this, "interval");
     private final int capacity = ConfigUtil.getOrDefaultItemSetting(16777216, this, "capacity");
@@ -59,26 +59,26 @@ public class TimeGenerator extends AbstractMachine implements EnergyNetProvider,
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tickWithData(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data) {
         Location location = block.getLocation();
         World world = location.getWorld();
-        int charge = this.getCharge(location);
+        int charge = LegacySlimefunApiCompat.getCharge(this, location);
 
         if (world != null) {
             long time = world.getTime() / this.interval;
-            String oldTime = config.getString(this.key);
+            String oldTime = LegacyTickerDataCompat.getString(data, this.key);
             if (oldTime != null && !oldTime.equals(String.valueOf(time))) {
                 charge *= 2;
             }
-            config.setValue(this.key, String.valueOf(time));
+            LegacyTickerDataCompat.setValue(data, this.key, String.valueOf(time));
         }
 
         charge += 1;
 
         charge = charge > this.capacity ? 0 : charge;
-        this.setCharge(location, charge);
+        LegacySlimefunApiCompat.setCharge(this, location, charge);
 
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
         if (blockMenu.hasViewer()) {
             this.updateMenu(blockMenu, 4, this,
                     String.valueOf(charge));
@@ -91,9 +91,9 @@ public class TimeGenerator extends AbstractMachine implements EnergyNetProvider,
     }
 
     @Override
-    public int getGeneratedOutput(@Nonnull Location location, @Nonnull Config data) {
-        int charge = this.getCharge(location);
-        this.setCharge(location, 0);
+    protected int getGeneratedOutputCompat(@Nonnull Location location) {
+        int charge = LegacySlimefunApiCompat.getCharge(this, location);
+        LegacySlimefunApiCompat.setCharge(this, location, 0);
         return charge;
     }
 

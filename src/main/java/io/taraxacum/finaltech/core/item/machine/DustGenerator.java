@@ -4,11 +4,12 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import io.taraxacum.common.util.MathUtil;
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
@@ -21,8 +22,6 @@ import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -35,7 +34,7 @@ import javax.annotation.Nonnull;
  * @author Final_ROOT
  * @since 1.0
  */
-public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUpdater, EnergyNetProvider {
+public class DustGenerator extends AbstractEnergyProviderMachine implements RecipeItem, MenuUpdater {
     private final String keyCount = "count";
     private final int capacity = ConfigUtil.getOrDefaultItemSetting(Integer.MAX_VALUE / 4, this, "capacity");
     // default = 144115188344291328
@@ -52,7 +51,7 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
         return new BlockPlaceHandler(false) {
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent blockPlaceEvent) {
-                BlockStorage.addBlockInfo(blockPlaceEvent.getBlock().getLocation(), keyCount, StringNumberUtil.ZERO);
+                LegacyBlockDataCompat.setValue(blockPlaceEvent.getBlock().getLocation(), keyCount, StringNumberUtil.ZERO);
             }
         };
     }
@@ -70,11 +69,11 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+    protected void tickWithData(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data) {
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
 
-        long count = Long.parseLong(config.getString(keyCount)) % Integer.MAX_VALUE;
+        long count = Long.parseLong(LegacyTickerDataCompat.getString(data, keyCount)) % Integer.MAX_VALUE;
         boolean work = false;
         for (int slot : this.getInputSlot()) {
             ItemStack itemStack = blockMenu.getItemInSlot(slot);
@@ -96,7 +95,7 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
         }
         int charge = (int) count;
 
-        BlockStorage.addBlockInfo(location, keyCount, String.valueOf(count));
+        LegacyTickerDataCompat.setValue(data, keyCount, String.valueOf(count));
         if (count > 0) {
             LegacySlimefunApiCompat.addCharge(this, location, charge);
         }
@@ -121,7 +120,7 @@ public class DustGenerator extends AbstractMachine implements RecipeItem, MenuUp
     }
 
     @Override
-    public int getGeneratedOutput(@Nonnull Location location, @Nonnull Config config) {
+    protected int getGeneratedOutputCompat(@Nonnull Location location) {
         int storedCharge = LegacySlimefunApiCompat.getCharge(this, location);
         LegacySlimefunApiCompat.setCharge(this, location, 0);
         return storedCharge;
