@@ -10,6 +10,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftFrameMenu.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -43,12 +47,20 @@ machine_recipe_lock = read(
 frame_menu = read(
     "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftFrameMenu.java"
 )
+position_info = read(
+    "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java"
+)
+slot_search_line = read(
+    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java"
+)
 compat = read(
     "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java"
 )
 
 require('KEY = "mms"' in machine_max_stack, "MachineMaxStack key must remain mms")
 require('KEY = "rl"' in machine_recipe_lock, "MachineRecipeLock key must remain rl")
+require('KEY = "pi"' in position_info, "PositionInfo key must remain pi")
+require('KEY = "ssl"' in slot_search_line, "SlotSearchLine key must remain ssl")
 require(
     "LegacyBlockDataCompat.getMenu(location)" in frame_menu,
     "AdvancedAutoCraftFrameMenu must use the block-data menu boundary",
