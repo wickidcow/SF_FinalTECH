@@ -72,6 +72,9 @@ jobs:
       - name: Verify Part 2 storage boundaries
         run: python3 scripts/verify_part2_storage_boundaries.py
 
+      - name: Verify ItemStack text compatibility
+        run: python3 scripts/verify_itemstack_text_compat.py
+
       - name: Verify Paper 1.21.11 baseline compilation
         run: >-
           mvn -B --no-transfer-progress -DskipTests
