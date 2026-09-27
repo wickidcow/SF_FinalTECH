@@ -16,6 +16,7 @@ import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
+import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -120,11 +121,11 @@ public class DustFactoryDirt extends AbstractOperationMachine implements RecipeI
             ItemStack itemStack = blockMenu.getItemInSlot(slot);
 
             if (amountCount == 0 && typeCount == 0) {
-                itemStack.setType(Material.RED_STAINED_GLASS_PANE);
+                LegacyItemStackCompat.setType(itemStack, Material.RED_STAINED_GLASS_PANE);
             } else if (amountCount > amountDifficulty || typeCount > typeDifficulty) {
-                itemStack.setType(Material.YELLOW_STAINED_GLASS_PANE);
+                LegacyItemStackCompat.setType(itemStack, Material.YELLOW_STAINED_GLASS_PANE);
             } else {
-                itemStack.setType(Material.GREEN_STAINED_GLASS_PANE);
+                LegacyItemStackCompat.setType(itemStack, Material.GREEN_STAINED_GLASS_PANE);
             }
         }
     }
