@@ -72,6 +72,26 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/EnergizedOperationAccelerator.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OperationAccelerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OverloadedOperationAccelerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/conversion/AbstractConversionMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/extraction/AbstractExtractionMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/generator/AbstractGeneratorMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/CureTower.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/PurifyLevelTower.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/PurifyTimeTower.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DistributeLeftStorageUnit.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DistributeRightStorageUnit.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -233,6 +253,28 @@ for path in (
     source = read(path)
     require(
         "LegacyBlockDataCompat.getMenu(block.getLocation())" in source,
+        f"{path} must route its ticker menu lookup through the compatibility boundary",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{path} must retain the RC-37 ticker Config signature",
+    )
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OperationAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/OverloadedOperationAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/conversion/AbstractConversionMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/extraction/AbstractExtractionMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/template/generator/AbstractGeneratorMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/CureTower.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/PurifyLevelTower.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/tower/PurifyTimeTower.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DistributeLeftStorageUnit.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/unit/DistributeRightStorageUnit.java",
+):
+    source = read(path)
+    require(
+        "LegacyBlockDataCompat.getMenu(" in source,
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(

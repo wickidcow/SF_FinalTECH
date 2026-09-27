@@ -20,7 +20,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -54,7 +54,7 @@ public abstract class AbstractExtractionMachine extends AbstractMachine implemen
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         try {
-            BlockMenu blockMenu = BlockStorage.getInventory(block);
+            BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
             int itemSlot = this.getInputSlot()[FinalTechChanged.getRandom().nextInt(this.getInputSlot().length)];
             ItemStack item = blockMenu.getItemInSlot(itemSlot);
 
