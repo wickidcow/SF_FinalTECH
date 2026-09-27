@@ -16,8 +16,7 @@ import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.LegacyItemStackCompat;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,8 +74,9 @@ public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
         super.newInstance(blockMenu, block);
 
         blockMenu.addMenuClickHandler(STATUS_SLOT, (player, slot, itemStack, action) -> {
-            Config config = BlockStorage.getLocationInfo(block.getLocation());
-            String count = JavaUtil.getFirstNotNull(config.getString(FinalTechItems.ITEM_DISMANTLE_TABLE.getKey()), StringNumberUtil.ZERO);
+            String count = JavaUtil.getFirstNotNull(
+                    LegacyBlockDataCompat.getValue(block.getLocation(), FinalTechItems.ITEM_DISMANTLE_TABLE.getKey()),
+                    StringNumberUtil.ZERO);
             if (StringNumberUtil.compare(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()) >= 0) {
                 if (MachineUtil.isEmpty(blockMenu.toInventory(), this.getOutputSlot())) {
                     ItemStack item = blockMenu.getItemInSlot(this.getInputSlot()[0]);
@@ -110,7 +110,10 @@ public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
                                 }
                             }
 
-                            config.setValue(FinalTechItems.ITEM_DISMANTLE_TABLE.getKey(), StringNumberUtil.sub(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()));
+                            LegacyBlockDataCompat.setValue(
+                                    block.getLocation(),
+                                    FinalTechItems.ITEM_DISMANTLE_TABLE.getKey(),
+                                    StringNumberUtil.sub(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()));
                         }
                     }
                 }
@@ -122,11 +125,11 @@ public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
 
     @Override
     public void updateInventory(@Nonnull Inventory inventory, @Nonnull Location location) {
-        Config config = BlockStorage.getLocationInfo(location);
-
         ItemStack item = inventory.getItem(STATUS_SLOT);
         if (!ItemStackUtil.isItemNull(item)) {
-            String count = JavaUtil.getFirstNotNull(config.getString(FinalTechItems.ITEM_DISMANTLE_TABLE.getKey()), StringNumberUtil.ZERO);
+            String count = JavaUtil.getFirstNotNull(
+                    LegacyBlockDataCompat.getValue(location, FinalTechItems.ITEM_DISMANTLE_TABLE.getKey()),
+                    StringNumberUtil.ZERO);
 
             LanguageManager languageManager = FinalTechChanged.getLanguageManager();
             ItemStackUtil.setLore(item, languageManager.replaceStringList(languageManager.getStringList("items", this.getID(), "status-icon", "lore"),

@@ -11,7 +11,7 @@ import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -36,12 +36,12 @@ public class MatrixExpandedCapacitor extends AbstractExpandedElectricCapacitor {
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
         for (int slot : this.getInputSlot()) {
             ItemStack item = blockMenu.getItemInSlot(slot);
             if (!ItemStackUtil.isItemNull(item) && FinalTechItems.ITEM_PHONY.verifyItem(item)) {
                 String energyStack = String.valueOf(config.getString(this.key));
-                BlockStorage.addBlockInfo(location, this.key, StringNumberUtil.min(String.valueOf(this.stack), StringNumberUtil.add(energyStack, energyStack)));
+                LegacyBlockDataCompat.setValue(location, this.key, StringNumberUtil.min(String.valueOf(this.stack), StringNumberUtil.add(energyStack, energyStack)));
                 item.setAmount(item.getAmount() - 1);
             }
         }

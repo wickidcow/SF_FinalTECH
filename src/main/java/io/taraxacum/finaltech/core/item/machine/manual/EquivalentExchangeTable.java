@@ -23,7 +23,7 @@ import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -52,8 +52,8 @@ public class EquivalentExchangeTable extends AbstractManualMachine implements Re
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
-        String value = JavaUtil.getFirstNotNull(BlockStorage.getLocationInfo(block.getLocation(), this.key), StringNumberUtil.ZERO);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
+        String value = JavaUtil.getFirstNotNull(LegacyBlockDataCompat.getValue(block.getLocation(), this.key), StringNumberUtil.ZERO);
         for (int slot : this.getInputSlot()) {
             ItemStack itemStack = blockMenu.getItemInSlot(slot);
             if (ItemStackUtil.isItemNull(itemStack)) {
@@ -80,7 +80,7 @@ public class EquivalentExchangeTable extends AbstractManualMachine implements Re
             }
         }
 
-        BlockStorage.addBlockInfo(block.getLocation(), this.key, value);
+        LegacyBlockDataCompat.setValue(block.getLocation(), this.key, value);
 
         if (blockMenu.hasViewer()) {
             this.getMachineMenu().updateInventory(blockMenu.toInventory(), block.getLocation());

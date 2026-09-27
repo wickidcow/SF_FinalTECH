@@ -118,6 +118,14 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/EtherMiner.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/MatrixExpandedCapacitor.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/EquivalentExchangeTable.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/ItemDismantleTable.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/machine/ItemDismantleTableMenu.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -343,6 +351,63 @@ for path, expected_count in {
     require(
         "Config config" in source or "Config data" in source,
         f"{path} must retain its RC-37 Config ticker signature",
+    )
+
+matrix_expanded = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/MatrixExpandedCapacitor.java"
+)
+equivalent_exchange = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/EquivalentExchangeTable.java"
+)
+item_dismantle = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/ItemDismantleTable.java"
+)
+item_dismantle_menu = read(
+    "src/main/java/io/taraxacum/finaltech/core/menu/machine/ItemDismantleTableMenu.java"
+)
+
+require(
+    "LegacyBlockDataCompat.getMenu(location)" in matrix_expanded
+    and "LegacyBlockDataCompat.setValue(location, this.key" in matrix_expanded,
+    "MatrixExpandedCapacitor must preserve its existing stack-key storage through the compatibility boundary",
+)
+require(
+    'private final String key = "value";' in equivalent_exchange,
+    "EquivalentExchangeTable persisted key must remain value",
+)
+require(
+    "LegacyBlockDataCompat.getValue(block.getLocation(), this.key)" in equivalent_exchange
+    and "LegacyBlockDataCompat.setValue(block.getLocation(), this.key, value)" in equivalent_exchange,
+    "EquivalentExchangeTable must preserve its value read/write semantics",
+)
+require(
+    'private final String key = "c";' in item_dismantle,
+    "ItemDismantleTable persisted key must remain c",
+)
+require(
+    "LegacyBlockDataCompat.getValue(block.getLocation(), key)" in item_dismantle
+    and "LegacyBlockDataCompat.setValue(block.getLocation(), key, StringNumberUtil.add(count))" in item_dismantle,
+    "ItemDismantleTable must preserve its dismantle-count read/write semantics",
+)
+require(
+    "LegacyBlockDataCompat.getValue(block.getLocation(), FinalTechItems.ITEM_DISMANTLE_TABLE.getKey())" in item_dismantle_menu
+    and "LegacyBlockDataCompat.setValue(" in item_dismantle_menu
+    and "LegacyBlockDataCompat.getValue(location, FinalTechItems.ITEM_DISMANTLE_TABLE.getKey())" in item_dismantle_menu,
+    "ItemDismantleTableMenu must preserve the same dismantle counter key for click and display paths",
+)
+require(
+    "Configuration.Config" not in item_dismantle_menu
+    and "BlockStorage." not in item_dismantle_menu,
+    "ItemDismantleTableMenu must not reintroduce deprecated Config or BlockStorage access",
+)
+for source, name in (
+    (matrix_expanded, "MatrixExpandedCapacitor"),
+    (equivalent_exchange, "EquivalentExchangeTable"),
+    (item_dismantle, "ItemDismantleTable"),
+):
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
     )
 
 for marker in (

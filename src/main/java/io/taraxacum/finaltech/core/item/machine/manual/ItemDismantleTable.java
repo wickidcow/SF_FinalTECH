@@ -20,7 +20,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.RecipeTypeRegistry;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -62,12 +62,12 @@ public class ItemDismantleTable extends AbstractManualMachine implements RecipeI
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        String count = JavaUtil.getFirstNotNull(BlockStorage.getLocationInfo(block.getLocation(), key), StringNumberUtil.ZERO);
+        String count = JavaUtil.getFirstNotNull(LegacyBlockDataCompat.getValue(block.getLocation(), key), StringNumberUtil.ZERO);
         if (StringNumberUtil.compare(count, limit) < 0) {
-            BlockStorage.addBlockInfo(block.getLocation(), key, StringNumberUtil.add(count));
+            LegacyBlockDataCompat.setValue(block.getLocation(), key, StringNumberUtil.add(count));
         }
 
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (blockMenu != null && blockMenu.hasViewer()) {
             this.getMachineMenu().updateInventory(blockMenu.toInventory(), block.getLocation());
         }
