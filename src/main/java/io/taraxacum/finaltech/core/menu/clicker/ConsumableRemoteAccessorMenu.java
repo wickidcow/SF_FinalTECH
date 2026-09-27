@@ -6,7 +6,7 @@ import io.taraxacum.finaltech.core.item.machine.clicker.AbstractClickerMachine;
 import io.taraxacum.finaltech.util.LocationUtil;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -57,8 +57,8 @@ public class ConsumableRemoteAccessorMenu extends AbstractClickerMenu {
                             targetBlock = targetBlock.getRelative(blockFace);
                         }
 
-                        if (BlockStorage.hasInventory(targetBlock)) {
-                            BlockMenu targetBlockMenu = BlockStorage.getInventory(targetBlock);
+                        BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(targetBlock.getLocation());
+                        if (targetBlockMenu != null) {
                             if (targetBlockMenu.canOpen(targetBlock, player)) {
                                 JavaPlugin javaPlugin = this.getSlimefunItem().getAddon().getJavaPlugin();
                                 Block finalTargetBlock = targetBlock;
@@ -70,8 +70,8 @@ public class ConsumableRemoteAccessorMenu extends AbstractClickerMenu {
                     } else if (digit == 0) {
                         for (int i = 0; i < this.range; i++) {
                             targetBlock = targetBlock.getRelative(blockFace);
-                            if (BlockStorage.hasInventory(targetBlock)) {
-                                BlockMenu targetBlockMenu = BlockStorage.getInventory(targetBlock);
+                            BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(targetBlock.getLocation());
+                            if (targetBlockMenu != null) {
                                 if (targetBlockMenu.canOpen(targetBlock, player)) {
                                     JavaPlugin javaPlugin = this.getSlimefunItem().getAddon().getJavaPlugin();
                                     Block finalTargetBlock = targetBlock;

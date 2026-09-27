@@ -44,6 +44,14 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/usable/PortableEnergyStorage.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ConfigurableRemoteAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ConsumableRemoteAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ExpandedConfigurableRemoteAccessorMenu.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ExpandedConsumableRemoteAccessorMenu.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -173,6 +181,22 @@ for path, expected_call in {
 }.items():
     source = read(path)
     require(expected_call in source, f"{path} lost its validated Part 2 storage boundary")
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ConfigurableRemoteAccessorMenu.java",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ConsumableRemoteAccessorMenu.java",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ExpandedConfigurableRemoteAccessorMenu.java",
+    "src/main/java/io/taraxacum/finaltech/core/menu/clicker/ExpandedConsumableRemoteAccessorMenu.java",
+):
+    source = read(path)
+    require(
+        source.count("LegacyBlockDataCompat.getMenu(targetBlock.getLocation())") == 2,
+        f"{path} must route both remote-access menu lookups through the compatibility boundary",
+    )
+    require(
+        "BlockStorage.hasInventory" not in source,
+        f"{path} must not retain the deprecated inventory-existence probe",
+    )
 
 for marker in (
     'getMethod("getDatabaseManager")',
