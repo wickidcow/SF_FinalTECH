@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
  * @author Final_ROOT
  * @since 2.4
  */
+@SuppressWarnings("deprecation")
 public class EnergyRegulatorStaticsMenu extends AbstractMachineMenu {
     public static final int STATUS_SLOT = 4;
     public static final int BUG_REPORT_SLOT = 8;

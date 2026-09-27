@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
  
+@SuppressWarnings("deprecation")
 public class SlotSearchLine {
     public static final String KEY = "ssl";
 

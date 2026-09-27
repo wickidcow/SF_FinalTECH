@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
  
+@SuppressWarnings("deprecation")
 public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
     private static final int[] BORDER = new int[]{3, 4, 12, 21, 22};
     private static final int[] INPUT_BORDER = new int[]{0, 1, 2, 9, 11, 18, 19, 20};

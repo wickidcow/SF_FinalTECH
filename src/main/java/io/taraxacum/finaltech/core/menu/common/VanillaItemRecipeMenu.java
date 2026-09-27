@@ -2,6 +2,7 @@ package io.taraxacum.finaltech.core.menu.common;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 
+@SuppressWarnings("deprecation")
 public class VanillaItemRecipeMenu extends ChestMenu {
     /**
      * Creates a new ChestMenu with the specified
