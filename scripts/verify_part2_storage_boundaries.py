@@ -132,6 +132,16 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/template/basic/AbstractBasicMachine.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/EnergizedAccelerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/OverloadedAccelerator.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/craft/AbstractManualCraftMachine.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineChargeCard.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/menu/manual/ManualCraftMachineMenu.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -465,6 +475,81 @@ for source, name in (
         "@Nonnull Config config" in source,
         f"{name} must retain the RC-37 ticker Config signature",
     )
+
+energized_accelerator = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/EnergizedAccelerator.java"
+)
+overloaded_accelerator = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/OverloadedAccelerator.java"
+)
+manual_craft = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/craft/AbstractManualCraftMachine.java"
+)
+charge_card = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineChargeCard.java"
+)
+manual_craft_menu = read(
+    "src/main/java/io/taraxacum/finaltech/core/menu/manual/ManualCraftMachineMenu.java"
+)
+
+for source, name in (
+    (energized_accelerator, "EnergizedAccelerator"),
+    (overloaded_accelerator, "OverloadedAccelerator"),
+):
+    require(
+        "LegacyBlockDataCompat.getMenu(" in source,
+        f"{name} must route its own menu lookup through the compatibility boundary",
+    )
+    require(
+        "LegacyBlockDataCompat.getSlimefunId(locationInfo.getLocation())" in source,
+        f"{name} must verify accelerated machine identity through the dedicated Slimefun-id boundary",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
+    )
+
+require(
+    'LegacyBlockDataCompat.setValue(blockPlaceEvent.getBlock().getLocation(), ManualCraftMachineMenu.KEY, "0")' in manual_craft,
+    "AbstractManualCraftMachine must preserve its existing manual-craft state key on placement",
+)
+require(
+    manual_craft.count("LegacyBlockDataCompat.getSlimefunId(location)") == 2,
+    "AbstractManualCraftMachine must resolve both energy identity paths through the dedicated Slimefun-id boundary",
+)
+require(
+    "LegacyBlockDataCompat.getMenu(block.getLocation())" in manual_craft,
+    "AbstractManualCraftMachine must use the compatibility menu boundary",
+)
+require(
+    "@Nonnull Config config" in manual_craft,
+    "AbstractManualCraftMachine must retain the RC-37 ticker Config signature",
+)
+
+require(
+    "String slimefunId = LegacyBlockDataCompat.getSlimefunId(location);" in charge_card
+    and "SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);" in charge_card,
+    "AbstractMachineChargeCard must use the dedicated Slimefun-id boundary once per activation",
+)
+require(
+    "ConstantTableUtil.CONFIG_ID" not in charge_card,
+    "AbstractMachineChargeCard must not treat the special Slimefun id as ordinary block data",
+)
+
+require(
+    "LegacyBlockDataCompat.setValue(l, key, value)" in manual_craft_menu
+    and "LegacyBlockDataCompat.getValue(l, key)" in manual_craft_menu,
+    "ManualCraftMachineMenu must route generic recipe-state access through the compatibility boundary",
+)
+require(
+    "Configuration.Config" not in manual_craft_menu
+    and "BlockStorage." not in manual_craft_menu,
+    "ManualCraftMachineMenu must not retain deprecated full Config or BlockStorage access",
+)
+require(
+    "add(l, KEY, get(l, KEY_L[finalSlotP]))" in manual_craft_menu,
+    "ManualCraftMachineMenu must preserve left-slot recipe selection semantics",
+)
 
 for marker in (
     'getMethod("getDatabaseManager")',

@@ -16,7 +16,7 @@ import io.taraxacum.finaltech.core.menu.manual.ManualCraftMachineMenu;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -56,7 +56,7 @@ public abstract class AbstractManualCraftMachine extends AbstractManualMachine i
             @Override
             public void onPlayerPlace(@Nonnull BlockPlaceEvent blockPlaceEvent) {
                 // TODO remove this
-                BlockStorage.addBlockInfo(blockPlaceEvent.getBlock().getLocation(), ManualCraftMachineMenu.KEY, "0");
+                LegacyBlockDataCompat.setValue(blockPlaceEvent.getBlock().getLocation(), ManualCraftMachineMenu.KEY, "0");
             }
         };
     }
@@ -71,16 +71,16 @@ public abstract class AbstractManualCraftMachine extends AbstractManualMachine i
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        int charge = LegacySlimefunApiCompat.getCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"))), location);
+        int charge = LegacySlimefunApiCompat.getCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location))), location);
 
         int intCharge = charge + this.charge;
         if (intCharge > this.capacity / 2) {
             intCharge /= 2;
         }
 
-        LegacySlimefunApiCompat.setCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(BlockStorage.getLocationInfo(location, "id"))), block.getLocation(), Math.min(intCharge, this.capacity));
+        LegacySlimefunApiCompat.setCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location))), block.getLocation(), Math.min(intCharge, this.capacity));
 
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inv = blockMenu.toInventory();
         Location location1 = block.getLocation();
         ManualCraftMachineMenu menu = (ManualCraftMachineMenu) this.getMachineMenu();

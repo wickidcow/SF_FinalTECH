@@ -12,11 +12,9 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.usable.UsableSlimefunItem;
-import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.PermissionUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
@@ -46,11 +44,8 @@ public abstract class AbstractMachineChargeCard extends UsableSlimefunItem {
         }
 
         Location location = block.getLocation();
-        if (!BlockStorage.hasBlockInfo(location)) {
-            return;
-        }
-
-        if (BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID) == null) {
+        String slimefunId = LegacyBlockDataCompat.getSlimefunId(location);
+        if (slimefunId == null) {
             return;
         }
 
@@ -64,7 +59,7 @@ public abstract class AbstractMachineChargeCard extends UsableSlimefunItem {
             player.sendRawMessage(FinalTechChanged.getLanguageString("message", "no-condition", "player"));
             return;
         }
-        SlimefunItem slimefunItem = SlimefunItem.getById(BlockStorage.getLocationInfo(location, ConstantTableUtil.CONFIG_ID));
+        SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);
 
         if (slimefunItem instanceof EnergyNetComponent energyNetComponent && energyNetComponent.getCapacity() > 0) {
             if (this.consume()) {

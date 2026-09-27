@@ -14,9 +14,8 @@ import io.taraxacum.finaltech.core.item.machine.manual.craft.AbstractManualCraft
 import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -92,18 +91,17 @@ public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
         }
     }
     public static void add(Location l, String key, String value) {
-        BlockStorage.addBlockInfo(l, key, value);
+        LegacyBlockDataCompat.setValue(l, key, value);
     }
     
     public static String get(Location l, String key) {
-        return BlockStorage.getLocationInfo(l, key);
+        return LegacyBlockDataCompat.getValue(l, key);
     }
     @Override
     public void newInstance(@Nonnull BlockMenu blockMenu, @Nonnull Block block) {
         super.newInstance(blockMenu, block);
         Inventory inventory = blockMenu.toInventory();
         Location l = blockMenu.getLocation();
-        Config config = BlockStorage.getLocationInfo(l);
         JavaPlugin javaPlugin = this.getSlimefunItem().getAddon().getJavaPlugin();
 
         blockMenu.addMenuOpeningHandler((player -> {
@@ -133,7 +131,7 @@ public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
 
                 javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.WAX_OFF, 0, block));
 
-                BlockStorage.addBlockInfo(l, KEY, BlockStorage.getLocationInfo(l, KEY_L[finalSlotP]));
+                add(l, KEY, get(l, KEY_L[finalSlotP]));
                 ManualCraftMachineMenu.this.updateInventory(inventory, l);
                 return false;
             });
@@ -161,7 +159,7 @@ public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
 
             javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.WAX_OFF, 0, block));
 
-            int offset = Integer.parseInt(BlockStorage.getLocationInfo(block.getLocation(), KEY));
+            int offset = Integer.parseInt(get(block.getLocation(), KEY));
             int length = MachineRecipeFactory.getInstance().getRecipe(this.getID()).size();
             offset = (offset + length - 1) % length;
             add(l, KEY, String.valueOf(offset));
@@ -177,7 +175,7 @@ public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
 
             javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.WAX_OFF, 0, block));
 
-            int offset = Integer.parseInt(BlockStorage.getLocationInfo(block.getLocation(), KEY));
+            int offset = Integer.parseInt(get(block.getLocation(), KEY));
             int length = MachineRecipeFactory.getInstance().getAdvancedRecipe(this.getID()).size();
             offset = (offset + 1) % length;
             add(l, KEY, String.valueOf(offset));
@@ -252,7 +250,6 @@ public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
 
     @Override
     public void updateInventory(@Nonnull Inventory inventory, @Nonnull Location location) {
-        Config config = BlockStorage.getLocationInfo(location);
         String charge = EnergyUtil.getCharge(location);
         int intCharge = Integer.parseInt(charge);
         AdvancedCraft craft = null;
