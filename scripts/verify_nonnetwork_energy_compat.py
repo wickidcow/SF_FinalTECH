@@ -24,10 +24,17 @@ for path in SURFACES:
     text = read(path)
     require("LegacySlimefunApiCompat" in text, f"{path} must use LegacySlimefunApiCompat")
     for line in text.splitlines():
-        if ".getCharge(" in line or ".setCharge(" in line or ".addCharge(" in line or ".removeCharge(" in line:
+        stripped = line.strip()
+        if (
+            ".getCharge(" in stripped
+            or ".setCharge(" in stripped
+            or ".addCharge(" in stripped
+            or ".removeCharge(" in stripped
+        ):
+            allowed_facade = "EnergyUtil." in stripped or "LegacySlimefunApiCompat." in stripped
             require(
-                "LegacySlimefunApiCompat." in line,
-                f"{path} contains a direct legacy energy call: {line.strip()}",
+                allowed_facade,
+                f"{path} contains a direct legacy energy call: {stripped}",
             )
 
 network = read("src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java")
