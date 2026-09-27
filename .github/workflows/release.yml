@@ -69,6 +69,9 @@ jobs:
           grep -Fq '<finalName>SF_FinalTECH${project.version}</finalName>' pom.xml
           grep -Fq 'api-version: 1.17' src/main/resources/plugin.yml
 
+      - name: Verify storage compatibility boundary
+        run: python3 scripts/verify_storage_compat.py
+
       - name: Verify Paper 1.21.11 baseline compilation
         run: >-
           mvn -B --no-transfer-progress -DskipTests
