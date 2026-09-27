@@ -15,7 +15,6 @@ import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -27,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class EntropySeed extends AbstractMachine implements RecipeItem {
+public class EntropySeed extends AbstractConfigFreeMachine implements RecipeItem {
     private final double equivalentConceptLife = ConfigUtil.getOrDefaultItemSetting(8.0, this, "life");
     private final int equivalentConceptRange = ConfigUtil.getOrDefaultItemSetting(4, this, "range");
     private final String key = "key";
@@ -68,7 +67,7 @@ public class EntropySeed extends AbstractMachine implements RecipeItem {
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
         // TODO optimization
 
         Location location = block.getLocation();
