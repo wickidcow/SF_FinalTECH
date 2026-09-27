@@ -12,7 +12,6 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.StringItemUtil;
 import io.taraxacum.libs.plugin.util.TextUtil;
 import io.taraxacum.libs.slimefun.interfaces.ValidItem;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
@@ -56,8 +55,8 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
         if (!itemMeta.hasLore()) {
             return false;
         }
-        List<String> lore = itemMeta.getLore();
-        return !lore.isEmpty() && this.itemLoreWithoutColor.equals(ChatColor.stripColor(lore.get(0)));
+        List<String> lore = ItemStackUtil.getLore(itemMeta);
+        return !lore.isEmpty() && this.itemLoreWithoutColor.equals(TextUtil.stripColor(lore.get(0)));
     }
 
     @Nonnull
