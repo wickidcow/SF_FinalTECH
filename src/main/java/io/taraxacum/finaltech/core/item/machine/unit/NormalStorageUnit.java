@@ -33,6 +33,7 @@ public class NormalStorageUnit extends AbstractStorageUnit implements RecipeItem
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

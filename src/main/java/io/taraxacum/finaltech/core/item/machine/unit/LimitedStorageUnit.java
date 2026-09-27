@@ -29,6 +29,7 @@ public class LimitedStorageUnit extends AbstractStorageUnit implements RecipeIte
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

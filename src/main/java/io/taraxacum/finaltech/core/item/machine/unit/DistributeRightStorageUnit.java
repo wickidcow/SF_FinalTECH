@@ -33,6 +33,7 @@ public class DistributeRightStorageUnit extends AbstractStorageUnit implements R
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();

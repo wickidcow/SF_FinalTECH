@@ -29,6 +29,7 @@ public class DividedLimitedStorageUnit extends AbstractStorageUnit implements Re
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

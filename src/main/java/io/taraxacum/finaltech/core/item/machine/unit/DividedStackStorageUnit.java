@@ -31,6 +31,7 @@ public class DividedStackStorageUnit extends AbstractStorageUnit implements Reci
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         MachineUtil.stockSlots(blockMenu.toInventory(), this.getInputSlot());

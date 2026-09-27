@@ -46,6 +46,7 @@ public class FuelCharger extends AbstractFaceMachine implements RecipeItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
         javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> FuelCharger.this.pointFunction(block, 1, location -> {

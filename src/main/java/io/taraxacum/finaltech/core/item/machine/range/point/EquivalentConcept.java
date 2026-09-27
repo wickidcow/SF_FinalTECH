@@ -113,6 +113,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         try  {
             if (FinalTechChanged.y) {

@@ -55,6 +55,7 @@ public class FuelAccelerator extends AbstractFaceMachine implements RecipeItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         BukkitTask task = locationBukkitTaskMap.get(location);

@@ -52,6 +52,7 @@ public abstract class AbstractExtractionMachine extends AbstractMachine implemen
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         try {
             BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());

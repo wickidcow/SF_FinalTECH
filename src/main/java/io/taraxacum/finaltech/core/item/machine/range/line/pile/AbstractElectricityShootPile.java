@@ -68,6 +68,7 @@ public abstract class AbstractElectricityShootPile extends AbstractLineMachine i
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Directional directional) {

@@ -57,6 +57,7 @@ public class MatrixOperationAccelerator extends AbstractFaceMachine implements R
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         this.pointFunction(block, 1, location -> {
             LocationInfo locationInfo = LocationInfo.get(location);

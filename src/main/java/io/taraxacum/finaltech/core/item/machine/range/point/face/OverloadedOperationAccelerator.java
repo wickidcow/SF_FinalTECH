@@ -67,6 +67,7 @@ public class OverloadedOperationAccelerator extends AbstractFaceMachine implemen
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         ItemStack item = blockMenu.getItemInSlot(this.getInputSlot()[0]);

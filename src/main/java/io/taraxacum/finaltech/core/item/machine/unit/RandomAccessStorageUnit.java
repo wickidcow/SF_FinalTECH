@@ -28,6 +28,7 @@ public class RandomAccessStorageUnit extends AbstractStorageUnit implements Reci
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

@@ -33,6 +33,7 @@ public abstract class AbstractMachineActivateCard extends UsableSlimefunItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void function(@Nonnull PlayerRightClickEvent playerRightClickEvent) {
         playerRightClickEvent.cancel();
 

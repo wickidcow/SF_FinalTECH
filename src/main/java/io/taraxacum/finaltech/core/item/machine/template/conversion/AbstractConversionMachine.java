@@ -53,6 +53,7 @@ public abstract class AbstractConversionMachine extends AbstractMachine implemen
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();

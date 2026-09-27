@@ -56,6 +56,7 @@ public class PurifyLevelTower extends AbstractTower implements RecipeItem, MenuU
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);

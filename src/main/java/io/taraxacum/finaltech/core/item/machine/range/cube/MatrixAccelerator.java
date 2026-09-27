@@ -67,6 +67,7 @@ public class MatrixAccelerator extends AbstractCubeMachine implements RecipeItem
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location blockLocation = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(blockLocation);

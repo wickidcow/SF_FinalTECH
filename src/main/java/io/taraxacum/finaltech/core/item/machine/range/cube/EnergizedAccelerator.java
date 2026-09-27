@@ -64,6 +64,7 @@ public class EnergizedAccelerator extends AbstractCubeMachine implements EnergyN
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location blockLocation = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(blockLocation);

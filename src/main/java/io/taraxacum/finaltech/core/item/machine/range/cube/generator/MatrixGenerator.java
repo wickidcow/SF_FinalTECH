@@ -43,6 +43,7 @@ public class MatrixGenerator extends AbstractCubeElectricGenerator {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         boolean drawParticle = blockMenu.hasViewer();

@@ -29,6 +29,7 @@ public class RandomInputStorageUnit extends AbstractStorageUnit implements Recip
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

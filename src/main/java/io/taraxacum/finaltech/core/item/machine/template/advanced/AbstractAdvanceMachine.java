@@ -58,6 +58,7 @@ public abstract class AbstractAdvanceMachine extends AbstractMachine implements 
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected final void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         int offset = config.contains(this.offsetKey) ? Integer.parseInt(config.getString(offsetKey)) : 0;

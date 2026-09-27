@@ -66,6 +66,7 @@ public class OperationAccelerator extends AbstractFaceMachine implements RecipeI
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         ItemStack item = blockMenu.getItemInSlot(this.getInputSlot()[0]);
