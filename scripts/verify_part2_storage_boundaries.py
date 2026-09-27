@@ -12,6 +12,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/libs/slimefun/util/EnergyUtil.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/util/MachineUtil.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/util/PermissionUtil.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -48,6 +52,12 @@ frame_menu = read(
 energy_util = read(
     "src/main/java/io/taraxacum/libs/slimefun/util/EnergyUtil.java"
 )
+machine_util = read(
+    "src/main/java/io/taraxacum/finaltech/util/MachineUtil.java"
+)
+permission_util = read(
+    "src/main/java/io/taraxacum/finaltech/util/PermissionUtil.java"
+)
 compat = read(
     "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java"
 )
@@ -70,6 +80,22 @@ require(
 require(
     'LegacyBlockDataCompat.getValue(location, "id")' not in energy_util,
     'EnergyUtil must never treat the special Slimefun "id" field as ordinary block data',
+)
+require(
+    "LegacyBlockDataCompat.getMenu(location)" in machine_util,
+    "MachineUtil block-break handlers must use the modern block-menu compatibility boundary",
+)
+require(
+    "LegacyBlockDataCompat.getValue(sourceLocation, ConstantTableUtil.CONFIG_UUID)" in permission_util,
+    "PermissionUtil location-based owner lookup must use the modern block-data compatibility boundary",
+)
+require(
+    "IgnorePermission.HELPER.getOrDefaultValue(sourceLocation)" in permission_util,
+    "PermissionUtil location-based permission cache must use the location compatibility boundary",
+)
+require(
+    "@Nonnull Config config" in permission_util,
+    "PermissionUtil must retain the RC-37 Config overload for ticker compatibility",
 )
 
 for marker in (

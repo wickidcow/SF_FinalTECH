@@ -4,8 +4,8 @@ import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.taraxacum.finaltech.core.helper.IgnorePermission;
 import io.taraxacum.libs.plugin.util.PlayerUtil;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -50,7 +50,26 @@ public class PermissionUtil {
     }
 
     public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Config config, @Nonnull Location... targetLocations) {
-        String uuid = config.getString(ConstantTableUtil.CONFIG_UUID);
+        return PermissionUtil.checkOfflinePermission(
+                sourceLocation,
+                config.getString(ConstantTableUtil.CONFIG_UUID),
+                IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(config)),
+                targetLocations);
+    }
+
+    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Location... targetLocations) {
+        return PermissionUtil.checkOfflinePermission(
+                sourceLocation,
+                LegacyBlockDataCompat.getValue(sourceLocation, ConstantTableUtil.CONFIG_UUID),
+                IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(sourceLocation)),
+                targetLocations);
+    }
+
+    private static boolean checkOfflinePermission(
+            @Nonnull Location sourceLocation,
+            String uuid,
+            boolean ignorePermission,
+            @Nonnull Location... targetLocations) {
         if (uuid == null) {
             return false;
         }
@@ -64,11 +83,8 @@ public class PermissionUtil {
             }
             IgnorePermission.HELPER.setOrClearValue(sourceLocation, IgnorePermission.VALUE_TRUE);
             return true;
-        } else return IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(config));
-    }
-
-    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Location... targetLocations) {
-        return PermissionUtil.checkOfflinePermission(sourceLocation, BlockStorage.getLocationInfo(sourceLocation), targetLocations);
+        }
+        return ignorePermission;
     }
 
     public static boolean checkPermission(@Nonnull String uuid, @Nonnull Block block, @Nonnull Interaction... interactions) {
