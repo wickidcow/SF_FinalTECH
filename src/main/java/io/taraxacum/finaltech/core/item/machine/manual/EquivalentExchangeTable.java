@@ -51,6 +51,7 @@ public class EquivalentExchangeTable extends AbstractManualMachine implements Re
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         String value = JavaUtil.getFirstNotNull(LegacyBlockDataCompat.getValue(block.getLocation(), this.key), StringNumberUtil.ZERO);

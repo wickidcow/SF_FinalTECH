@@ -44,6 +44,7 @@ public class VariableWireResistance extends AbstractElectricMachine implements R
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         String charge = EnergyUtil.getCharge(location);

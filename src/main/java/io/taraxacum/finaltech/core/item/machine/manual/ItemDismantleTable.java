@@ -61,6 +61,7 @@ public class ItemDismantleTable extends AbstractManualMachine implements RecipeI
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         String count = JavaUtil.getFirstNotNull(LegacyBlockDataCompat.getValue(block.getLocation(), key), StringNumberUtil.ZERO);
         if (StringNumberUtil.compare(count, limit) < 0) {

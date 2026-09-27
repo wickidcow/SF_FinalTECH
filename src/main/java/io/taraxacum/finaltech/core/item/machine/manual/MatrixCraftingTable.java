@@ -34,6 +34,7 @@ public class MatrixCraftingTable extends AbstractManualMachine implements Recipe
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (blockMenu.hasViewer()) {

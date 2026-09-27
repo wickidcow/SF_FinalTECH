@@ -65,6 +65,7 @@ public class ConfigurationCopier extends AbstractRangeMachine implements RecipeI
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
 

@@ -70,6 +70,7 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         String energyStr = EnergyUtil.getCharge(config);
         String energyStackStr = JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO);
@@ -99,6 +100,7 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
                 String.format("%.2f", Slimefun.getTickerTask().getTickRate() / 20.0));
     }
 
+    @SuppressWarnings("deprecation")
     public int getStack(@Nonnull Config config) {
         return Integer.parseInt(JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO));
     }

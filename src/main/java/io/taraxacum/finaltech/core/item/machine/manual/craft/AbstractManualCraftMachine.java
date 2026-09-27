@@ -69,6 +69,7 @@ public abstract class AbstractManualCraftMachine extends AbstractManualMachine i
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         int charge = LegacySlimefunApiCompat.getCharge((EnergyNetComponent) Objects.requireNonNull(SlimefunItem.getById(LegacyBlockDataCompat.getSlimefunId(location))), location);

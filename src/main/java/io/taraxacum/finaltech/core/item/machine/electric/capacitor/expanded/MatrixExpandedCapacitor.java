@@ -34,6 +34,7 @@ public class MatrixExpandedCapacitor extends AbstractExpandedElectricCapacitor {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);

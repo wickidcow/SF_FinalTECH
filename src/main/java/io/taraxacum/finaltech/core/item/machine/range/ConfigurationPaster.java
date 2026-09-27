@@ -67,6 +67,7 @@ public class ConfigurationPaster extends AbstractMachine implements RecipeItem, 
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
 

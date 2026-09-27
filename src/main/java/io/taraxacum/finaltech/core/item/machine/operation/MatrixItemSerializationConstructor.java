@@ -64,6 +64,7 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         this.locationList.add(location);

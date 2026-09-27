@@ -93,6 +93,7 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();

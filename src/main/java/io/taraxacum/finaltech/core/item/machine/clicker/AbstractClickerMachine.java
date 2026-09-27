@@ -46,6 +46,7 @@ public abstract class AbstractClickerMachine extends AbstractMachine {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
 
     }

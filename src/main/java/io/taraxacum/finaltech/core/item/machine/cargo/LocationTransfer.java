@@ -68,6 +68,7 @@ public class LocationTransfer extends AbstractCargo implements RecipeItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();

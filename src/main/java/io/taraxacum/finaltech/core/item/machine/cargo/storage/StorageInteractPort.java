@@ -56,6 +56,7 @@ public class StorageInteractPort extends AbstractCargo implements RecipeItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void tick(Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Block targetBlock = block.getRelative(BlockFace.UP);
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
