@@ -52,7 +52,7 @@ public class AdvancedAutoCraftFrame extends AbstractMachine implements RecipeIte
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
 
         if (blockMenu.hasViewer()) {
             Icon.updateQuantityModule(blockMenu, AdvancedAutoCraftFrameMenu.MODULE_SLOT, AdvancedAutoCraftFrameMenu.STATUS_SLOT);

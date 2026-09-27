@@ -57,7 +57,7 @@ public class AutoItemDismantleTable extends AbstractMachine implements RecipeIte
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (MachineUtil.isEmpty(blockMenu.toInventory(), this.getOutputSlot())) {
             ItemStack itemStack = blockMenu.getItemInSlot(this.getInputSlot()[0]);
             SlimefunItem sfItem = SlimefunItem.getByItem(itemStack);

@@ -60,7 +60,7 @@ public class MatrixItemDeserializeParser extends AbstractMachine implements Reci
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();
         if (MachineUtil.slotCount(inventory, this.getOutputSlot()) == this.getOutputSlot().length) {
             return;

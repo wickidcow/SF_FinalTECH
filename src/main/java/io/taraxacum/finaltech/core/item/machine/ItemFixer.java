@@ -50,7 +50,7 @@ public class ItemFixer extends AbstractMachine implements RecipeItem {
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
 
         for (int slot : this.getInputSlot()) {
             ItemStack itemStack = blockMenu.getItemInSlot(slot);

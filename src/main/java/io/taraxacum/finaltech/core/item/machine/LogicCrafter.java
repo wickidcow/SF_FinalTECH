@@ -52,7 +52,7 @@ public class LogicCrafter extends AbstractMachine implements RecipeItem {
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         int digit = 0;
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Inventory inventory = blockMenu.toInventory();
         if (MachineUtil.slotCount(inventory, this.getOutputSlot()) == this.getOutputSlot().length) {
             return;
