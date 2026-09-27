@@ -16,8 +16,7 @@ import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -28,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DustFactoryStone extends AbstractMachine implements RecipeItem {
+public class DustFactoryStone extends AbstractConfigFreeMachine implements RecipeItem {
     private final double SLEEP = ConfigUtil.getOrDefaultItemSetting(1, this, "sleep");
 
     public DustFactoryStone(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -43,8 +42,8 @@ public class DustFactoryStone extends AbstractMachine implements RecipeItem {
             public void onPlayerPlace(@Nonnull BlockPlaceEvent e) {
                 Block block = e.getBlock();
                 Location location = block.getLocation();
-                Config config = BlockStorage.getLocationInfo(location);
-                BlockTickerUtil.setSleep(config, String.valueOf(DustFactoryStone.this.SLEEP * DustFactoryStone.this.SLEEP));
+                LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_SLEEP,
+                        String.valueOf(DustFactoryStone.this.SLEEP * DustFactoryStone.this.SLEEP));
             }
         };
     }
@@ -62,9 +61,9 @@ public class DustFactoryStone extends AbstractMachine implements RecipeItem {
     }
 
     @Override
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem) {
 
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         if (MachineUtil.slotCount(blockMenu.toInventory(), this.getInputSlot()) != this.getInputSlot().length) {
             return;
         }
