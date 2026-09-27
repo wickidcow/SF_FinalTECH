@@ -146,6 +146,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/ItemSerializationConstructor.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/MatrixItemSerializationConstructor.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -589,6 +593,44 @@ require(
     "BlockStorage." not in slot_search_line,
     "SlotSearchLine must not reintroduce direct deprecated BlockStorage access",
 )
+
+serialization_constructor = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/ItemSerializationConstructor.java"
+)
+matrix_serialization_constructor = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/MatrixItemSerializationConstructor.java"
+)
+
+for source, name in (
+    (serialization_constructor, "ItemSerializationConstructor"),
+    (matrix_serialization_constructor, "MatrixItemSerializationConstructor"),
+):
+    require(
+        'blockStorageItemKey = "item"' in source
+        and 'blockStorageAmountKey = "amount"' in source,
+        f"{name} must retain the existing item/amount persistence keys",
+    )
+    require(
+        source.count("LegacyBlockDataCompat.getMenu(") == 2,
+        f"{name} must route break/tick menu access through the compatibility boundary",
+    )
+    require(
+        source.count("LegacyBlockDataCompat.setValue(") == 4,
+        f"{name} must preserve item/amount clear and save writes through the compatibility boundary",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(location, this.blockStorageItemKey, null)" in source
+        and "LegacyBlockDataCompat.setValue(location, this.blockStorageAmountKey, null)" in source,
+        f"{name} must preserve operation-state clearing",
+    )
+    require(
+        "@Nonnull Config config" in source,
+        f"{name} must retain the RC-37 ticker Config signature",
+    )
+    require(
+        "BlockStorage." not in source,
+        f"{name} must not reintroduce direct deprecated BlockStorage access",
+    )
 
 for marker in (
     'getMethod("getDatabaseManager")',

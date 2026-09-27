@@ -17,7 +17,7 @@ import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,7 +48,7 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
             @Override
             public void onPlayerBreak(@Nonnull BlockBreakEvent blockBreakEvent, @Nonnull ItemStack item, @Nonnull List<ItemStack> drops) {
                 Location location = blockBreakEvent.getBlock().getLocation();
-                BlockMenu blockMenu = BlockStorage.getInventory(location);
+                BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
                 blockMenu.dropItems(location, MatrixItemSerializationConstructor.this.getInputSlot());
                 blockMenu.dropItems(location, MatrixItemSerializationConstructor.this.getOutputSlot());
 
@@ -67,7 +67,7 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
         this.locationList.add(location);
-        BlockMenu blockMenu = BlockStorage.getInventory(block);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
 
         if (FinalTechChanged.getTps() < 5.5 && this.lastLocationList.size() > 1) {
             if (BlockTickerUtil.hasSleep(config)) {
@@ -118,15 +118,15 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
             blockMenu.pushItem(operation.getResult(), this.getOutputSlot());
             this.getMachineProcessor().endOperation(block);
             operation = null;
-            BlockStorage.addBlockInfo(location, this.blockStorageItemKey, null);
-            BlockStorage.addBlockInfo(location, this.blockStorageAmountKey, null);
+            LegacyBlockDataCompat.setValue(location, this.blockStorageItemKey, null);
+            LegacyBlockDataCompat.setValue(location, this.blockStorageAmountKey, null);
         }
 
         if (operation != null && operation.getType() == ItemSerializationConstructorOperation.COPY_CARD) {
             if (!config.contains(this.blockStorageItemKey)) {
-                BlockStorage.addBlockInfo(location, this.blockStorageItemKey, ItemStackUtil.itemStackToString(((ItemCopyCardOperation) operation).getMatchItem()));
+                LegacyBlockDataCompat.setValue(location, this.blockStorageItemKey, ItemStackUtil.itemStackToString(((ItemCopyCardOperation) operation).getMatchItem()));
             }
-            BlockStorage.addBlockInfo(location, this.blockStorageAmountKey, String.valueOf((int) ((ItemCopyCardOperation) operation).getCount()));
+            LegacyBlockDataCompat.setValue(location, this.blockStorageAmountKey, String.valueOf((int) ((ItemCopyCardOperation) operation).getCount()));
         }
 
         if (blockMenu.hasViewer()) {
