@@ -251,7 +251,13 @@ public final class LegacyBlockDataCompat {
         }
 
         private boolean hasBlockData(@Nonnull Location location) {
-            return getLoadedData(location) != null;
+            try {
+                return getLoadedData(location) != null;
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block-data existence API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("check block data existence", exception);
+            }
         }
 
         private boolean hasMenu(@Nonnull Location location) {
