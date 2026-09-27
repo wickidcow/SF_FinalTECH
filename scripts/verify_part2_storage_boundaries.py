@@ -156,6 +156,10 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineActivateCard.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/AdvancedAutoCraft.java":
+        "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/storage/StorageInteractPort.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -693,6 +697,49 @@ for source, name, config_calls in (
         and "ConstantTableUtil.CONFIG_ID" not in source,
         f"{name} must not reintroduce direct deprecated storage identity access",
     )
+
+advanced_auto_craft = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/face/AdvancedAutoCraft.java"
+)
+storage_interact_port = read(
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/storage/StorageInteractPort.java"
+)
+
+require(
+    advanced_auto_craft.count("LegacyBlockDataCompat.getSlimefunId(containerLocation)") == 1,
+    "AdvancedAutoCraft must resolve the single adjacent container identity through the compatibility boundary",
+)
+require(
+    advanced_auto_craft.count("LegacyBlockDataCompat.getMenu(") == 3,
+    "AdvancedAutoCraft must preserve own-menu, preflight container-menu, and runnable container-menu lookups",
+)
+require(
+    "containerId == null || LegacyBlockDataCompat.getMenu(containerLocation) == null" in advanced_auto_craft,
+    "AdvancedAutoCraft must retain its preflight container existence/menu guard",
+)
+require(
+    "BlockMenu containerMenu = LegacyBlockDataCompat.getMenu(containerLocation);" in advanced_auto_craft
+    and "if (containerMenu == null)" in advanced_auto_craft,
+    "AdvancedAutoCraft must re-resolve the adjacent menu before crafting",
+)
+require(
+    "@Nonnull Config config" in advanced_auto_craft,
+    "AdvancedAutoCraft must retain the RC-37 ticker Config signature",
+)
+
+require(
+    storage_interact_port.count("LegacyBlockDataCompat.getMenu(") == 2,
+    "StorageInteractPort must route its own and adjacent-block menu lookups through the compatibility boundary",
+)
+require(
+    "BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(targetBlock.getLocation());" in storage_interact_port
+    and "if (targetBlockMenu == null)" in storage_interact_port,
+    "StorageInteractPort must preserve vanilla-inventory fallback only when the adjacent block has no Slimefun menu",
+)
+require(
+    "Config config" in storage_interact_port,
+    "StorageInteractPort must retain the RC-37 ticker Config signature",
+)
 
 for marker in (
     'getMethod("getDatabaseManager")',

@@ -16,7 +16,6 @@ import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
 import io.taraxacum.finaltech.core.menu.cargo.AdvancedAutoCraftMenu;
 import io.taraxacum.finaltech.util.CargoUtil;
-import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.dto.AdvancedMachineRecipe;
@@ -26,7 +25,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.AdvancedCraft;
 import io.taraxacum.libs.slimefun.util.BlockStorageConfigUtil;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -69,7 +68,7 @@ public class AdvancedAutoCraft extends AbstractFaceMachine implements RecipeItem
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
         Location location = block.getLocation();
-        BlockMenu blockMenu = BlockStorage.getInventory(location);
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
 
         AdvancedMachineRecipe machineRecipe = LocationRecipeRegistry.getInstance().getRecipe(location);
         if (machineRecipe == null) {
@@ -77,11 +76,12 @@ public class AdvancedAutoCraft extends AbstractFaceMachine implements RecipeItem
         }
 
         Block containerBlock = block.getRelative(BlockFace.DOWN);
-        if (!BlockStorage.hasBlockInfo(containerBlock.getLocation()) || !BlockStorage.hasInventory(containerBlock)) {
+        Location containerLocation = containerBlock.getLocation();
+        String containerId = LegacyBlockDataCompat.getSlimefunId(containerLocation);
+        if (containerId == null || LegacyBlockDataCompat.getMenu(containerLocation) == null) {
             return;
         }
 
-        String containerId = BlockStorage.getLocationInfo(containerBlock.getLocation(), ConstantTableUtil.CONFIG_ID);
         if (containerId != null) {
             Runnable runnable = () -> {
                 InvWithSlots inputMap = CargoUtil.getInvWithSlots(containerBlock, SlotSearchSize.INPUT_HELPER.getOrDefaultValue(containerBlock.getLocation()), SlotSearchOrder.VALUE_ASCENT);
@@ -90,7 +90,10 @@ public class AdvancedAutoCraft extends AbstractFaceMachine implements RecipeItem
                     return;
                 }
 
-                BlockMenu containerMenu = BlockStorage.getInventory(containerBlock);
+                BlockMenu containerMenu = LegacyBlockDataCompat.getMenu(containerLocation);
+                if (containerMenu == null) {
+                    return;
+                }
                 int[] inputSlots = inputMap.getSlots();
                 int[] outputSlots = outputMap.getSlots();
 
