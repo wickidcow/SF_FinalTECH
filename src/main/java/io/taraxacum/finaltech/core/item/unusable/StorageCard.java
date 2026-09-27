@@ -102,7 +102,7 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
         List<String> lore;
         if (persistentDataContainer.has(StringItemUtil.AMOUNT_KEY, PersistentDataType.STRING)) {
             String amount = persistentDataContainer.get(StringItemUtil.AMOUNT_KEY, PersistentDataType.STRING);
-            lore = cardItemMeta.getLore();
+            lore = ItemStackUtil.getLore(cardItemMeta);
             if (lore == null || lore.isEmpty()) {
                 lore = new ArrayList<>(4);
                 lore.add(this.itemLore);
@@ -119,6 +119,6 @@ public class StorageCard extends UnusableSlimefunItem implements RecipeItem, Val
             lore = new ArrayList<>(1);
             lore.add(this.itemLore);
         }
-        cardItemMeta.setLore(lore);
+        ItemStackUtil.setLore(cardItemMeta, lore);
     }
 }
