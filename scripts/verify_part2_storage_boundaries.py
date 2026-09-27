@@ -10,6 +10,8 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftFrameMenu.java":
         "LegacyBlockDataCompat",
+    "src/main/java/io/taraxacum/libs/slimefun/util/EnergyUtil.java":
+        "LegacyBlockDataCompat",
 }
 
 
@@ -43,6 +45,9 @@ machine_recipe_lock = read(
 frame_menu = read(
     "src/main/java/io/taraxacum/finaltech/core/menu/cargo/AdvancedAutoCraftFrameMenu.java"
 )
+energy_util = read(
+    "src/main/java/io/taraxacum/libs/slimefun/util/EnergyUtil.java"
+)
 compat = read(
     "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java"
 )
@@ -53,6 +58,19 @@ require(
     "LegacyBlockDataCompat.getMenu(location)" in frame_menu,
     "AdvancedAutoCraftFrameMenu must use the block-data menu boundary",
 )
+require(
+    "LegacyBlockDataCompat.getSlimefunId(location)" in energy_util,
+    "EnergyUtil must resolve machine identity through the dedicated identity boundary",
+)
+require(
+    "LegacySlimefunApiCompat.getCharge" in energy_util
+    and "LegacySlimefunApiCompat.setCharge" in energy_util,
+    "EnergyUtil location-based energy access must use the Slimefun API compatibility boundary",
+)
+require(
+    'LegacyBlockDataCompat.getValue(location, "id")' not in energy_util,
+    'EnergyUtil must never treat the special Slimefun "id" field as ordinary block data',
+)
 
 for marker in (
     'getMethod("getDatabaseManager")',
@@ -60,6 +78,7 @@ for marker in (
     'getMethod("getBlockData", Location.class)',
     'getMethod("loadBlockData", blockDataType)',
     'getMethod("getBlockMenu")',
+    'getMethod("getSfId")',
     "LegacyAccess",
     '@SuppressWarnings("deprecation")',
 ):
