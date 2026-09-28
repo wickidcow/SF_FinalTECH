@@ -768,22 +768,46 @@ block_ticker_util = read(
 require(
     "public static void removeBlock(@Nonnull Location location)" in legacy_block_data
     and 'controllerType.getMethod("removeBlock", Location.class)' in legacy_block_data
-    and "BlockStorage.clearBlockInfo(location)" in legacy_block_data,
-    "LegacyBlockDataCompat must preserve modern-controller removal with an RC-37 BlockStorage fallback",
+    and 'method("clearBlockInfo", Location.class)' in legacy_block_data,
+    "LegacyBlockDataCompat must preserve modern-controller removal with a reflective RC-37 BlockStorage fallback",
+)
+require(
+    "public static Object getModernDataContainer(@Nonnull Location location)" in legacy_block_data
+    and "return MODERN.getDataContainer(location);" in legacy_block_data,
+    "LegacyBlockDataCompat must expose current storage containers opaquely without raising the RC-37 type floor",
+)
+require(
+    'Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage")' in legacy_block_data
+    and "me.mrCookieSlime.Slimefun.api.BlockStorage." not in legacy_block_data,
+    "LegacyBlockDataCompat must resolve historical BlockStorage calls reflectively",
 )
 
 for expected in (
+    "public static int getResearchLevelCost(",
+    "public static void setResearchLevelCost(",
     "public static int getCharge(",
     "public static int getGeneratedOutput(",
     "public static boolean willExplode(",
+    "public static void setCharge(",
+    'tryInvoke(research, "getLevelCost")',
+    'tryInvoke(research, "setLevelCost", cost)',
+    'tryInvoke(component, "getChargeLong", location)',
+    "LegacyBlockDataCompat.getModernDataContainer(location)",
 ):
     require(
         expected in legacy_slimefun_api,
-        f"LegacySlimefunApiCompat lost required energy compatibility adapter: {expected}",
+        f"LegacySlimefunApiCompat lost modern-first compatibility behavior: {expected}",
     )
 require(
-    '@SuppressWarnings("deprecation")' in legacy_slimefun_api,
-    "LegacySlimefunApiCompat must explicitly isolate intentional deprecated energy calls",
+    'invokeRequired(research, "getCost")' in legacy_slimefun_api
+    and 'invokeRequired(research, "setCost", cost)' in legacy_slimefun_api
+    and 'invokeRequired(component, "getCharge", location)' in legacy_slimefun_api,
+    "LegacySlimefunApiCompat must retain reflective RC-37 method-name fallbacks",
+)
+require(
+    "me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config" not in legacy_slimefun_api
+    and '@SuppressWarnings("deprecation")' not in legacy_slimefun_api,
+    "LegacySlimefunApiCompat must not compile against deprecated Research/Energy/Config APIs",
 )
 
 require(
@@ -954,8 +978,8 @@ for expected in (
     "public static boolean hasMenu(@Nonnull Location location)",
     "return MODERN.hasBlockData(location);",
     "return MODERN.hasMenu(location);",
-    "BlockStorage.hasBlockInfo(location)",
-    "BlockStorage.hasInventory(location.getBlock())",
+    'method("hasBlockInfo", Location.class)',
+    'method("hasInventory", Block.class)',
 ):
     require(
         expected in legacy_block_data,
@@ -972,9 +996,10 @@ require(
 )
 require(
     "public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world)" in legacy_block_data
-    and 'BlockStorage.class.getDeclaredField("inventories")' in legacy_block_data
-    and "BlockStorage.getStorage(world)" in legacy_block_data,
-    "LegacyBlockDataCompat must isolate the RC-37 world-inventory registry used by data-loss recovery",
+    and "LegacyAccess.getStorage(world)" in legacy_block_data
+    and 'BLOCK_STORAGE.getDeclaredField("inventories")' in legacy_block_data
+    and 'method("getStorage", World.class)' in legacy_block_data,
+    "LegacyBlockDataCompat must isolate the RC-37 world-inventory registry behind reflection",
 )
 
 require(
@@ -1078,7 +1103,7 @@ for marker in (
     'getMethod("getBlockMenu")',
     'getMethod("getSfId")',
     "LegacyAccess",
-    '@SuppressWarnings("deprecation")',
+    'Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage")',
 ):
     require(marker in compat, f"storage compatibility boundary is missing: {marker}")
 

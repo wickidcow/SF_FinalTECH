@@ -5,6 +5,7 @@ import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -87,6 +88,21 @@ public final class LegacyBlockDataCompat {
     }
 
     /**
+     * Returns the current Slimefun block-data container without exposing its
+     * modern storage type in FinalTECH's always-loaded API surface.
+     *
+     * <p>RC-37 has no equivalent container type, so this returns {@code null}
+     * there and callers must use their historical fallback.</p>
+     */
+    @Nullable
+    public static Object getModernDataContainer(@Nonnull Location location) {
+        if (MODERN == null) {
+            return null;
+        }
+        return MODERN.getDataContainer(location);
+    }
+
+    /**
      * Exposes the historical per-world BlockStorage inventory map used only by
      * FinalTECH's RC-37 data-loss recovery path.
      *
@@ -95,21 +111,9 @@ public final class LegacyBlockDataCompat {
      * servers naturally skip this legacy-only recovery scan.</p>
      */
     @Nullable
-    @SuppressWarnings({"unchecked", "deprecation"})
     public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world) {
-        me.mrCookieSlime.Slimefun.api.BlockStorage storage =
-                me.mrCookieSlime.Slimefun.api.BlockStorage.getStorage(world);
-        if (storage == null) {
-            return null;
-        }
-
-        try {
-            Field inventories = me.mrCookieSlime.Slimefun.api.BlockStorage.class.getDeclaredField("inventories");
-            inventories.setAccessible(true);
-            return (Map<Location, BlockMenu>) inventories.get(storage);
-        } catch (ReflectiveOperationException exception) {
-            throw new IllegalStateException("Could not access legacy BlockStorage inventory registry", exception);
-        }
+        Object storage = LegacyAccess.getStorage(world);
+        return storage == null ? null : LegacyAccess.getInventories(storage);
     }
 
     /**
@@ -304,6 +308,17 @@ public final class LegacyBlockDataCompat {
             return menu != NO_RECORD_OBJECT && menu != null;
         }
 
+        @Nullable
+        private Object getDataContainer(@Nonnull Location location) {
+            try {
+                return getLoadedData(location);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access Slimefun Legacy block-data container API", exception);
+            } catch (InvocationTargetException exception) {
+                throw unwrap("read data container", exception);
+            }
+        }
+
         private boolean setValue(
                 @Nonnull Location location,
                 @Nonnull String key,
@@ -364,49 +379,123 @@ public final class LegacyBlockDataCompat {
 
     /**
      * Intentional RC-37 and no-modern-record compatibility boundary.
+     *
+     * <p>Historical BlockStorage calls are resolved reflectively so current
+     * builds do not compile against the deprecated facade, while RC-37 keeps
+     * the same method names, arguments, and persisted values.</p>
      */
-    @SuppressWarnings("deprecation")
     private static final class LegacyAccess {
+
+        private static final Class<?> BLOCK_STORAGE = loadBlockStorage();
+        private static final Method GET_VALUE =
+                method("getLocationInfo", Location.class, String.class);
+        private static final Method SET_VALUE =
+                method("addBlockInfo", Location.class, String.class, String.class);
+        private static final Method GET_MENU =
+                method("getInventory", Location.class);
+        private static final Method HAS_BLOCK_DATA =
+                method("hasBlockInfo", Location.class);
+        private static final Method HAS_MENU =
+                method("hasInventory", Block.class);
+        private static final Method SET_ID =
+                method("addBlockInfo", Location.class, String.class, String.class, boolean.class);
+        private static final Method REMOVE_BLOCK =
+                method("clearBlockInfo", Location.class);
+        private static final Method GET_STORAGE =
+                method("getStorage", World.class);
 
         private LegacyAccess() {
         }
 
+        private static Class<?> loadBlockStorage() {
+            try {
+                return Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage");
+            } catch (ClassNotFoundException | LinkageError exception) {
+                throw new IllegalStateException("Could not load RC-37 BlockStorage compatibility API", exception);
+            }
+        }
+
+        private static Method method(@Nonnull String name, @Nonnull Class<?>... parameterTypes) {
+            try {
+                return BLOCK_STORAGE.getMethod(name, parameterTypes);
+            } catch (NoSuchMethodException exception) {
+                throw new IllegalStateException(
+                        "RC-37 BlockStorage compatibility method is unavailable: " + name,
+                        exception);
+            }
+        }
+
+        @Nullable
+        private static Object invoke(@Nonnull Method method, @Nonnull Object... arguments) {
+            try {
+                return method.invoke(null, arguments);
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Could not access RC-37 BlockStorage compatibility API", exception);
+            } catch (InvocationTargetException exception) {
+                Throwable cause = exception.getCause();
+                if (cause instanceof RuntimeException runtimeException) {
+                    throw runtimeException;
+                }
+                if (cause instanceof Error error) {
+                    throw error;
+                }
+                throw new IllegalStateException("RC-37 BlockStorage compatibility call failed", cause);
+            }
+        }
+
         @Nullable
         private static String getValue(@Nonnull Location location, @Nonnull String key) {
-            return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location, key);
+            return (String) invoke(GET_VALUE, location, key);
         }
 
         @Nullable
         private static String getSlimefunId(@Nonnull Location location) {
-            return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location, "id");
+            return getValue(location, "id");
         }
 
         private static void setValue(
                 @Nonnull Location location,
                 @Nonnull String key,
                 @Nullable String value) {
-            me.mrCookieSlime.Slimefun.api.BlockStorage.addBlockInfo(location, key, value);
+            invoke(SET_VALUE, location, key, value);
         }
 
         @Nullable
         private static BlockMenu getMenu(@Nonnull Location location) {
-            return me.mrCookieSlime.Slimefun.api.BlockStorage.getInventory(location);
+            return (BlockMenu) invoke(GET_MENU, location);
         }
 
         private static boolean hasBlockData(@Nonnull Location location) {
-            return me.mrCookieSlime.Slimefun.api.BlockStorage.hasBlockInfo(location);
+            return Boolean.TRUE.equals(invoke(HAS_BLOCK_DATA, location));
         }
 
         private static boolean hasMenu(@Nonnull Location location) {
-            return me.mrCookieSlime.Slimefun.api.BlockStorage.hasInventory(location.getBlock());
+            return Boolean.TRUE.equals(invoke(HAS_MENU, location.getBlock()));
         }
 
         private static void setSlimefunId(@Nonnull Location location, @Nonnull String slimefunId) {
-            me.mrCookieSlime.Slimefun.api.BlockStorage.addBlockInfo(location, "id", slimefunId, true);
+            invoke(SET_ID, location, "id", slimefunId, true);
         }
 
         private static void removeBlock(@Nonnull Location location) {
-            me.mrCookieSlime.Slimefun.api.BlockStorage.clearBlockInfo(location);
+            invoke(REMOVE_BLOCK, location);
+        }
+
+        @Nullable
+        private static Object getStorage(@Nonnull World world) {
+            return invoke(GET_STORAGE, world);
+        }
+
+        @SuppressWarnings("unchecked")
+        private static Map<Location, BlockMenu> getInventories(@Nonnull Object storage) {
+            try {
+                Field inventories = BLOCK_STORAGE.getDeclaredField("inventories");
+                inventories.setAccessible(true);
+                return (Map<Location, BlockMenu>) inventories.get(storage);
+            } catch (ReflectiveOperationException exception) {
+                throw new IllegalStateException("Could not access legacy BlockStorage inventory registry", exception);
+            }
         }
     }
+
 }
