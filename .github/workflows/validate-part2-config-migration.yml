@@ -68,8 +68,12 @@ jobs:
       - name: Compile deprecation audit
         shell: bash
         run: |
-          set -o pipefail
-          mvn -B --no-transfer-progress -DskipTests             -Dmaven.compiler.failOnWarning=false             -Dpaper.version=1.21.11-R0.1-SNAPSHOT             -Dslimefun.groupId=com.github.slimefun             -Dslimefun.artifactId=Slimefun             -Dslimefun.version=ALBION-SNAPSHOT             clean compile 2>&1 | tee /tmp/deprecation-audit.log
+          set -euo pipefail
+          # The production build intentionally fails on warnings. The audit job
+          # disables that gate only in its throwaway checkout so javac can emit
+          # the complete deprecation inventory and still reach the summary step.
+          sed -i 's#<failOnWarning>true</failOnWarning>#<failOnWarning>false</failOnWarning>#' pom.xml
+          mvn -B --no-transfer-progress -DskipTests             -Dpaper.version=1.21.11-R0.1-SNAPSHOT             -Dslimefun.groupId=com.github.slimefun             -Dslimefun.artifactId=Slimefun             -Dslimefun.version=ALBION-SNAPSHOT             clean compile 2>&1 | tee /tmp/deprecation-audit.log
 
       - name: Summarize deprecation warnings
         shell: bash
