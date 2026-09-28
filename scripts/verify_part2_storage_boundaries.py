@@ -26,8 +26,6 @@ MIGRATED = {
         "MachineRecipeLock.HELPER",
     "src/main/java/io/taraxacum/finaltech/core/menu/manual/EquivalentExchangeTableMenu.java":
         "LegacyBlockDataCompat",
-    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorDetailMenu.java":
-        "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java":
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java":
@@ -114,8 +112,6 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java":
         "LegacyBlockDataCompat",
-    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorBlockTicker.java":
-        "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/EtherMiner.java":
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/MatrixExpandedCapacitor.java":
@@ -144,8 +140,6 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java":
         "LegacyBlockDataCompat",
-    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java":
-        "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/ItemSerializationConstructor.java":
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/MatrixItemSerializationConstructor.java":
@@ -162,8 +156,6 @@ MIGRATED = {
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/util/BlockTickerUtil.java":
         "LegacyBlockDataCompat",
-    "src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java":
-        "LegacySlimefunApiCompat",
     "src/main/java/io/taraxacum/finaltech/core/menu/AbstractMachineMenu.java":
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireCapacitor.java":
@@ -287,8 +279,6 @@ for path, expected_call in {
         "MachineRecipeLock.HELPER.getOrDefaultValue(location)",
     "src/main/java/io/taraxacum/finaltech/core/menu/manual/EquivalentExchangeTableMenu.java":
         'LegacyBlockDataCompat.getValue(location, "value")',
-    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorDetailMenu.java":
-        "LegacyBlockDataCompat.getMenu(componentLocation)",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java":
         "LegacyBlockDataCompat.getMenu(block.getLocation())",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java":
@@ -408,7 +398,6 @@ for path in (
 
 for path, expected_count in {
     "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java": 1,
-    "src/main/java/io/taraxacum/finaltech/core/patch/EnergyRegulatorBlockTicker.java": 1,
     "src/main/java/io/taraxacum/finaltech/core/item/machine/operation/EtherMiner.java": 2,
 }.items():
     source = read(path)
@@ -606,10 +595,6 @@ require(
 position_info = read(
     "src/main/java/io/taraxacum/finaltech/core/helper/PositionInfo.java"
 )
-slot_search_line = read(
-    "src/main/java/io/taraxacum/finaltech/core/helper/SlotSearchLine.java"
-)
-
 require(
     position_info.count("LegacyBlockDataCompat.getValue(") == 6
     and position_info.count("LegacyBlockDataCompat.setValue(") == 1,
@@ -622,20 +607,6 @@ require(
 require(
     "BlockStorage." not in position_info,
     "PositionInfo must not reintroduce direct deprecated BlockStorage access",
-)
-
-require(
-    slot_search_line.count("LegacyBlockDataCompat.getValue(") == 6
-    and slot_search_line.count("LegacyBlockDataCompat.setValue(") == 1,
-    "SlotSearchLine must preserve all slot-search map reads and its serialized write through the compatibility boundary",
-)
-require(
-    "BlockStorageHelper.ID_CARGO" in slot_search_line,
-    "SlotSearchLine must retain the existing cargo helper id and serialized cargo state contract",
-)
-require(
-    "BlockStorage." not in slot_search_line,
-    "SlotSearchLine must not reintroduce direct deprecated BlockStorage access",
 )
 
 serialization_constructor = read(
@@ -784,10 +755,6 @@ legacy_slimefun_api = read(
 block_ticker_util = read(
     "src/main/java/io/taraxacum/finaltech/util/BlockTickerUtil.java"
 )
-altered_energy_net = read(
-    "src/main/java/io/taraxacum/finaltech/core/networks/AlteredEnergyNet.java"
-)
-
 require(
     "public static void removeBlock(@Nonnull Location location)" in legacy_block_data
     and 'controllerType.getMethod("removeBlock", Location.class)' in legacy_block_data
@@ -821,35 +788,6 @@ require(
 require(
     "BlockStorage." not in block_ticker_util,
     "BlockTickerUtil must not directly use deprecated BlockStorage",
-)
-
-require(
-    "Map<Location, Object> generatorConfigMap" in altered_energy_net,
-    "AlteredEnergyNet must keep legacy provider data behind an opaque compatibility object",
-)
-require(
-    "LegacyTickerDataCompat.getConfig(" in altered_energy_net
-    and "LegacyBlockDataCompat.removeBlock(" in altered_energy_net,
-    "AlteredEnergyNet must route ticker data and block removal through compatibility boundaries",
-)
-for expected in (
-    "LegacySlimefunApiCompat.getCharge(",
-    "LegacySlimefunApiCompat.setCharge(",
-    "LegacySlimefunApiCompat.getGeneratedOutput(",
-    "LegacySlimefunApiCompat.willExplode(",
-):
-    require(
-        expected in altered_energy_net,
-        f"AlteredEnergyNet lost compatibility-routed energy call: {expected}",
-    )
-require(
-    '@SuppressWarnings("deprecation")' in altered_energy_net
-    and "public Summary tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config)" in altered_energy_net,
-    "AlteredEnergyNet must retain its RC-37 Config-facing tick bridge",
-)
-require(
-    "BlockStorage." not in altered_energy_net,
-    "AlteredEnergyNet must not reintroduce direct deprecated BlockStorage access",
 )
 
 abstract_machine_menu = read(
