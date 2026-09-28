@@ -476,4 +476,112 @@ if set(imports) != allowed:
         + str([str(path.relative_to(ROOT)) for path in imports])
     )
 
+
+# 3) Centralize invocations of another machine's RC-37 BlockTicker callback.
+rel = "src/main/java/io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java"
+ticker_data = read(rel)
+if "public static Object getData(@Nonnull Location location)" not in ticker_data:
+    target = """    @Nonnull
+    public static Config getConfig(@Nonnull Location location) {
+        return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location);
+    }
+"""
+    replacement = target + """
+    /**
+     * Returns the same ticker-data object without exposing the deprecated Config type.
+     */
+    @Nonnull
+    public static Object getData(@Nonnull Location location) {
+        return getConfig(location);
+    }
+"""
+    ticker_data = replace_once(
+        ticker_data, target, replacement, "LegacyTickerDataCompat getData"
+    )
+write(rel, ticker_data)
+
+rel = "src/main/java/io/taraxacum/libs/slimefun/dto/LocationInfo.java"
+location_info = read(rel)
+if "public Object getData()" not in location_info:
+    target = """    public Config getConfig() {
+        return config;
+    }
+"""
+    replacement = """    public Object getData() {
+        return config;
+    }
+
+""" + target
+    location_info = replace_once(
+        location_info, target, replacement, "LocationInfo getData"
+    )
+write(rel, location_info)
+
+rel = "src/main/java/io/taraxacum/finaltech/util/BlockTickerUtil.java"
+ticker_util = read(rel)
+if "public static void tickCompat(" not in ticker_util:
+    target = """    public static void subSleep(@Nonnull Config config) {
+        subSleep((Object) config);
+    }
+
+"""
+    replacement = target + """    /**
+     * Invokes the RC-37 BlockTicker callback while keeping Config out of callers.
+     */
+    public static void tickCompat(
+            @Nonnull BlockTicker blockTicker,
+            @Nonnull Block block,
+            @Nonnull SlimefunItem item,
+            @Nonnull Object data) {
+        blockTicker.tick(block, item, (Config) data);
+    }
+
+"""
+    ticker_util = replace_once(
+        ticker_util, target, replacement, "BlockTickerUtil tickCompat"
+    )
+write(rel, ticker_util)
+
+for rel in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/EnergizedAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/OverloadedAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java",
+):
+    accelerator = read(rel)
+    accelerator = accelerator.replace(
+        "blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getConfig())",
+        "BlockTickerUtil.tickCompat(blockTicker, locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getData())",
+    )
+    accelerator = accelerator.replace(
+        "blockTicker.tick(machineBlock, locationInfo.getSlimefunItem(), locationInfo.getConfig())",
+        "BlockTickerUtil.tickCompat(blockTicker, machineBlock, locationInfo.getSlimefunItem(), locationInfo.getData())",
+    )
+    write(rel, accelerator)
+
+for rel in (
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineAccelerateCard.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineActivateCard.java",
+):
+    card = read(rel)
+    card = card.replace(
+        "blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location))",
+        "BlockTickerUtil.tickCompat(blockTicker, block, slimefunItem, LegacyTickerDataCompat.getData(location))",
+    )
+    if "BlockTickerUtil.tickCompat" in card:
+        card = add_import(
+            card, "import io.taraxacum.finaltech.util.BlockTickerUtil;\n"
+        )
+    write(rel, card)
+
+for rel in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/EnergizedAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/OverloadedAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/range/cube/MatrixAccelerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineAccelerateCard.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/usable/machine/AbstractMachineActivateCard.java",
+):
+    caller = read(rel)
+    if "blockTicker.tick(" in caller:
+        raise RuntimeError(f"{rel} still directly invokes the deprecated BlockTicker callback")
+
 print("Part 2 Config object migration prepared successfully.")
