@@ -295,8 +295,8 @@ for path in (
     "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java",
 ):
     require(
-        "@Nonnull Config config" in read(path),
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in read(path),
+        f"{path} must use the opaque internal ticker-data signature",
     )
 
 for path, expected_call in {
@@ -348,8 +348,8 @@ for path in (
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{path} must use the opaque internal ticker-data signature",
     )
 
 for path in (
@@ -370,8 +370,8 @@ for path in (
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{path} must use the opaque internal ticker-data signature",
     )
 
 for path in (
@@ -392,8 +392,8 @@ for path in (
         f"{path} must route its menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{path} must use the opaque internal ticker-data signature",
     )
 
 for path, expected_count in {
@@ -406,8 +406,8 @@ for path, expected_count in {
         f"{path} lost one or more validated menu compatibility lookups",
     )
     require(
-        "Config config" in source or "Config data" in source,
-        f"{path} must retain its RC-37 Config ticker signature",
+        "Object config" in source or "Object data" in source,
+        f"{path} must use its opaque internal ticker-data signature",
     )
 
 matrix_expanded = read(
@@ -463,8 +463,8 @@ for source, name in (
     (item_dismantle, "ItemDismantleTable"),
 ):
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
 
 expanded_capacitor = read(
@@ -488,8 +488,13 @@ for expected in (
 ):
     require(expected in expanded_capacitor, f"AbstractExpandedElectricCapacitor lost storage behavior: {expected}")
 require(
-    "@Nonnull Config config" in expanded_capacitor,
-    "AbstractExpandedElectricCapacitor must retain the RC-37 ticker Config signature",
+    "@Nonnull Object config" in expanded_capacitor,
+    "AbstractExpandedElectricCapacitor must use the opaque internal ticker-data signature",
+)
+require(
+    "public int getStack(@Nonnull Config config)" in expanded_capacitor
+    and "public int getStack(@Nonnull Object data)" in expanded_capacitor,
+    "AbstractExpandedElectricCapacitor must retain the RC-37 getStack overload while using Object internally",
 )
 
 for source, name in (
@@ -513,8 +518,8 @@ for source, name in (
         f"{name} must preserve recipe-offset clearing",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
 
 energized_accelerator = read(
@@ -546,8 +551,8 @@ for source, name in (
         f"{name} must verify accelerated machine identity through the dedicated Slimefun-id boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
 
 require(
@@ -563,8 +568,8 @@ require(
     "AbstractManualCraftMachine must use the compatibility menu boundary",
 )
 require(
-    "@Nonnull Config config" in manual_craft,
-    "AbstractManualCraftMachine must retain the RC-37 ticker Config signature",
+    "@Nonnull Object config" in manual_craft,
+    "AbstractManualCraftMachine must use the opaque internal ticker-data signature",
 )
 
 require(
@@ -639,8 +644,8 @@ for source, name in (
         f"{name} must preserve operation-state clearing",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
     require(
         "BlockStorage." not in source,
@@ -678,6 +683,11 @@ require(
 require(
     "BlockStorage." not in location_info,
     "LocationInfo must not reintroduce direct deprecated BlockStorage access",
+)
+
+require(
+    "public Object getData()" in location_info,
+    "LocationInfo must expose opaque ticker data for internal callers",
 )
 
 for source, name, config_calls in (
@@ -728,8 +738,8 @@ require(
     "AdvancedAutoCraft must re-resolve the adjacent menu before crafting",
 )
 require(
-    "@Nonnull Config config" in advanced_auto_craft,
-    "AdvancedAutoCraft must retain the RC-37 ticker Config signature",
+    "@Nonnull Object config" in advanced_auto_craft,
+    "AdvancedAutoCraft must use the opaque internal ticker-data signature",
 )
 
 require(
@@ -742,8 +752,8 @@ require(
     "StorageInteractPort must preserve vanilla-inventory fallback only when the adjacent block has no Slimefun menu",
 )
 require(
-    "Config config" in storage_interact_port,
-    "StorageInteractPort must retain the RC-37 ticker Config signature",
+    "Object config" in storage_interact_port,
+    "StorageInteractPort must use the opaque internal ticker-data signature",
 )
 
 legacy_block_data = read(
@@ -788,6 +798,12 @@ require(
 require(
     "BlockStorage." not in block_ticker_util,
     "BlockTickerUtil must not directly use deprecated BlockStorage",
+)
+
+require(
+    "public static void tickCompat(" in block_ticker_util
+    and "blockTicker.tick(block, item, (Config) data);" in block_ticker_util,
+    "BlockTickerUtil must isolate the RC-37 BlockTicker callback behind tickCompat",
 )
 
 abstract_machine_menu = read(
@@ -839,8 +855,8 @@ for source, name, target_id in (
         f"{name} must route status-menu access through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
     require(
         "ConstantTableUtil.CONFIG_ID" not in source
@@ -1001,8 +1017,8 @@ for source, name, has_menu_count, get_menu_count in (
         f"{name} must preserve owner UUID persistence",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull Object config" in source,
+        f"{name} must use the opaque internal ticker-data signature",
     )
 
 for source, name in (
@@ -1034,8 +1050,8 @@ require(
     "EquivalentConcept must preserve both full block-data removal transitions",
 )
 require(
-    "@Nonnull Config config" in equivalent_concept,
-    "EquivalentConcept must retain the RC-37 ticker Config signature",
+    "@Nonnull Object config" in equivalent_concept,
+    "EquivalentConcept must use the opaque internal ticker-data signature",
 )
 require("BlockStorage." not in equivalent_concept, "EquivalentConcept must not directly use deprecated BlockStorage")
 
@@ -1091,6 +1107,12 @@ direct_storage_allowlist = {
     "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
 }
 
+config_machine_allowlist = {
+    "io/taraxacum/finaltech/core/item/machine/AbstractMachine.java",
+    "io/taraxacum/finaltech/core/item/machine/AbstractEnergyProviderMachine.java",
+    "io/taraxacum/finaltech/core/item/machine/electric/capacitor/expanded/AbstractExpandedElectricCapacitor.java",
+}
+
 global_violations = []
 
 for java_path in java_root.rglob("*.java"):
@@ -1103,6 +1125,15 @@ for java_path in java_root.rglob("*.java"):
     ):
         global_violations.append(
             f"{relative} reintroduced direct deprecated BlockStorage access"
+        )
+
+    if (
+        relative.startswith("io/taraxacum/finaltech/core/item/machine/")
+        and relative not in config_machine_allowlist
+        and "import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;" in source
+    ):
+        global_violations.append(
+            f"{relative} reintroduced Config into the internal machine ticker contract"
         )
 
     if (
