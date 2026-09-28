@@ -1,0 +1,26 @@
+name: Export Deprecation Audit Source
+
+on:
+  push:
+    branches: [audit/deprecation-part2]
+    paths:
+      - '.github/workflows/export-deprecation-audit-source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Package source snapshot
+        run: |
+          set -euo pipefail
+          tar -czf finaltech-audit-source.tar.gz             src/main/java src/main/resources scripts pom.xml .github/workflows/release.yml
+      - uses: actions/upload-artifact@v7
+        with:
+          name: finaltech-audit-source
+          path: finaltech-audit-source.tar.gz
+          archive: false
+          if-no-files-found: error
