@@ -57,6 +57,23 @@ public final class MachineMaxStack {
 
         @Nonnull
         @Override
+        public ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem, @Nullable String value) {
+            ItemStack updated;
+            if (Objects.equals(this.defaultValue(), value)) {
+                updated = LegacyItemStackCompat.withType(iconItem, Material.CHEST);
+                updated.setAmount(1);
+            } else if (value != null) {
+                updated = LegacyItemStackCompat.withType(iconItem, Material.HOPPER);
+                updated.setAmount(Integer.parseInt(value));
+            } else {
+                return iconItem;
+            }
+            super.setIcon(updated, value);
+            return updated;
+        }
+
+        @Nonnull
+        @Override
         public String nextOrDefaultValue(@Nullable String value) {
             return this.defaultValue();
         }
@@ -82,7 +99,7 @@ public final class MachineMaxStack {
                             quantity = (quantity + 1) % (((AbstractMachine) slimefunItem).getInputSlot().length + 1);
                         }
                     }
-                    MachineMaxStack.HELPER.setIcon(inventory.getItem(slot), String.valueOf(quantity));
+                    inventory.setItem(slot, MachineMaxStack.HELPER.getUpdatedIcon(inventory.getItem(slot), String.valueOf(quantity)));
                     LegacyBlockDataCompat.setValue(location, MachineMaxStack.KEY, String.valueOf(quantity));
                     return false;
                 };

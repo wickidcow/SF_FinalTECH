@@ -170,7 +170,10 @@ public abstract class AbstractCubeElectricGenerator extends AbstractCubeMachine 
         MenuUpdater.super.updateMenu(blockMenu, slot, slimefunItem, text);
         ItemStack itemStack = blockMenu.getItemInSlot(slot);
         if (text.length > 0) {
-            LegacyItemStackCompat.setType(itemStack, StringNumberUtil.ZERO.equals(text[0]) ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE);
+            Material statusMaterial = StringNumberUtil.ZERO.equals(text[0])
+                    ? Material.RED_STAINED_GLASS_PANE
+                    : Material.GREEN_STAINED_GLASS_PANE;
+            blockMenu.replaceExistingItem(slot, LegacyItemStackCompat.withType(itemStack, statusMaterial));
         }
     }
 

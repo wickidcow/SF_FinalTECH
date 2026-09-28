@@ -119,14 +119,15 @@ public class DustFactoryDirt extends AbstractOperationMachine implements RecipeI
             int typeDifficulty = Integer.parseInt(text[3]);
 
             ItemStack itemStack = blockMenu.getItemInSlot(slot);
-
+            Material statusMaterial;
             if (amountCount == 0 && typeCount == 0) {
-                LegacyItemStackCompat.setType(itemStack, Material.RED_STAINED_GLASS_PANE);
+                statusMaterial = Material.RED_STAINED_GLASS_PANE;
             } else if (amountCount > amountDifficulty || typeCount > typeDifficulty) {
-                LegacyItemStackCompat.setType(itemStack, Material.YELLOW_STAINED_GLASS_PANE);
+                statusMaterial = Material.YELLOW_STAINED_GLASS_PANE;
             } else {
-                LegacyItemStackCompat.setType(itemStack, Material.GREEN_STAINED_GLASS_PANE);
+                statusMaterial = Material.GREEN_STAINED_GLASS_PANE;
             }
+            blockMenu.replaceExistingItem(slot, LegacyItemStackCompat.withType(itemStack, statusMaterial));
         }
     }
 

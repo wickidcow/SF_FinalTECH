@@ -136,6 +136,26 @@ public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
     }
 
     /**
+     * Applies this helper's icon update and returns the stack that must remain
+     * in the inventory. Subclasses may return a replacement stack when a modern
+     * API forbids mutating the original object in place.
+     */
+    @Nonnull
+    public ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem, @Nullable String value) {
+        this.setIcon(iconItem, value);
+        return iconItem;
+    }
+
+    /**
+     * Slimefun-item-aware variant of {@link #getUpdatedIcon(ItemStack, String)}.
+     */
+    @Nonnull
+    public ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem, @Nullable String value, @Nonnull SlimefunItem slimefunItem) {
+        this.setIcon(iconItem, value, slimefunItem);
+        return iconItem;
+    }
+
+    /**
      * check Slimefun block data
      * update the icon{@link ItemStack} in the given slot place
      */
@@ -145,7 +165,7 @@ public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
             value = this.defaultValue();
         }
         ItemStack item = inventory.getItem(slot);
-        this.setIcon(item, value);
+        inventory.setItem(slot, this.getUpdatedIcon(item, value));
         return true;
     }
 
@@ -159,7 +179,7 @@ public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
                 value = BlockStorageLoreHelper.this.nextOrDefaultValue(value);
             }
             ItemStack item = inventory.getItem(slot);
-            BlockStorageLoreHelper.this.setIcon(item, value);
+            inventory.setItem(slot, BlockStorageLoreHelper.this.getUpdatedIcon(item, value));
             BlockStorageLoreHelper.this.setOrClearValue(location, value);
             return false;
         };
@@ -185,7 +205,7 @@ public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
             String value = BlockStorageLoreHelper.this.getOrDefaultValue(location);
             value = BlockStorageLoreHelper.this.clickNextValue(value, clickAction);
             ItemStack item = inventory.getItem(slot);
-            BlockStorageLoreHelper.this.setIcon(item, value);
+            inventory.setItem(slot, BlockStorageLoreHelper.this.getUpdatedIcon(item, value));
             BlockStorageLoreHelper.this.setOrClearValue(location, value);
             return false;
         };
@@ -197,7 +217,7 @@ public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
             String value = BlockStorageLoreHelper.this.getOrDefaultValue(location);
             value = BlockStorageLoreHelper.this.clickPreviousValue(value, clickAction);
             ItemStack item = inventory.getItem(slot);
-            BlockStorageLoreHelper.this.setIcon(item, value);
+            inventory.setItem(slot, BlockStorageLoreHelper.this.getUpdatedIcon(item, value));
             BlockStorageLoreHelper.this.setOrClearValue(location, value);
             return false;
         };

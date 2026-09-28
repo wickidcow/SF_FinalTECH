@@ -724,7 +724,7 @@ public class CardOperationPortMenu extends AbstractManualMachineMenu {
                 if (ItemStackUtil.isItemNull(iconItem)) {
                     iconItem = new ItemStack(CRAFT_ICON);
                 }
-                craft.doUpdateIcon(iconItem);
+                inventory.setItem(CRAFT_SLOT, craft.getUpdatedIcon(iconItem));
                 work = true;
                 break;
             }
@@ -764,6 +764,14 @@ public class CardOperationPortMenu extends AbstractManualMachineMenu {
         String getInfoOutput();
 
         boolean canCraft(@Nullable ItemStack item1, @Nullable ItemStack item2);
+
+        @Nonnull
+        default ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem) {
+            ItemStack updated = LegacyItemStackCompat.withType(iconItem, Material.GREEN_STAINED_GLASS_PANE);
+            ItemStackUtil.setItemName(updated, this.getInfoName());
+            ItemStackUtil.setLore(updated, this.getInfoLore());
+            return updated;
+        }
 
         default void doUpdateIcon(@Nonnull ItemStack iconItem) {
             LegacyItemStackCompat.setType(iconItem, Material.GREEN_STAINED_GLASS_PANE);

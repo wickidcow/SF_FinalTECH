@@ -136,11 +136,10 @@ public class ItemDismantleTableMenu extends AbstractManualMachineMenu {
                     count,
                     FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()));
 
-            if (StringNumberUtil.compare(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()) >= 0) {
-                LegacyItemStackCompat.setType(item, Material.GREEN_STAINED_GLASS_PANE);
-            } else {
-                LegacyItemStackCompat.setType(item, Material.RED_STAINED_GLASS_PANE);
-            }
+            Material statusMaterial = StringNumberUtil.compare(count, FinalTechItems.ITEM_DISMANTLE_TABLE.getCount()) >= 0
+                    ? Material.GREEN_STAINED_GLASS_PANE
+                    : Material.RED_STAINED_GLASS_PANE;
+            inventory.setItem(STATUS_SLOT, LegacyItemStackCompat.withType(item, statusMaterial));
         }
 
     }

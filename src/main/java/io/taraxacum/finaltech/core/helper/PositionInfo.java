@@ -196,6 +196,28 @@ public class PositionInfo {
             return BlockStorageLoreMaterialHelper.super.setIcon(iconItem, value, slimefunItem);
         }
 
+        @Nonnull
+        @Override
+        public ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem, @Nullable String value) {
+            ItemStack updated = iconItem;
+            if (BlockStorageLoreMaterialHelper.this.validValue(value) && valueMaterialMap.containsKey(value)) {
+                updated = LegacyItemStackCompat.withType(iconItem, valueMaterialMap.get(value));
+            }
+            BlockStorageLoreMaterialHelper.super.setIcon(updated, value);
+            return updated;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getUpdatedIcon(@Nonnull ItemStack iconItem, @Nullable String value, @Nonnull SlimefunItem slimefunItem) {
+            ItemStack updated = iconItem;
+            if (BlockStorageLoreMaterialHelper.this.validValue(value) && valueMaterialMap.containsKey(value)) {
+                updated = LegacyItemStackCompat.withType(iconItem, valueMaterialMap.get(value));
+            }
+            BlockStorageLoreMaterialHelper.super.setIcon(updated, value, slimefunItem);
+            return updated;
+        }
+
         @Override
         public boolean checkAndUpdateIcon(@Nonnull Inventory inventory, @Nonnull Location location, int slot) {
             String valueMap = LegacyBlockDataCompat.getValue(location, this.getKey());
@@ -214,7 +236,7 @@ public class PositionInfo {
             }
             ItemStack item = inventory.getItem(slot);
             item.setAmount(keyValueStringHelper.getKeyIndex(this.getValueKey()) > 0 ? keyValueStringHelper.getKeyIndex(this.getValueKey()) + 1 : 1);
-            BlockStorageLoreMaterialHelper.this.setIcon(item, value);
+            inventory.setItem(slot, BlockStorageLoreMaterialHelper.this.getUpdatedIcon(item, value));
             return true;
         }
 
@@ -235,7 +257,7 @@ public class PositionInfo {
                 }
                 keyValueStringHelper.putEntry(BlockStorageLoreMaterialHelper.this.getValueKey(), value);
                 item.setAmount(keyValueStringHelper.getKeyIndex(this.getValueKey()) > 0 ? keyValueStringHelper.getKeyIndex(this.getValueKey()) + 1 : 1);
-                BlockStorageLoreMaterialHelper.this.setIcon(item, value);
+                inventory.setItem(slot, BlockStorageLoreMaterialHelper.this.getUpdatedIcon(item, value));
                 BlockStorageLoreMaterialHelper.this.setOrClearValue(location, keyValueStringHelper.toString());
                 return false;
             };
@@ -256,7 +278,7 @@ public class PositionInfo {
                 }
                 keyValueStringHelper.putEntry(BlockStorageLoreMaterialHelper.this.getValueKey(), value);
                 item.setAmount(keyValueStringHelper.getKeyIndex(this.getValueKey()) > 0 ? keyValueStringHelper.getKeyIndex(this.getValueKey()) + 1 : 1);
-                BlockStorageLoreMaterialHelper.this.setIcon(item, value);
+                inventory.setItem(slot, BlockStorageLoreMaterialHelper.this.getUpdatedIcon(item, value));
                 BlockStorageLoreMaterialHelper.this.setOrClearValue(location, keyValueStringHelper.toString());
                 return false;
             };
@@ -275,7 +297,7 @@ public class PositionInfo {
                 value = BlockStorageLoreMaterialHelper.this.clickNextValue(value, action);
                 keyValueStringHelper.putEntry(BlockStorageLoreMaterialHelper.this.getValueKey(), value);
                 item.setAmount(keyValueStringHelper.getKeyIndex(this.getValueKey()) > 0 ? keyValueStringHelper.getKeyIndex(this.getValueKey()) + 1 : 1);
-                BlockStorageLoreMaterialHelper.this.setIcon(item, value);
+                inventory.setItem(slot, BlockStorageLoreMaterialHelper.this.getUpdatedIcon(item, value));
                 BlockStorageLoreMaterialHelper.this.setOrClearValue(location, keyValueStringHelper.toString());
                 return false;
             };
@@ -294,7 +316,7 @@ public class PositionInfo {
                 value = BlockStorageLoreMaterialHelper.this.clickPreviousValue(value, action);
                 keyValueStringHelper.putEntry(BlockStorageLoreMaterialHelper.this.getValueKey(), value);
                 item.setAmount(keyValueStringHelper.getKeyIndex(this.getValueKey()) > 0 ? keyValueStringHelper.getKeyIndex(this.getValueKey()) + 1 : 1);
-                BlockStorageLoreMaterialHelper.this.setIcon(item, value);
+                inventory.setItem(slot, BlockStorageLoreMaterialHelper.this.getUpdatedIcon(item, value));
                 BlockStorageLoreMaterialHelper.this.setOrClearValue(location, keyValueStringHelper.toString());
                 return false;
             };
