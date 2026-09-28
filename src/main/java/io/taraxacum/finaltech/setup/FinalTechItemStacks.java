@@ -5,7 +5,6 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.HeadTexture;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Slime;

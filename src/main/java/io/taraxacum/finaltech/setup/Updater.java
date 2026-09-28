@@ -1,7 +1,6 @@
 package io.taraxacum.finaltech.setup;
 
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 
