@@ -1,4 +1,4 @@
 /**
- * Class here is for normal plugin development.
+ * Shared Bukkit/Paper plugin utilities.
  */
 package io.taraxacum.libs.plugin;

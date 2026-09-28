@@ -1,4 +1,4 @@
 /**
- * Class here is for slimefun plugin development.
+ * Shared Slimefun integration and compatibility utilities.
  */
 package io.taraxacum.libs.slimefun;

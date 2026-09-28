@@ -1,5 +1,4 @@
 /**
- * If one machine is ticked in main thread.
- * It will be put here.
+ * Cargo and item-transfer machines that participate in FinalTECH's ticking systems.
  */
 package io.taraxacum.finaltech.core.item.machine.cargo;

@@ -1,5 +1,4 @@
 /**
- * Java class here is not related to bukkit plugin.
- * So they could be reused elsewhere.
+ * General-purpose Java utilities that are not tied directly to Bukkit or Slimefun.
  */
 package io.taraxacum.common;

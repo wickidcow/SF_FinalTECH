@@ -186,7 +186,7 @@ jobs:
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber
-            gh release edit "$TAG" --title "SF_FinalTECH $TAG" --notes "$NOTES"
+            gh release edit "$TAG" --target "$GITHUB_SHA" --title "SF_FinalTECH $TAG" --notes "$NOTES"
           else
             gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --title "SF_FinalTECH $TAG" --notes "$NOTES"
           fi

@@ -1,4 +1,4 @@
 /**
- * Setup items and menus and recipes.
+ * Plugin setup, item registration, menu registration, and recipe initialization.
  */
 package io.taraxacum.finaltech.setup;
