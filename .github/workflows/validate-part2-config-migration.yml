@@ -4,6 +4,9 @@ on:
   push:
     branches: [audit/deprecation-part2]
     paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'pom.xml'
       - '.github/workflows/validate-part2-config-migration.yml'
 
 permissions:

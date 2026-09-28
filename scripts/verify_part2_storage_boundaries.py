@@ -690,7 +690,7 @@ require(
     "LocationInfo must expose opaque ticker data for internal callers",
 )
 
-for source, name, config_calls in (
+for source, name, data_calls in (
     (accelerate_card, "AbstractMachineAccelerateCard", 1),
     (activate_card, "AbstractMachineActivateCard", 2),
 ):
@@ -704,8 +704,8 @@ for source, name, config_calls in (
         f"{name} must route menu permission checks through the compatibility boundary",
     )
     require(
-        source.count("LegacyTickerDataCompat.getConfig(location)") == config_calls,
-        f"{name} must route legacy ticker Config retrieval through LegacyTickerDataCompat",
+        source.count("LegacyTickerDataCompat.getData(location)") == data_calls,
+        f"{name} must route internal ticker data through the opaque LegacyTickerDataCompat boundary",
     )
     require(
         "BlockStorage." not in source
