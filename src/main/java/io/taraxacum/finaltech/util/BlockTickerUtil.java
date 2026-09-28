@@ -105,7 +105,7 @@ public class BlockTickerUtil {
             @Override
             public void tick(Block b, SlimefunItem item, Config data) {
                 FinalTechChanged.logger().info("DEBUG MODE: " + slimefunItem.getId() + " | Location: " + b.getLocation());
-                blockTicker.tick(b, item, data);
+                BlockTickerUtil.tickCompat(blockTicker, b, item, data);
             }
 
             @Override
@@ -125,7 +125,7 @@ public class BlockTickerUtil {
             @Override
             public void tick(Block b, SlimefunItem item, Config data) {
                 if (FinalTechChanged.getSlimefunTickCount() % interval == 0) {
-                    blockTicker.tick(b, item, data);
+                    BlockTickerUtil.tickCompat(blockTicker, b, item, data);
                 }
             }
 
@@ -149,7 +149,7 @@ public class BlockTickerUtil {
                 if (BlockTickerUtil.hasSleep(data)) {
                     BlockTickerUtil.subSleep(data);
                 }
-                blockTicker.tick(b, item, data);
+                BlockTickerUtil.tickCompat(blockTicker, b, item, data);
                 BlockTickerUtil.setSleep(data, i);
             }
 
@@ -214,7 +214,7 @@ public class BlockTickerUtil {
                         return;
                     }
                 }
-                blockTicker.tick(block, item, data);
+                BlockTickerUtil.tickCompat(blockTicker, block, item, data);
                 this.locationList.add(block.getLocation());
             }
 
@@ -243,7 +243,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (!AntiAccelerationUtil.isAccelerated(data) && PerformanceLimitUtil.charge(data)) {
-                        this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
+                        this.runnableLockFactory.waitThenRun(() -> BlockTickerUtil.tickCompat(blockTicker, b, item, data), b.getLocation());
                     }
                 }
 
@@ -264,7 +264,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (!AntiAccelerationUtil.isAccelerated(data)) {
-                        this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
+                        this.runnableLockFactory.waitThenRun(() -> BlockTickerUtil.tickCompat(blockTicker, b, item, data), b.getLocation());
                     }
                 }
 
@@ -285,7 +285,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (PerformanceLimitUtil.charge(data)) {
-                        this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
+                        this.runnableLockFactory.waitThenRun(() -> BlockTickerUtil.tickCompat(blockTicker, b, item, data), b.getLocation());
                     }
                 }
 
@@ -305,7 +305,7 @@ public class BlockTickerUtil {
 
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
-                    this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
+                    this.runnableLockFactory.waitThenRun(() -> BlockTickerUtil.tickCompat(blockTicker, b, item, data), b.getLocation());
                 }
 
                 @Override
@@ -323,7 +323,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (!AntiAccelerationUtil.isAccelerated(data) && PerformanceLimitUtil.charge(data)) {
-                        blockTicker.tick(b, item, data);
+                        BlockTickerUtil.tickCompat(blockTicker, b, item, data);
                     }
                 }
 
@@ -342,7 +342,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (!AntiAccelerationUtil.isAccelerated(data)) {
-                        blockTicker.tick(b, item, data);
+                        BlockTickerUtil.tickCompat(blockTicker, b, item, data);
                     }
                 }
 
@@ -361,7 +361,7 @@ public class BlockTickerUtil {
                 @Override
                 public void tick(Block b, SlimefunItem item, Config data) {
                     if (PerformanceLimitUtil.charge(data)) {
-                        blockTicker.tick(b, item, data);
+                        BlockTickerUtil.tickCompat(blockTicker, b, item, data);
                     }
                 }
 

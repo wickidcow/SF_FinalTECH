@@ -837,8 +837,9 @@ require(
 
 require(
     "public static void tickCompat(" in block_ticker_util
-    and "blockTicker.tick(block, item, (Config) data);" in block_ticker_util,
-    "BlockTickerUtil must isolate the RC-37 BlockTicker callback behind tickCompat",
+    and "blockTicker.tick(block, item, (Config) data);" in block_ticker_util
+    and block_ticker_util.count("blockTicker.tick(") == 1,
+    "BlockTickerUtil must isolate every direct RC-37 BlockTicker callback behind the single tickCompat boundary",
 )
 
 abstract_machine_menu = read(
