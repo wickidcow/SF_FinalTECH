@@ -32,8 +32,14 @@ for marker in (
     "Material.GRAVEL",
     "RecipeChoice.MaterialChoice",
     "RecipeChoice.ExactChoice",
-    '@SuppressWarnings("deprecation")',
+    'RecipeChoice.class.getMethod("getItemStack")',
+    "Method REPRESENTATIVE_ITEM_METHOD",
 ):
     require(marker in compat, f"recipe compatibility helper is missing: {marker}")
+
+require(".getItemStack()" not in compat,
+        "recipe compatibility helper must not directly link to deprecated RecipeChoice#getItemStack")
+require('@SuppressWarnings("deprecation")' not in compat,
+        "recipe compatibility helper must not require a deprecation suppression")
 
 print("FinalTECH recipe API compatibility boundary: PASS")

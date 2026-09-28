@@ -7,7 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import javax.annotation.Nonnull;
 
 /**
- * Modern attribute access with an isolated compatibility fallback.
+ * Modern attribute access for living-entity maximum health.
  */
 public final class EntityAttributeCompat {
 
@@ -16,17 +16,11 @@ public final class EntityAttributeCompat {
 
     public static double getMaxHealth(@Nonnull LivingEntity entity) {
         AttributeInstance maxHealth = entity.getAttribute(Attribute.MAX_HEALTH);
-        return maxHealth == null ? LegacyAccess.getMaxHealth(entity) : maxHealth.getValue();
-    }
-
-    @SuppressWarnings("deprecation")
-    private static final class LegacyAccess {
-
-        private LegacyAccess() {
+        if (maxHealth == null) {
+            throw new IllegalStateException(
+                    "Living entity " + entity.getType() + " does not expose Attribute.MAX_HEALTH"
+            );
         }
-
-        private static double getMaxHealth(@Nonnull LivingEntity entity) {
-            return entity.getMaxHealth();
-        }
+        return maxHealth.getValue();
     }
 }

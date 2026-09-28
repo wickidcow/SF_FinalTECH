@@ -8,6 +8,8 @@ import org.bukkit.inventory.RecipeChoice;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -16,10 +18,13 @@ import java.util.Set;
  * representative ingredient rather than every accepted alternative.
  *
  * <p>The modern APIs are used wherever they can reproduce that behavior exactly.
- * A narrow deprecated RecipeChoice fallback remains only for future/unknown choice
- * implementations that do not expose a modern representative-item accessor.</p>
+ * A cached reflective fallback preserves Bukkit's representative-item contract for
+ * choice implementations not available on the release compile baseline, without
+ * linking FinalTECH bytecode directly to the deprecated RecipeChoice method.</p>
  */
 public final class LegacyRecipeApiCompat {
+
+    private static final Method REPRESENTATIVE_ITEM_METHOD = findRepresentativeItemMethod();
 
     private LegacyRecipeApiCompat() {
     }
@@ -64,17 +69,39 @@ public final class LegacyRecipeApiCompat {
             return choices.isEmpty() ? null : choices.get(0).clone();
         }
 
-        return getLegacyRepresentative(choice);
+        return getReflectiveRepresentative(choice);
     }
 
-    /**
-     * Paper's generic RecipeChoice API still has no non-deprecated method for
-     * obtaining a representative stack from every possible choice type.
-     */
     @Nullable
-    @SuppressWarnings("deprecation")
-    private static ItemStack getLegacyRepresentative(@Nonnull RecipeChoice choice) {
-        ItemStack representative = choice.getItemStack();
-        return representative == null ? null : representative.clone();
+    private static ItemStack getReflectiveRepresentative(@Nonnull RecipeChoice choice) {
+        Method method = REPRESENTATIVE_ITEM_METHOD;
+        if (method == null) {
+            return null;
+        }
+
+        try {
+            Object representative = method.invoke(choice);
+            return representative instanceof ItemStack itemStack ? itemStack.clone() : null;
+        } catch (IllegalAccessException exception) {
+            throw new IllegalStateException("Could not access RecipeChoice representative item", exception);
+        } catch (InvocationTargetException exception) {
+            Throwable cause = exception.getCause();
+            if (cause instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            if (cause instanceof Error error) {
+                throw error;
+            }
+            throw new IllegalStateException("RecipeChoice representative lookup failed", cause);
+        }
+    }
+
+    @Nullable
+    private static Method findRepresentativeItemMethod() {
+        try {
+            return RecipeChoice.class.getMethod("getItemStack");
+        } catch (NoSuchMethodException ignored) {
+            return null;
+        }
     }
 }

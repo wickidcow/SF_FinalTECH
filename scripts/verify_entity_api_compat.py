@@ -25,9 +25,11 @@ for path in HEALTH_SURFACES:
 
 attribute = read("src/main/java/io/taraxacum/libs/plugin/util/EntityAttributeCompat.java")
 require("Attribute.MAX_HEALTH" in attribute and "entity.getAttribute(" in attribute,
-        "EntityAttributeCompat must prefer Attribute.MAX_HEALTH")
-require('@SuppressWarnings("deprecation")' in attribute and "entity.getMaxHealth()" in attribute,
-        "EntityAttributeCompat must keep the legacy getter isolated as a fallback")
+        "EntityAttributeCompat must use Attribute.MAX_HEALTH")
+require("entity.getMaxHealth()" not in attribute,
+        "EntityAttributeCompat must not fall back to deprecated Damageable#getMaxHealth")
+require('@SuppressWarnings("deprecation")' not in attribute,
+        "EntityAttributeCompat must not require a deprecation suppression")
 
 magic = read("src/main/java/io/taraxacum/finaltech/core/item/usable/MagicHypnotic.java")
 require("PotionEffectType.values()" not in magic, "MagicHypnotic must not use deprecated potion values()")
