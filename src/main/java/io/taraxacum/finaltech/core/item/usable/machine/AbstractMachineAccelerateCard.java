@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
+import io.taraxacum.finaltech.util.BlockTickerUtil;
  
 public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
     public AbstractMachineAccelerateCard(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -93,7 +94,7 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
 
         Runnable runnable = () -> {
             for (int i = 0; i < time; i++) {
-                blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location));
+                BlockTickerUtil.tickCompat(blockTicker, block, slimefunItem, LegacyTickerDataCompat.getData(location));
             }
         };
 

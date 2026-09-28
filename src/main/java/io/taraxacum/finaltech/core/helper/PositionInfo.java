@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 @SuppressWarnings("deprecation")
 public class PositionInfo {
@@ -133,10 +134,15 @@ public class PositionInfo {
     }
 
     @Nonnull
+    public static BlockFace[] getBlockFaces(@Nonnull Object data, @Nonnull String... values) {
+        String string = JavaUtil.getFirstNotNull(LegacyTickerDataCompat.getString(data, KEY), "");
+        return PositionInfo.getBlockFaces(string, values);
+    }
+
+    @Nonnull
     @SuppressWarnings("deprecation")
     public static BlockFace[] getBlockFaces(@Nonnull Config config, @Nonnull String... values) {
-        String string = JavaUtil.getFirstNotNull(config.getString(KEY), "");
-        return PositionInfo.getBlockFaces(string, values);
+        return PositionInfo.getBlockFaces((Object) config, values);
     }
 
     public static abstract class BlockStorageLoreMaterialHelper extends BlockStorageLoreHelper {
@@ -166,9 +172,8 @@ public class PositionInfo {
 
         @Nonnull
         @Override
-        @SuppressWarnings("deprecation")
-        public String getOrDefaultValue(@Nonnull Config config) {
-            String valueMap = config.getString(this.getKey());
+        public String getOrDefaultValue(@Nonnull Object data) {
+            String valueMap = LegacyTickerDataCompat.getString(data, this.getKey());
             KeyValueStringHelper keyValueStringHelper = MAP_EXAMPLE.parseString(valueMap);
             String value = keyValueStringHelper.getValue(BlockStorageLoreMaterialHelper.this.getValueKey());
             if ("".equals(value)) {

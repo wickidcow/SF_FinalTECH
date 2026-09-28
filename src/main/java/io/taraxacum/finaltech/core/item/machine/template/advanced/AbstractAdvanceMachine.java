@@ -17,7 +17,6 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.libs.plugin.dto.AdvancedMachineRecipe;
 import io.taraxacum.libs.slimefun.dto.AdvancedCraft;
 import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -27,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 /**
  * @author Final_ROOT
@@ -58,11 +58,10 @@ public abstract class AbstractAdvanceMachine extends AbstractMachine implements 
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected final void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected final void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
-        int offset = config.contains(this.offsetKey) ? Integer.parseInt(config.getString(offsetKey)) : 0;
-        int recipeLock = config.contains(MachineRecipeLock.KEY) ? Integer.parseInt(config.getString(MachineRecipeLock.KEY)) : -2;
+        int offset = LegacyTickerDataCompat.contains(config, this.offsetKey) ? Integer.parseInt(LegacyTickerDataCompat.getString(config, offsetKey)) : 0;
+        int recipeLock = LegacyTickerDataCompat.contains(config, MachineRecipeLock.KEY) ? Integer.parseInt(LegacyTickerDataCompat.getString(config, MachineRecipeLock.KEY)) : -2;
         MachineUtil.stockSlots(blockMenu.toInventory(), this.getInputSlot());
         MachineRecipe machineRecipe = this.matchRecipe(blockMenu, offset, recipeLock);
         if (machineRecipe != null) {

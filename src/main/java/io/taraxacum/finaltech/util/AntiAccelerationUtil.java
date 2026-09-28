@@ -4,6 +4,7 @@ import io.taraxacum.finaltech.FinalTechChanged;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 
 import javax.annotation.Nonnull;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 public class AntiAccelerationUtil {
     public static String KEY = "anti-acceleration";
@@ -14,13 +15,17 @@ public class AntiAccelerationUtil {
      * @param config The storage info in the machine location
      * @return whether a machine can work
      */
-    @SuppressWarnings("deprecation")
-    public static boolean isAccelerated(@Nonnull Config config) {
-        String s = config.getString(KEY);
-        if (s != null && Integer.parseInt(s) == FinalTechChanged.getSlimefunTickCount()) {
+    public static boolean isAccelerated(@Nonnull Object data) {
+        String value = LegacyTickerDataCompat.getString(data, KEY);
+        if (value != null && Integer.parseInt(value) == FinalTechChanged.getSlimefunTickCount()) {
             return true;
         }
-        config.setValue(KEY, String.valueOf(FinalTechChanged.getSlimefunTickCount()));
+        LegacyTickerDataCompat.setValue(data, KEY, String.valueOf(FinalTechChanged.getSlimefunTickCount()));
         return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean isAccelerated(@Nonnull Config config) {
+        return isAccelerated((Object) config);
     }
 }

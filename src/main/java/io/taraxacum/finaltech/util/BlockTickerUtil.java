@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
  
 /**
  * Ticker wrappers intentionally retain the RC-37 {@link Config} callback
@@ -50,24 +51,47 @@ public class BlockTickerUtil {
         }
     }
 
-    public static void setSleep(@Nonnull Config config, @Nullable String sleep) {
-        config.setValue(ConstantTableUtil.CONFIG_SLEEP, sleep);
+    public static void setSleep(@Nonnull Object data, @Nullable String sleep) {
+        LegacyTickerDataCompat.setValue(data, ConstantTableUtil.CONFIG_SLEEP, sleep);
     }
 
-    public static boolean hasSleep(@Nonnull Config config) {
-        return config.contains(ConstantTableUtil.CONFIG_SLEEP);
+    public static boolean hasSleep(@Nonnull Object data) {
+        return LegacyTickerDataCompat.contains(data, ConstantTableUtil.CONFIG_SLEEP);
     }
 
-    public static void subSleep(@Nonnull Config config) {
-        String sleepStr = config.getString(ConstantTableUtil.CONFIG_SLEEP);
+    public static void subSleep(@Nonnull Object data) {
+        String sleepStr = LegacyTickerDataCompat.getString(data, ConstantTableUtil.CONFIG_SLEEP);
         if (sleepStr != null) {
             double sleep = Double.parseDouble(sleepStr) - 1;
             if (sleep > 0) {
-                config.setValue(ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
+                LegacyTickerDataCompat.setValue(data, ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
             } else {
-                config.setValue(ConstantTableUtil.CONFIG_SLEEP, "0");
+                LegacyTickerDataCompat.setValue(data, ConstantTableUtil.CONFIG_SLEEP, "0");
             }
         }
+    }
+
+    public static void setSleep(@Nonnull Config config, @Nullable String sleep) {
+        setSleep((Object) config, sleep);
+    }
+
+    public static boolean hasSleep(@Nonnull Config config) {
+        return hasSleep((Object) config);
+    }
+
+    public static void subSleep(@Nonnull Config config) {
+        subSleep((Object) config);
+    }
+
+    /**
+     * Invokes the RC-37 BlockTicker callback while keeping Config out of callers.
+     */
+    public static void tickCompat(
+            @Nonnull BlockTicker blockTicker,
+            @Nonnull Block block,
+            @Nonnull SlimefunItem item,
+            @Nonnull Object data) {
+        blockTicker.tick(block, item, (Config) data);
     }
 
     @Nonnull

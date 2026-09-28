@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 public class PermissionUtil {
     public static boolean checkOfflinePermission(@Nonnull ItemStack itemStack, @Nonnull Location... targetLocations) {
@@ -49,13 +50,17 @@ public class PermissionUtil {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Config config, @Nonnull Location... targetLocations) {
+    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Object data, @Nonnull Location... targetLocations) {
         return PermissionUtil.checkOfflinePermission(
                 sourceLocation,
-                config.getString(ConstantTableUtil.CONFIG_UUID),
-                IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(config)),
+                LegacyTickerDataCompat.getString(data, ConstantTableUtil.CONFIG_UUID),
+                IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(data)),
                 targetLocations);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Config config, @Nonnull Location... targetLocations) {
+        return PermissionUtil.checkOfflinePermission(sourceLocation, (Object) config, targetLocations);
     }
 
     public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Location... targetLocations) {

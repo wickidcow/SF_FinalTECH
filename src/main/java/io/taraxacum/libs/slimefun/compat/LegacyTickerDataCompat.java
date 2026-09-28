@@ -37,6 +37,14 @@ public final class LegacyTickerDataCompat {
         return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location);
     }
 
+    /**
+     * Returns the same ticker-data object without exposing the deprecated Config type.
+     */
+    @Nonnull
+    public static Object getData(@Nonnull Location location) {
+        return getConfig(location);
+    }
+
     public static boolean contains(@Nonnull Object data, @Nonnull String key) {
         return config(data).contains(key);
     }

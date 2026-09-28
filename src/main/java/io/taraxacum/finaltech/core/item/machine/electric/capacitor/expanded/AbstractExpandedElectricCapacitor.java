@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 import javax.annotation.Nonnull;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 /**
  * @author Final_ROOT
@@ -70,10 +71,9 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object config) {
         String energyStr = EnergyUtil.getCharge(config);
-        String energyStackStr = JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO);
+        String energyStackStr = JavaUtil.getFirstNotNull(LegacyTickerDataCompat.getString(config, this.key), StringNumberUtil.ZERO);
         long energy = Integer.parseInt(energyStr);
         long energyStack = Integer.parseInt(energyStackStr);
 
@@ -100,9 +100,16 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
                 String.format("%.2f", Slimefun.getTickerTask().getTickRate() / 20.0));
     }
 
+    public int getStack(@Nonnull Object data) {
+        return Integer.parseInt(JavaUtil.getFirstNotNull(LegacyTickerDataCompat.getString(data, this.key), StringNumberUtil.ZERO));
+    }
+
+    /**
+     * RC-37 source/binary compatibility overload.
+     */
     @SuppressWarnings("deprecation")
     public int getStack(@Nonnull Config config) {
-        return Integer.parseInt(JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO));
+        return getStack((Object) config);
     }
 
     public long getMaxEnergy() {

@@ -12,6 +12,7 @@ import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 /**
  * Legacy Config overloads are retained for RC-37 compatibility; location-based
@@ -29,8 +30,15 @@ public class EnergyUtil {
     }
 
     @Nonnull
+    public static String getCharge(@Nonnull Object data) {
+        return Objects.requireNonNull(JavaUtil.getFirstNotNull(
+                LegacyTickerDataCompat.getString(data, ConstantTableUtil.CONFIG_CHARGE),
+                StringNumberUtil.ZERO));
+    }
+
+    @Nonnull
     public static String getCharge(@Nonnull Config config) {
-        return Objects.requireNonNull(JavaUtil.getFirstNotNull(config.getString(ConstantTableUtil.CONFIG_CHARGE), StringNumberUtil.ZERO));
+        return getCharge((Object) config);
     }
 
     public static void setCharge(@Nonnull Location location, @Nonnull String energy) {
@@ -47,12 +55,20 @@ public class EnergyUtil {
                 LegacySlimefunApiCompat.setCharge((EnergyNetComponent) it, location, energy);
     }
 
+    public static void setCharge(@Nonnull Object data, @Nonnull String energy) {
+        LegacyTickerDataCompat.setValue(data, ConstantTableUtil.CONFIG_CHARGE, energy);
+    }
+
+    public static void setCharge(@Nonnull Object data, int energy) {
+        LegacyTickerDataCompat.setValue(data, ConstantTableUtil.CONFIG_CHARGE, String.valueOf(energy));
+    }
+
     public static void setCharge(@Nonnull Config config, @Nonnull String energy) {
-        config.setValue(ConstantTableUtil.CONFIG_CHARGE, energy);
+        setCharge((Object) config, energy);
     }
 
     public static void setCharge(@Nonnull Config config, int energy) {
-        config.setValue(ConstantTableUtil.CONFIG_CHARGE, String.valueOf(energy));
+        setCharge((Object) config, energy);
     }
 
 

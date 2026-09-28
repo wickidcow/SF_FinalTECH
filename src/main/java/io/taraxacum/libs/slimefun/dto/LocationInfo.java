@@ -56,6 +56,10 @@ public class LocationInfo {
         return location;
     }
 
+    public Object getData() {
+        return config;
+    }
+
     public Config getConfig() {
         return config;
     }

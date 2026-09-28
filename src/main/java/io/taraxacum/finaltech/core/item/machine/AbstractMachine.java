@@ -114,7 +114,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
     @Nullable
     protected abstract AbstractMachineMenu setMachineMenu();
 
-    protected abstract void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config);
+    protected abstract void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object data);
 
     protected abstract boolean isSynchronized();
 }

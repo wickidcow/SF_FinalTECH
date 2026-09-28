@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 
 /**
  * Just for easily change value of the given key in specific condition
@@ -107,16 +108,33 @@ public abstract class BlockStorageHelper {
     }
 
     @Nonnull
+    public String getOrDefaultValue(@Nonnull Object data) {
+        return LegacyTickerDataCompat.contains(data, this.getKey())
+                ? LegacyTickerDataCompat.getString(data, this.getKey())
+                : this.defaultValue();
+    }
+
+    /**
+     * RC-37 compatibility overload. New FinalTECH ticker code passes opaque data.
+     */
+    @Nonnull
     public String getOrDefaultValue(@Nonnull Config config) {
-        return config.contains(this.getKey()) ? config.getString(this.getKey()) : this.defaultValue();
+        return this.getOrDefaultValue((Object) config);
     }
 
     public void setOrClearValue(@Nonnull Location location, @Nullable String value) {
         LegacyBlockDataCompat.setValue(location, this.getKey(), value);
     }
 
+    public void setOrClearValue(@Nonnull Object data, @Nullable String value) {
+        LegacyTickerDataCompat.setValue(data, this.getKey(), value);
+    }
+
+    /**
+     * RC-37 compatibility overload. New FinalTECH ticker code passes opaque data.
+     */
     public void setOrClearValue(@Nonnull Config config, @Nullable String value) {
-        config.setValue(this.getKey(), value);
+        this.setOrClearValue((Object) config, value);
     }
 
     public int valueSize() {

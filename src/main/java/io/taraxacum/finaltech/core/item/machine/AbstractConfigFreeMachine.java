@@ -4,7 +4,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,12 +12,9 @@ import javax.annotation.Nonnull;
 /**
  * Base class for machines whose ticker logic does not consume persisted ticker data.
  *
- * <p>The deprecated RC-37 Config signature is isolated here so data-free machine
- * implementations can remain independent of the legacy storage ABI. Current
- * Slimefun Legacy still reaches this bridge through BlockTicker's compatibility
- * dispatch, preserving identical tick timing and behavior.</p>
+ * <p>The RC-37 Config signature is isolated in {@link AbstractMachine}; this
+ * subclass receives opaque ticker data and intentionally ignores it.</p>
  */
-@SuppressWarnings("deprecation")
 public abstract class AbstractConfigFreeMachine extends AbstractMachine {
 
     protected AbstractConfigFreeMachine(
@@ -33,7 +29,7 @@ public abstract class AbstractConfigFreeMachine extends AbstractMachine {
     protected final void tick(
             @Nonnull Block block,
             @Nonnull SlimefunItem slimefunItem,
-            @Nonnull Config ignored) {
+            @Nonnull Object ignored) {
         tick(block, slimefunItem);
     }
 

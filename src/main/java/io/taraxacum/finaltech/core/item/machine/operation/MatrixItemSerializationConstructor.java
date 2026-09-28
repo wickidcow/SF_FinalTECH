@@ -15,7 +15,6 @@ import io.taraxacum.finaltech.core.operation.ItemSerializationConstructorOperati
 import io.taraxacum.finaltech.setup.FinalTechItems;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -27,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
  
 public class MatrixItemSerializationConstructor extends AbstractOperationMachine {
     private final CustomItemStack nullInfoIcon = new CustomItemStack(Material.RED_STAINED_GLASS_PANE, FinalTechChanged.getLanguageString("items", this.getId(), "null-icon", "name"), FinalTechChanged.getLanguageStringArray("items", this.getId(), "null-icon", "lore"));
@@ -63,8 +63,7 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Object config) {
         Location location = block.getLocation();
         this.locationList.add(location);
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
@@ -85,14 +84,14 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
 
         ItemSerializationConstructorOperation operation = (ItemSerializationConstructorOperation) this.getMachineProcessor().getOperation(block);
 
-        if (operation == null && config.contains(this.blockStorageItemKey)) {
-            String itemString = config.getString(this.blockStorageItemKey);
+        if (operation == null && LegacyTickerDataCompat.contains(config, this.blockStorageItemKey)) {
+            String itemString = LegacyTickerDataCompat.getString(config, this.blockStorageItemKey);
             ItemStack stringItem = ItemStackUtil.stringToItemStack(itemString);
             if (!ItemStackUtil.isItemNull(stringItem) && ItemSerializationConstructorOperation.getType(stringItem) == ItemSerializationConstructorOperation.COPY_CARD) {
                 operation = ItemSerializationConstructorOperation.newInstance(stringItem);
                 if (operation != null) {
                     this.getMachineProcessor().startOperation(block, operation);
-                    int amount = (int) Double.parseDouble(config.getString(this.blockStorageAmountKey));
+                    int amount = (int) Double.parseDouble(LegacyTickerDataCompat.getString(config, this.blockStorageAmountKey));
                     ((ItemCopyCardOperation) operation).setCount(amount);
                 }
             }
@@ -123,7 +122,7 @@ public class MatrixItemSerializationConstructor extends AbstractOperationMachine
         }
 
         if (operation != null && operation.getType() == ItemSerializationConstructorOperation.COPY_CARD) {
-            if (!config.contains(this.blockStorageItemKey)) {
+            if (!LegacyTickerDataCompat.contains(config, this.blockStorageItemKey)) {
                 LegacyBlockDataCompat.setValue(location, this.blockStorageItemKey, ItemStackUtil.itemStackToString(((ItemCopyCardOperation) operation).getMatchItem()));
             }
             LegacyBlockDataCompat.setValue(location, this.blockStorageAmountKey, String.valueOf((int) ((ItemCopyCardOperation) operation).getCount()));
