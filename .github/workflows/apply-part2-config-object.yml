@@ -1,0 +1,88 @@
+name: Apply Part 2 Config Object Migration
+
+on:
+  push:
+    branches: [audit/deprecation-part2]
+    paths:
+      - 'scripts/migrate_part2_config_object.py'
+      - '.github/workflows/apply-part2-config-object.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out audit branch
+        uses: actions/checkout@v6
+
+      - name: Check out Slimefun Legacy
+        uses: actions/checkout@v6
+        with:
+          repository: wickidcow/Slimefun-Legacy
+          ref: master
+          path: .deps/Slimefun-Legacy
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Publish Slimefun Legacy API locally
+        working-directory: .deps/Slimefun-Legacy
+        run: |
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -PprojectVersion=ALBION-SNAPSHOT -x test --no-daemon
+
+      - name: Apply Config-object migration
+        run: python3 scripts/migrate_part2_config_object.py
+
+      - name: Verify source hygiene
+        run: python3 scripts/verify_source_hygiene.py
+
+      - name: Validate patch
+        run: git diff --check
+
+      - name: Compile Paper 1.21.11 baseline
+        run: >-
+          mvn -B --no-transfer-progress -DskipTests
+          -Dpaper.version=1.21.11-R0.1-SNAPSHOT
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version=ALBION-SNAPSHOT
+          clean package
+
+      - name: Compile Paper 26.2
+        run: >-
+          mvn -B --no-transfer-progress -DskipTests
+          -Dpaper.version=26.2.build.112-stable
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version=ALBION-SNAPSHOT
+          clean package
+
+      - name: Compile Paper 26.3 alpha
+        run: >-
+          mvn -B --no-transfer-progress -DskipTests
+          -Dpaper.version=26.3-rc-3.build.1-alpha
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version=ALBION-SNAPSHOT
+          clean package
+
+      - name: Commit audit migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'wickidcow'
+          git config user.email '185013218+wickidcow@users.noreply.github.com'
+          git add src/main/java
+          if git diff --cached --quiet; then
+            echo 'No source changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Part 2 audit: isolate machine ticker Config ABI'
+          git push
