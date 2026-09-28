@@ -1,7 +1,6 @@
 package io.taraxacum.finaltech.util;
 
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 
 import javax.annotation.Nonnull;

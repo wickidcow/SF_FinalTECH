@@ -6,7 +6,6 @@ import io.taraxacum.libs.plugin.util.EntityAttributeCompat;
 import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.task.effect.VoidCurse;
 import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.setup.FinalTechItems;

@@ -6,7 +6,6 @@ import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.group.MainItemGroup;
 import io.taraxacum.finaltech.core.group.SubFlexItemGroup;
 import io.taraxacum.finaltech.util.ConfigUtil;

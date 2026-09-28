@@ -5,7 +5,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.dto.KeyValueStringHelper;
 import io.taraxacum.libs.plugin.dto.KeyValueStringOrderHelper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;

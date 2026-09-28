@@ -5,7 +5,6 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.common.util.ReflectionUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.event.ConfigSaveActionEvent;
 import io.taraxacum.finaltech.core.item.machine.AbstractMachine;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;

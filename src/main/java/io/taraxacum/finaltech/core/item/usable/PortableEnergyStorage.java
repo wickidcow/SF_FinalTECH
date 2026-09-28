@@ -9,7 +9,6 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction
 import io.taraxacum.common.util.JavaUtil;
 import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.event.EnergyDepositEvent;
 import io.taraxacum.finaltech.core.event.EnergyWithdrawEvent;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;

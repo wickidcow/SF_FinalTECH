@@ -10,7 +10,6 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.taraxacum.finaltech.FinalTechChanged;
-import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.usable.UsableSlimefunItem;
 import io.taraxacum.finaltech.util.PermissionUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
