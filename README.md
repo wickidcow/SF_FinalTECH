@@ -16,7 +16,7 @@ FinalTECH is a large Slimefun addon focused on high-throughput automation, advan
 [Report a Bug](https://github.com/wickidcow/SF_FinalTECH/issues) ·
 [Slimefun Legacy](https://github.com/wickidcow/Slimefun-Legacy)
 
-Current maintained version: **3.0**
+Current maintained version: **3.0.2**
 
 </div>
 
@@ -51,7 +51,7 @@ Release downloads are published as a **direct JAR file**, not a ZIP archive.
 Expected release filename:
 
 ```text
-SF_FinalTECH3.0.jar
+SF_FinalTECH3.0.2.jar
 ```
 
 | Requirement | Current maintained baseline |
@@ -71,7 +71,7 @@ Download the latest maintained build from [GitHub Releases](https://github.com/w
 
 1. Stop the server normally and create a backup.
 2. Install a compatible **Slimefun Legacy** build.
-3. Download `SF_FinalTECH3.0.jar` from this repository's [Releases](https://github.com/wickidcow/SF_FinalTECH/releases) page.
+3. Download `SF_FinalTECH3.0.2.jar` from this repository's [Releases](https://github.com/wickidcow/SF_FinalTECH/releases) page.
 4. Place the JAR in the server's `plugins` directory.
 5. Remove or archive older FinalTECH JARs so only the intended build can load.
 6. Start the server and review the console for dependency or registration errors.
@@ -147,7 +147,7 @@ mvn --batch-mode --no-transfer-progress -DskipTests package
 The shaded production JAR is written to:
 
 ```text
-target/SF_FinalTECH3.0.jar
+target/SF_FinalTECH3.0.2.jar
 ```
 
 The repository's release workflow publishes that JAR directly to GitHub Releases so server owners do not have to unpack an Actions artifact ZIP.
