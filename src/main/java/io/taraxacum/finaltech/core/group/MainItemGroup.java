@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
  
 // TODO: abstract as lib
+@SuppressWarnings("deprecation")
 public class MainItemGroup extends FlexItemGroup {
     private static final int BACK_SLOT = 1;
     private static final int PREVIOUS_SLOT = 3;

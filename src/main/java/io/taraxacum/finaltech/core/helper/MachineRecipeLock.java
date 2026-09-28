@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * @author Final_ROOT
  */
+@SuppressWarnings("deprecation")
 public final class MachineRecipeLock {
     public static final String KEY = "rl";
 

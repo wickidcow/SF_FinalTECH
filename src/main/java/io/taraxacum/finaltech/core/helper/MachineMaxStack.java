@@ -23,6 +23,7 @@ import java.util.Objects;
 /**
  * @author Final_ROOT
  */
+@SuppressWarnings("deprecation")
 public final class MachineMaxStack {
     public static final String KEY = "mms";
 

@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 /**
  * @author Final_ROOT
  */
+@SuppressWarnings("deprecation")
 public final class CargoNumber {
     public static final String KEY = "cb";
     public static final String KEY_INPUT = "cbi";

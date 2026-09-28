@@ -1113,6 +1113,15 @@ for java_path in java_root.rglob("*.java"):
             f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression"
         )
 
+    if (
+        "me.mrCookieSlime.CSCoreLibPlugin.general.Inventory." in source
+        and ("ChestMenu" in source or "ClickAction" in source)
+        and '@SuppressWarnings("deprecation")' not in source
+    ):
+        global_violations.append(
+            f"{relative} uses the supported legacy menu contract without an explicit compatibility suppression"
+        )
+
 require(
     not global_violations,
     "Part 2 global compatibility violations:\n- " + "\n- ".join(global_violations),

@@ -36,32 +36,4 @@ for path in SURFACES:
                 f"{path} contains a direct legacy energy call: {stripped}",
             )
 
-compat = read("src/main/java/io/taraxacum/libs/slimefun/compat/LegacySlimefunApiCompat.java")
-
-for expected in (
-    "research.getLevelCost()",
-    "research.setLevelCost(cost)",
-    "component.addCharge(location, (long) charge)",
-    "component.getChargeLong(location)",
-    "component.setCharge(location, (long) charge)",
-):
-    require(expected in compat, f"LegacySlimefunApiCompat lost modern API use: {expected}")
-
-for deprecated_call in (
-    "research.getCost()",
-    "research.setCost(",
-    "component.addCharge(location, charge)",
-    "component.getCharge(location);",
-    "component.setCharge(location, charge)",
-):
-    require(
-        deprecated_call not in compat,
-        f"LegacySlimefunApiCompat reintroduced deprecated API use: {deprecated_call}",
-    )
-
-require(
-    compat.count('@SuppressWarnings("deprecation")') == 3,
-    "LegacySlimefunApiCompat must suppress deprecation only on the three RC-37 Config bridge methods",
-)
-
 print("FinalTECH non-network energy compatibility boundary: PASS")

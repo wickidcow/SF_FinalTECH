@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class PositionInfo {
     public static final String KEY = "pi";
 

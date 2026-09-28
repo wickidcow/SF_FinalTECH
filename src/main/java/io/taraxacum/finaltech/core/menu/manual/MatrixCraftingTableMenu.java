@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class MatrixCraftingTableMenu extends AbstractManualMachineMenu {
     private static final int[] BORDER = new int[]{6, 7, 8, 15, 17, 24, 25, 26};
     private static final int[] INPUT_BORDER = new int[0];
