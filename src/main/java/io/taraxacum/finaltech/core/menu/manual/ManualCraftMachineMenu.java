@@ -34,7 +34,6 @@ import java.util.List;
  * @author Final_ROOT
  * @since 1.0
  */
-@SuppressWarnings("deprecation")
 public class ManualCraftMachineMenu extends AbstractManualMachineMenu {
     private static final int[] BORDER = new int[] {48, 50};
     private static final int[] INPUT_BORDER = new int[0];

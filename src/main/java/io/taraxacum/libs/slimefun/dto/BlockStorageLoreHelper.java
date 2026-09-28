@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("deprecation")
 public abstract class BlockStorageLoreHelper extends BlockStorageHelper {
     private static final List<String> ERROR_LORE = List.of("§cERROR");
     private final Map<String, List<String>> valueLoreMap;

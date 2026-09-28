@@ -37,7 +37,6 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.*;
  
-@SuppressWarnings("deprecation")
 public class AdvancedAutoCraftMenu extends AbstractMachineMenu {
     public static final int PARSE_ITEM_SLOT = 46;
     public static final int STATUS_SLOT = 27;

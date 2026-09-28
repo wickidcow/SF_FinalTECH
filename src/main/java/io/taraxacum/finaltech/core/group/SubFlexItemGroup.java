@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
  
 // TODO: abstract as lib
-@SuppressWarnings("deprecation")
 public class SubFlexItemGroup extends FlexItemGroup {
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
     private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();

@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public class SlimefunItemSmallRecipeMenu extends ChestMenu {
     private final int BACK_SLOT = 1;
     private final int RECIPE_TYPE = 10;

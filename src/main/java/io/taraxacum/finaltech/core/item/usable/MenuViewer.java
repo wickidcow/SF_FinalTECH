@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
  * @author Final_ROOT
  * @since 2.0
  */
-@SuppressWarnings("deprecation")
 public class MenuViewer extends UsableSlimefunItem implements RecipeItem {
     private final int INSERT_SLOT_VALUE = 1;
     private final int WITHDRAW_SLOT_VALUE = 2;

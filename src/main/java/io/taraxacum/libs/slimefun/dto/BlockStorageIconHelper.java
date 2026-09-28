@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("deprecation")
 public abstract class BlockStorageIconHelper extends BlockStorageHelper {
     private static final ItemStack ERROR_ICON = new CustomItemStack(Material.BARRIER, " ");
     private final Map<String, ItemStack> valueIconMap;

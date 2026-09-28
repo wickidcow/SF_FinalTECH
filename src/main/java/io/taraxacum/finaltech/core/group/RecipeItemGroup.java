@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 // TODO: abstract as lib
-@SuppressWarnings("deprecation")
 public class RecipeItemGroup extends FlexItemGroup {
     private static final Map<String, RecipeItemGroup> ID_MAP = new HashMap<>();
     private static final int SMALL_LIMIT = 9;
