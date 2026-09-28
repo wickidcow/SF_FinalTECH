@@ -89,7 +89,7 @@ public class EnergizedChargeBase extends AbstractFaceMachine implements RecipeIt
             chargeEnergy = Math.min(capacity - storedEnergy, (int) (capacity * EnergizedChargeBase.this.efficiency));
             if (chargeEnergy > 0) {
                 storedEnergy += chargeEnergy;
-                EnergyUtil.setCharge(locationInfo.getConfig(), storedEnergy);
+                EnergyUtil.setCharge(locationInfo.getData(), storedEnergy);
             }
         }
 

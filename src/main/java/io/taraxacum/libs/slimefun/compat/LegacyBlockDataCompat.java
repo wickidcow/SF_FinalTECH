@@ -103,6 +103,22 @@ public final class LegacyBlockDataCompat {
     }
 
     /**
+     * Returns the historical location-data view used by RC-37.
+     *
+     * <p>This is intentionally opaque so normal FinalTECH code never compiles
+     * against the deprecated Config type. Current Slimefun Legacy returns its
+     * compatibility wrapper; RC-37 returns its native Config instance.</p>
+     */
+    @Nonnull
+    public static Object getLegacyDataView(@Nonnull Location location) {
+        Object data = LegacyAccess.getDataView(location);
+        if (data == null) {
+            throw new IllegalStateException("RC-37 location-data view is unavailable at " + location);
+        }
+        return data;
+    }
+
+    /**
      * Exposes the historical per-world BlockStorage inventory map used only by
      * FinalTECH's RC-37 data-loss recovery path.
      *
@@ -403,6 +419,8 @@ public final class LegacyBlockDataCompat {
                 method("clearBlockInfo", Location.class);
         private static final Method GET_STORAGE =
                 method("getStorage", World.class);
+        private static final Method GET_DATA_VIEW =
+                method("getLocationInfo", Location.class);
 
         private LegacyAccess() {
         }
@@ -484,6 +502,11 @@ public final class LegacyBlockDataCompat {
         @Nullable
         private static Object getStorage(@Nonnull World world) {
             return invoke(GET_STORAGE, world);
+        }
+
+        @Nullable
+        private static Object getDataView(@Nonnull Location location) {
+            return invoke(GET_DATA_VIEW, location);
         }
 
         @SuppressWarnings("unchecked")

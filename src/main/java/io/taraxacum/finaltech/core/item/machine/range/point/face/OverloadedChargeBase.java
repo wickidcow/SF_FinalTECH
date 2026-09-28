@@ -93,7 +93,7 @@ public class OverloadedChargeBase extends AbstractFaceMachine implements RecipeI
             chargeEnergy = storedEnergy < maxValue - capacity * OverloadedChargeBase.this.efficiency ? (int) (capacity * OverloadedChargeBase.this.efficiency) : (maxValue - storedEnergy);
             if (chargeEnergy > 0) {
                 storedEnergy += chargeEnergy;
-                EnergyUtil.setCharge(locationInfo.getConfig(), storedEnergy);
+                EnergyUtil.setCharge(locationInfo.getData(), storedEnergy);
             }
         }
 

@@ -160,7 +160,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
                                 LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId());
                                 LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
                                 LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1));
-                                BlockTickerUtil.setSleep(LegacyTickerDataCompat.getConfig(location), String.valueOf(EquivalentConcept.this.life - finalLife));
+                                BlockTickerUtil.setSleep(LegacyTickerDataCompat.getData(location), String.valueOf(EquivalentConcept.this.life - finalLife));
                                 JavaPlugin javaPlugin = EquivalentConcept.this.getAddon().getJavaPlugin();
                                 javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> targetBlock.setType(EquivalentConcept.this.getItem().getType()));
                             }

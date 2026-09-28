@@ -666,28 +666,39 @@ activate_card = read(
 )
 
 require(
-    "public static Config getConfig(@Nonnull Location location)" in legacy_ticker_data
-    and "me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location)" in legacy_ticker_data,
-    "LegacyTickerDataCompat must isolate the intentional RC-37 location-to-Config bridge",
+    "private static final ClassValue<DataAccess> ACCESS" in legacy_ticker_data
+    and "LegacyBlockDataCompat.getModernDataContainer(location)" in legacy_ticker_data
+    and "LegacyBlockDataCompat.getLegacyDataView(location)" in legacy_ticker_data
+    and 'method(type, "getData", String.class)' in legacy_ticker_data
+    and 'method(type, "setData", String.class, String.class)' in legacy_ticker_data
+    and 'method(type, "removeData", String.class)' in legacy_ticker_data
+    and 'method(type, "getAllData")' in legacy_ticker_data,
+    "LegacyTickerDataCompat must use cached modern-container access with an opaque RC-37 fallback",
 )
 require(
-    '@SuppressWarnings("deprecation")' in legacy_ticker_data,
-    "LegacyTickerDataCompat must explicitly mark its intentional deprecated compatibility surface",
+    "me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config" not in legacy_ticker_data
+    and "me.mrCookieSlime.Slimefun.api.BlockStorage" not in legacy_ticker_data,
+    "LegacyTickerDataCompat must not compile against deprecated Config or BlockStorage APIs",
 )
 
 require(
-    location_info.count("LegacyTickerDataCompat.getConfig(location)") == 2
+    location_info.count("LegacyTickerDataCompat.getData(location)") == 2
     and location_info.count("LegacyBlockDataCompat.getSlimefunId(location)") == 2,
-    "LocationInfo must route Config and identity retrieval through the compatibility boundaries",
+    "LocationInfo must route opaque data and identity retrieval through the compatibility boundaries",
+)
+require(
+    "private Object data;" in location_info
+    and "public Object getData()" in location_info,
+    "LocationInfo must store and expose opaque ticker data for internal callers",
+)
+require(
+    "public Config getConfig()" in location_info
+    and "LegacyBlockDataCompat.getLegacyDataView(location)" in location_info,
+    "LocationInfo must retain only its explicit historical Config accessor",
 )
 require(
     "BlockStorage." not in location_info,
     "LocationInfo must not reintroduce direct deprecated BlockStorage access",
-)
-
-require(
-    "public Object getData()" in location_info,
-    "LocationInfo must expose opaque ticker data for internal callers",
 )
 
 for source, name, data_calls in (
@@ -929,8 +940,15 @@ require(
     "ItemConfigurationUtil must distinguish Slimefun identity from ordinary values",
 )
 require(
-    "LegacyTickerDataCompat.getConfig(location).getKeys()" in item_configuration,
-    "ItemConfigurationUtil must enumerate legacy-compatible config keys through LegacyTickerDataCompat",
+    "LegacyTickerDataCompat.getKeys(LegacyTickerDataCompat.getData(location))" in item_configuration
+    and "LegacyTickerDataCompat.getKeys(locationInfo.getData())" in item_configuration
+    and "LegacyTickerDataCompat.getString(locationInfo.getData(), key)" in item_configuration
+    and "LegacyTickerDataCompat.contains(locationInfo.getData(), entry.getKey())" in item_configuration,
+    "ItemConfigurationUtil must enumerate/read/check opaque ticker data through LegacyTickerDataCompat",
+)
+require(
+    ".getConfig()" not in item_configuration,
+    "ItemConfigurationUtil must not call the historical LocationInfo Config accessor",
 )
 require(
     "LegacyBlockDataCompat.setValue(location, entry.getKey(), entry.getValue())" in item_configuration
@@ -1065,7 +1083,7 @@ for expected in (
     "LegacyBlockDataCompat.getSlimefunId(location) == null",
     "LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId())",
     "LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId())",
-    "LegacyTickerDataCompat.getConfig(location)",
+    "LegacyTickerDataCompat.getData(location)",
     "LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate))",
     "LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1))",
 ):
@@ -1129,7 +1147,6 @@ require(
 java_root = ROOT / "src/main/java"
 direct_storage_allowlist = {
     "io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java",
-    "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
 }
 
 config_machine_allowlist = {
@@ -1167,6 +1184,15 @@ for java_path in java_root.rglob("*.java"):
     ):
         global_violations.append(
             f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression"
+        )
+
+    if (
+        relative != "io/taraxacum/libs/slimefun/dto/LocationInfo.java"
+        and ".getConfig()" in source
+        and "LocationInfo" in source
+    ):
+        global_violations.append(
+            f"{relative} calls the historical LocationInfo.getConfig() compatibility accessor"
         )
 
     if (

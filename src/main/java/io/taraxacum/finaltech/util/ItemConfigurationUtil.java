@@ -150,7 +150,7 @@ public class ItemConfigurationUtil {
         }
 
         Map<String, String> configMap = new HashMap<>();
-        for (String key : LegacyTickerDataCompat.getConfig(location).getKeys()) {
+        for (String key : LegacyTickerDataCompat.getKeys(LegacyTickerDataCompat.getData(location))) {
             configMap.put(key, getValue(location, key));
         }
 
@@ -169,8 +169,8 @@ public class ItemConfigurationUtil {
         }
 
         Map<String, String> configMap = new HashMap<>();
-        for (String key : locationInfo.getConfig().getKeys()) {
-            configMap.put(key, locationInfo.getConfig().getString(key));
+        for (String key : LegacyTickerDataCompat.getKeys(locationInfo.getData())) {
+            configMap.put(key, LegacyTickerDataCompat.getString(locationInfo.getData(), key));
         }
 
         configMap = ItemConfigurationUtil.filterByItem(locationInfo.getId(), configMap);
@@ -219,7 +219,7 @@ public class ItemConfigurationUtil {
         configMap = ItemConfigurationUtil.filterByItem(itemId, configMap);
 
         for (Map.Entry<String, String> entry : configMap.entrySet()) {
-            if (locationInfo.getConfig().contains(entry.getKey())) {
+            if (LegacyTickerDataCompat.contains(locationInfo.getData(), entry.getKey())) {
                 LegacyBlockDataCompat.setValue(locationInfo.getLocation(), entry.getKey(), entry.getValue());
             }
         }
