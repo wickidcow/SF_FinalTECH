@@ -63,7 +63,6 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
     private ConfigFileManager config;
     private ConfigFileManager value;
     private ConfigFileManager item;
-    private ConfigFileManager template;
     private LanguageManager languageManager;
     private Set<String> asyncSlimefunIdSet = new HashSet<>();
     private Set<String> antiAccelerateSlimefunIdSet = new HashSet<>();
@@ -232,7 +231,6 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             this.config = ConfigFileManager.getOrNewInstance(this, "config");
             this.value = ConfigFileManager.getOrNewInstance(this, "value");
             this.item = ConfigFileManager.getOrNewInstance(this, "item");
-            this.template = ConfigFileManager.getOrNewInstance(this, "template");
 
             String language = this.config.getOrDefault("en-US", "language");
             this.languageManager = LanguageManager.getOrNewInstance(this, language);
@@ -369,15 +367,6 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         this.antiAccelerateSlimefunIdSet.add(FinalTechItemStacks.ENTROPY_SEED.getItemId());
         this.antiAccelerateSlimefunIdSet.add(FinalTechItemStacks.EQUIVALENT_CONCEPT.getItemId());
         this.antiAccelerateSlimefunIdSet.add(FinalTechItemStacks.MATRIX_ACCELERATOR.getItemId());
-
-        /* setup template machine */
-        // we need more test. and it's not all finished.
-//        int templateMachineDelay = this.config.getOrDefault(-1, "setups", "template-machine", "delay");
-//        if(templateMachineDelay >= 0) {
-//            this.getServer().getScheduler().runTaskLater(this, () -> new TemplateParser(FinalTechChanged.this.template, false, false).registerMachine(), templateMachineDelay);
-//        } else {
-//            new TemplateParser(this.template, false, false).registerMachine();
-//        }
 
         /* fix data loss for others */
         if (this.dataLossFixCustom) {
