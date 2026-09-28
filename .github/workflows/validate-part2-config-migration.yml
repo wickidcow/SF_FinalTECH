@@ -1,0 +1,93 @@
+name: Validate Part 2 Config Migration
+
+on:
+  push:
+    branches: [audit/deprecation-part2]
+    paths:
+      - '.github/workflows/validate-part2-config-migration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out audit branch
+        uses: actions/checkout@v6
+
+      - name: Check out Slimefun Legacy
+        uses: actions/checkout@v6
+        with:
+          repository: wickidcow/Slimefun-Legacy
+          ref: master
+          path: .deps/Slimefun-Legacy
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Publish Slimefun Legacy API locally
+        working-directory: .deps/Slimefun-Legacy
+        run: |
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -PprojectVersion=ALBION-SNAPSHOT -x test --no-daemon
+
+      - name: Run source and compatibility guards
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_source_hygiene.py
+          python3 scripts/verify_part2_storage_boundaries.py
+          python3 scripts/verify_itemstack_text_compat.py
+          python3 scripts/verify_itemstack_type_compat.py
+          python3 scripts/verify_legacy_text_compat.py
+          python3 scripts/verify_entity_api_compat.py
+          python3 scripts/verify_nonnetwork_energy_compat.py
+          python3 scripts/verify_recipe_api_compat.py
+
+      - name: Strip deprecation suppressions for audit
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("src/main/java")
+          for path in root.rglob("*.java"):
+              source = path.read_text(encoding="utf-8")
+              source = source.replace('@SuppressWarnings("deprecation")\n', '')
+              source = source.replace('@SuppressWarnings({"unchecked", "deprecation"})', '@SuppressWarnings("unchecked")')
+              source = source.replace('@SuppressWarnings({"deprecation", "unchecked"})', '@SuppressWarnings("unchecked")')
+              path.write_text(source, encoding="utf-8")
+          PY
+
+      - name: Compile deprecation audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mvn -B --no-transfer-progress -DskipTests             -Dmaven.compiler.failOnWarning=false             -Dpaper.version=1.21.11-R0.1-SNAPSHOT             -Dslimefun.groupId=com.github.slimefun             -Dslimefun.artifactId=Slimefun             -Dslimefun.version=ALBION-SNAPSHOT             clean compile 2>&1 | tee /tmp/deprecation-audit.log
+
+      - name: Summarize deprecation warnings
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re
+          from collections import Counter
+          from pathlib import Path
+          lines = Path("/tmp/deprecation-audit.log").read_text(errors="replace").splitlines()
+          warnings = []
+          for line in lines:
+              match = re.search(r'\[WARNING\].*?src/main/java/([^:]+):\[(\d+),(\d+)\]\s+(.*has been deprecated.*)$', line)
+              if match:
+                  warnings.append((match.group(1), match.group(4)))
+          categories = Counter(message for _, message in warnings)
+          files = Counter(path for path, _ in warnings)
+          print(f"DEPRECATION_AUDIT_TOTAL={len(warnings)}")
+          print(f"DEPRECATION_AUDIT_FILES={len(files)}")
+          for message, count in categories.most_common():
+              print(f"DEPRECATION_CATEGORY={count} :: {message}")
+          print("Top files:")
+          for path, count in files.most_common(30):
+              print(f"{count:3d} {path}")
+          PY
