@@ -63,7 +63,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq '<version>3.0.2</version>' pom.xml
+          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
           grep -Fq '<paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>' pom.xml
           grep -Fq '<finalName>SF_FinalTECH${project.version}</finalName>' pom.xml
@@ -172,11 +173,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
           TAG="${{ steps.version.outputs.tag }}"
           JAR="target/${{ steps.version.outputs.jar }}"
-          NOTES="FinalTECH 3.0.2 adds Paper 26.3 alpha compatibility validation while preserving Paper 1.21.11 / Java 21 release compatibility and Paper 26.2 as the primary production target. The existing English YAML validation and recent FinalTECH compatibility fixes remain enforced."
+          NOTES="Automated validated build of FinalTECH ${VERSION}. Compiled for Java 21 and verified against Paper 1.21.11, Paper 26.2, and Paper 26.3 alpha with the repository compatibility and localization guards enabled."
+
+          # This repository intentionally keeps the current-version release asset
+          # updated from validated main builds. Keep the tag/source commit aligned
+          # with the JAR instead of leaving the release pointed at an older commit.
+          git tag --force "$TAG" "$GITHUB_SHA"
+          git push origin "refs/tags/$TAG" --force
+
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber
+            gh release edit "$TAG" --title "SF_FinalTECH $TAG" --notes "$NOTES"
           else
             gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --title "SF_FinalTECH $TAG" --notes "$NOTES"
           fi
