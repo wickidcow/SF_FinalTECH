@@ -7,7 +7,7 @@ FinalTECH is a large Slimefun addon focused on high-throughput automation, advan
 
 [![English Audit](https://github.com/wickidcow/SF_FinalTECH/actions/workflows/english-localization-audit.yml/badge.svg)](https://github.com/wickidcow/SF_FinalTECH/actions/workflows/english-localization-audit.yml)
 [![License](https://img.shields.io/github/license/wickidcow/SF_FinalTECH?label=license)](LICENSE)
-[![Java](https://img.shields.io/badge/Java-17+-orange)](https://adoptium.net/)
+[![Java](https://img.shields.io/badge/Java-21%20bytecode-orange)](https://adoptium.net/)
 [![Slimefun](https://img.shields.io/badge/Slimefun-Legacy-brightgreen)](https://github.com/wickidcow/Slimefun-Legacy)
 [![Language](https://img.shields.io/badge/Player%20language-English-blue)](#english-first)
 
@@ -57,8 +57,8 @@ SF_FinalTECH3.0.2.jar
 | Requirement | Current maintained baseline |
 | --- | --- |
 | **Slimefun** | Slimefun Legacy recommended |
-| **Java** | Java 17 or newer |
-| **Build API** | Spigot API 1.19.3 |
+| **Java** | FinalTECH targets Java 21 bytecode; use the Java runtime required by your Paper build |
+| **Server API** | Paper 1.21.11 release baseline; CI also validates Paper 26.2 and Paper 26.3 alpha |
 | **Client** | Normal Minecraft Java client; no client mod required |
 
 Download the latest maintained build from [GitHub Releases](https://github.com/wickidcow/SF_FinalTECH/releases).
@@ -104,7 +104,7 @@ FinalTECH-Changed includes substantial balance changes, recipe changes, mechanic
 
 Items from different FinalTECH variants should **not** be assumed to be interchangeable. Never swap variants on a live production world without backups and testing.
 
-This maintained fork currently keeps the Changed edition's existing Java 17 / Maven build baseline while English localization and Slimefun Legacy compatibility are cleaned up in controlled passes. Platform modernization should not silently alter gameplay behavior.
+This maintained fork builds Java 21 bytecode against Paper 1.21.11 as the release baseline, with CI compatibility checks for Paper 26.2 and Paper 26.3 alpha. Compatibility modernization is isolated behind adapters so gameplay, item IDs, and saved-data behavior are not silently altered.
 
 Some startup warnings inherited from the Changed lineage may be harmless when the addon otherwise enables correctly, but unexpected exceptions should still be investigated rather than ignored.
 
@@ -138,7 +138,7 @@ On public servers, avoid allowing many Entropy Seeds to be placed at once withou
 ---
 ## 🧰 Building from source
 
-FinalTECH uses Maven.
+FinalTECH uses Maven. The production JAR targets Java 21 bytecode, while CI validates the source against Paper 1.21.11, Paper 26.2, and Paper 26.3 alpha.
 
 ```bash
 mvn --batch-mode --no-transfer-progress -DskipTests package
