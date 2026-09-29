@@ -30,6 +30,7 @@ jobs:
           mapfile -t offenders < <(
             grep -RInP '[\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}]' . \
               --exclude-dir=.git \
+              --exclude-dir=.deps \
               --exclude='zh-CN.yml' \
               --exclude='zh-TW.yml' \
               || true
