@@ -34,6 +34,13 @@ for stale_path in (
     if (ROOT / stale_path).exists():
         violations.append(f"stale development artifact returned: {stale_path}")
 
+
+main_plugin = (JAVA_ROOT / "io/taraxacum/finaltech/FinalTechChanged.java").read_text(encoding="utf-8")
+if 'return "???";' in main_plugin:
+    violations.append("FinalTechChanged#getBugTrackerURL must point to the maintained issue tracker")
+if "e.printStackTrace();" in main_plugin:
+    violations.append("FinalTechChanged must use structured plugin logging instead of printStackTrace")
+
 if violations:
     raise SystemExit(
         "FinalTECH source hygiene violations:\n- " + "\n- ".join(violations)
