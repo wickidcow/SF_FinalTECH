@@ -11,7 +11,6 @@ import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.CustomLogger;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
-import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
@@ -440,33 +439,18 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         if (this.bukkitTask != null) {
             this.bukkitTask.cancel();
         }
-        saveBlockStorageCompat();
+
         try {
             FinalTechChanged.logger().info("Waiting all task to end.(" + FinalTechChanged.getLocationRunnableFactory().taskSize() + ")");
             FinalTechChanged.getLocationRunnableFactory().waitAllTask();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            saveBlockStorageCompat();
-      }
+        }
+
         try {
             FinalTechChanged.getEntityRunnableFactory().waitAllTask();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            saveBlockStorageCompat();
-        }
-    }
-
-    /**
-     * Flushes storage only on legacy Slimefun builds that still expose explicit
-     * save hooks. Current Slimefun Legacy persists through its storage controller.
-     */
-    private void saveBlockStorageCompat() {
-        try {
-            LegacyBlockDataCompat.flushLegacyStorage();
-        } catch (RuntimeException exception) {
-            FinalTechChanged.logger().warning("Could not invoke legacy storage save hooks: " + exception.getMessage());
         }
     }
 

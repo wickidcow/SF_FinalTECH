@@ -757,9 +757,13 @@ block_ticker_util = read(
 )
 require(
     "public static void removeBlock(@Nonnull Location location)" in legacy_block_data
-    and 'controllerType.getMethod("removeBlock", Location.class)' in legacy_block_data
-    and "BlockStorage.clearBlockInfo(location)" in legacy_block_data,
-    "LegacyBlockDataCompat must preserve modern-controller removal with an RC-37 BlockStorage fallback",
+    and "controller().removeBlock(location)" in legacy_block_data,
+    "LegacyBlockDataCompat must remove blocks through the current BlockDataController",
+)
+require(
+    "BlockStorage" not in legacy_block_data
+    and '@SuppressWarnings("deprecation")' not in legacy_block_data,
+    "LegacyBlockDataCompat must not restore the retired RC-37 BlockStorage fallback",
 )
 
 for expected in (
@@ -947,18 +951,11 @@ for expected in (
     )
 require(
     "return getLoadedData(location) != null;" in legacy_block_data,
-    "LegacyBlockDataCompat.hasBlockData must preserve legacy data-loading existence semantics",
+    "LegacyBlockDataCompat.hasBlockData must use the current loaded block-data record",
 )
 require(
-    "Object menu = getMenu(location);" in legacy_block_data
-    and "menu != NO_RECORD_OBJECT && menu != null" in legacy_block_data,
-    "LegacyBlockDataCompat.hasMenu must distinguish absent records from menu-less Slimefun blocks",
-)
-require(
-    "public static Map<Location, BlockMenu> getLegacyWorldInventories(@Nonnull World world)" in legacy_block_data
-    and 'BlockStorage.class.getDeclaredField("inventories")' in legacy_block_data
-    and "BlockStorage.getStorage(world)" in legacy_block_data,
-    "LegacyBlockDataCompat must isolate the RC-37 world-inventory registry used by data-loss recovery",
+    "blockData != null && blockData.getBlockMenu() != null" in legacy_block_data,
+    "LegacyBlockDataCompat.hasMenu must distinguish records with and without menus",
 )
 
 require(
@@ -1040,43 +1037,33 @@ require(
 require("BlockStorage." not in equivalent_concept, "EquivalentConcept must not directly use deprecated BlockStorage")
 
 require(
-    "LegacyBlockDataCompat.getLegacyWorldInventories(world)" in setup_util,
-    "SetupUtil must route RC-37 world-inventory recovery through the compatibility boundary",
+    "legacy BlockStorage recovery is not required" in setup_util,
+    "SetupUtil must retain a harmless compatibility no-op for the retired data-loss repair option",
 )
 require(
-    "LegacyBlockDataCompat.setSlimefunId(location, id)" in setup_util
-    and "LegacyBlockDataCompat.setValue(location, configEntry.getKey(), configEntry.getValue())" in setup_util,
-    "SetupUtil data-loss repair must preserve identity and custom state restoration",
-)
-require(
-    "ReflectionUtil" not in setup_util
+    "LegacyBlockDataCompat" not in setup_util
     and "BlockStorage." not in setup_util,
-    "SetupUtil must not directly access the deprecated BlockStorage registry",
+    "SetupUtil must not retain the retired BlockStorage recovery path",
 )
 
 for marker in (
-    'getMethod("getDatabaseManager")',
-    'getMethod("getBlockDataController")',
-    'getMethod("getBlockData", Location.class)',
-    'getMethod("loadBlockData", blockDataType)',
-    'getMethod("getBlockMenu")',
-    'getMethod("getSfId")',
-    "LegacyAccess",
-    '@SuppressWarnings("deprecation")',
+    "BlockDataController",
+    "SlimefunBlockData",
+    "controller().getBlockData(location)",
+    "controller.loadBlockData(blockData)",
+    "blockData.getData(key)",
+    "blockData.getSfId()",
+    "blockData.getBlockMenu()",
 ):
-    require(marker in compat, f"storage compatibility boundary is missing: {marker}")
+    require(marker in compat, f"modern storage boundary is missing: {marker}")
 
 finaltech_changed = read(
     "src/main/java/io/taraxacum/finaltech/FinalTechChanged.java"
 )
 require(
-    "public static void flushLegacyStorage()" in legacy_block_data
-    and 'Class.forName("me.mrCookieSlime.Slimefun.api.BlockStorage")' in legacy_block_data,
-    "LegacyBlockDataCompat must isolate the optional RC-37 shutdown storage flush hooks",
-)
-require(
-    "LegacyBlockDataCompat.flushLegacyStorage()" in finaltech_changed,
-    "FinalTechChanged must delegate legacy shutdown persistence to the compatibility boundary",
+    "flushLegacyStorage" not in legacy_block_data
+    and "saveBlockStorageCompat" not in finaltech_changed,
+    "FinalTECH must rely on current Slimefun Legacy storage lifecycle instead of RC-37 flush hooks",
 )
 require(
     "me.mrCookieSlime.Slimefun.api.BlockStorage" not in finaltech_changed
