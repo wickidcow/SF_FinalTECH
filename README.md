@@ -104,7 +104,7 @@ FinalTECH-Changed includes substantial balance changes, recipe changes, mechanic
 
 Items from different FinalTECH variants should **not** be assumed to be interchangeable. Never swap variants on a live production world without backups and testing.
 
-This maintained fork builds Java 21 bytecode against Paper 1.21.11 as the release baseline, with CI compatibility checks for Paper 26.2 and Paper 26.3 alpha. Compatibility modernization is isolated behind adapters so gameplay, item IDs, and saved-data behavior are not silently altered.
+This maintained fork builds Java 21 bytecode against Paper 1.21.11 as the release baseline, with CI compatibility checks for Paper 26.2 and Paper 26.3 alpha. FinalTECH now targets the maintained Slimefun Legacy API directly; modernization keeps gameplay, item IDs, and saved-data keys stable while obsolete pre-Legacy API fallbacks are removed.
 
 Some startup warnings inherited from the Changed lineage may be harmless when the addon otherwise enables correctly, but unexpected exceptions should still be investigated rather than ignored.
 
@@ -138,9 +138,11 @@ On public servers, avoid allowing many Entropy Seeds to be placed at once withou
 ---
 ## 🧰 Building from source
 
-FinalTECH uses Maven. The production JAR targets Java 21 bytecode, while CI validates the source against Paper 1.21.11, Paper 26.2, and Paper 26.3 alpha.
+FinalTECH uses Maven. The production JAR targets Java 21 bytecode, while CI validates the source against Paper 1.21.11, Paper 26.2, and Paper 26.3 alpha. The maintained Slimefun Legacy API is the compile-time dependency and should be published to your local Maven repository first.
 
 ```bash
+git clone https://github.com/wickidcow/Slimefun-Legacy.git .deps/Slimefun-Legacy
+(cd .deps/Slimefun-Legacy && ./gradlew publishToMavenLocal -PprojectVersion=ALBION-SNAPSHOT -x test --no-daemon)
 mvn --batch-mode --no-transfer-progress -DskipTests package
 ```
 
