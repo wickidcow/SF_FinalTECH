@@ -1,0 +1,159 @@
+name: FinalTECH English Locale Restart Preservation
+
+on:
+  push:
+    branches: ['work/english-locale-restart-validation']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finaltech-english-quotes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: wickidcow/Slimefun-Legacy
+          ref: d600e077552baab2086a056d04b1cb0a6a9051a5
+          path: .deps/core
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Apply exact reviewed locale correction and tests
+        run: |
+          python3 - <<'PY'
+          import gzip, hashlib, json
+          from pathlib import Path
+          def blob(data):
+              return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+          raw = b''.join(Path(f'.audit/english-quotes.{i}').read_bytes() for i in range(3))
+          assert blob(raw) == 'fd43573696b623aa8bb9fe58c3d8fa7b9cc27793'
+          changes = json.loads(gzip.decompress(raw))
+          assert len(changes) == 3
+          staged = {}
+          for change in changes:
+              path = Path(change['path'])
+              assert not path.is_absolute() and '..' not in path.parts
+              assert str(path).startswith(('src/main/java/', 'src/test/java/'))
+              if change['old'] is None: assert not path.exists()
+              else: assert blob(path.read_bytes()) == change['old'], path
+              output = change['content'].encode()
+              assert blob(output) == change['new'], path
+              staged[str(path)] = output
+          for name, data in staged.items():
+              path = Path(name)
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(data)
+          Path('audit-evidence').mkdir()
+          Path('audit-evidence/source-manifest.json').write_text(json.dumps({name: blob(data) for name, data in staged.items()}, indent=2))
+          PY
+          git diff --check
+      - name: Keep English and storage compatibility gates intact
+        run: |
+          set -euo pipefail
+          python3 scripts/normalize_english_yaml.py --check
+          python3 scripts/verify_source_hygiene.py
+          python3 scripts/verify_part2_storage_boundaries.py
+          python3 scripts/test_storage_boundary_verifier.py
+          python3 scripts/verify_itemstack_text_compat.py
+          python3 scripts/verify_itemstack_type_compat.py
+          python3 scripts/verify_legacy_text_compat.py
+          python3 scripts/verify_entity_api_compat.py
+          python3 scripts/verify_nonnetwork_energy_compat.py
+          python3 scripts/verify_recipe_api_compat.py
+      - name: Publish exact core API to the disposable runner
+        working-directory: .deps/core
+        run: |
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -x test -PprojectVersion=ALBION-SNAPSHOT --console=plain --no-daemon
+      - name: Reproduce the original rewrite of valid Bukkit-saved YAML
+        id: control
+        run: |
+          set -euo pipefail
+          FILE=src/main/java/io/taraxacum/libs/plugin/dto/ConfigFileManager.java
+          cp "$FILE" "$RUNNER_TEMP/corrected-manager.java"
+          trap 'cp "$RUNNER_TEMP/corrected-manager.java" "$FILE"' EXIT
+          git show "HEAD:$FILE" > "$FILE"
+          set +e
+          mvn -B --no-transfer-progress -Dtest=EnglishYamlQuoteRepairTest#validBukkitResaveIsNotModified test > audit-evidence/original-manager.log 2>&1
+          RESULT=$?
+          set -e
+          test "$RESULT" -ne 0
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          path = Path('target/surefire-reports/TEST-io.taraxacum.libs.plugin.dto.EnglishYamlQuoteRepairTest.xml')
+          suite = ET.parse(path).getroot()
+          assert int(suite.get('tests', '0')) == 1 and int(suite.get('failures', '0')) == 1 and int(suite.get('errors', '0')) == 0, suite.attrib
+          assert 'A valid Bukkit-saved document must remain byte-identical' in path.read_text()
+          Path('audit-evidence/original-manager.xml').write_bytes(path.read_bytes())
+          print('Original locale repair changed a valid Bukkit-saved document; assertion failure reproduced.')
+          PY
+      - name: Build corrected source and run the complete test suite
+        id: build
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          mvn -B --no-transfer-progress clean package 2>&1 | tee audit-evidence/build.log
+          python3 - <<'PY'
+          import json, xml.etree.ElementTree as ET
+          from pathlib import Path
+          totals = dict.fromkeys(('tests', 'failures', 'errors', 'skipped'), 0)
+          new_count = 0
+          for path in Path('target/surefire-reports').glob('TEST-*.xml'):
+              suite = ET.parse(path).getroot()
+              for key in totals: totals[key] += int(suite.get(key, '0'))
+              if suite.get('name', '').endswith('.EnglishYamlQuoteRepairTest'):
+                  new_count = int(suite.get('tests', '0'))
+                  assert all(int(suite.get(key, '0')) == 0 for key in ('failures','errors','skipped')), suite.attrib
+          assert new_count == 12 and totals['tests'] == 20 and totals['failures'] == totals['errors'] == totals['skipped'] == 0, totals
+          Path('audit-evidence/results.json').write_text(json.dumps(totals, indent=2))
+          print('Actual FinalTECH test executions:', totals)
+          PY
+          git diff --check
+      - name: Retain exact validated sources without changing refs
+        if: ${{ success() && steps.control.outcome == 'success' && steps.build.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os, subprocess
+          from pathlib import Path
+          manifest = json.loads(Path('audit-evidence/source-manifest.json').read_text())
+          for name, expected in manifest.items():
+              data = Path(name).read_bytes()
+              assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == expected
+              request = json.dumps({'content': base64.b64encode(data).decode(), 'encoding': 'base64'})
+              result = subprocess.run(['gh', 'api', '--method', 'POST', f"repos/{os.environ['GITHUB_REPOSITORY']}/git/blobs", '--input', '-', '--jq', '.sha'], input=request, text=True, capture_output=True, check=True)
+              assert result.stdout.strip() == expected
+              target = Path('audit-evidence/tested-source', name)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              print('VALIDATED_SOURCE_BLOB', expected, name)
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: finaltech-locale-restart-evidence
+          path: |
+            audit-evidence/
+            target/surefire-reports/TEST-*.xml
+          retention-days: 14
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v7
+        with:
+          name: SF_FinalTECH3.0.2-locale-candidate.jar
+          path: target/SF_FinalTECH3.0.2.jar
+          archive: false
+          if-no-files-found: error
