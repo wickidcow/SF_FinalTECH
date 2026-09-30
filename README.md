@@ -106,6 +106,8 @@ Items from different FinalTECH variants should **not** be assumed to be intercha
 
 This maintained fork builds Java 21 bytecode against Paper 1.21.11 as the release baseline, with CI compatibility checks for Paper 26.2 and Paper 26.3 alpha. FinalTECH now targets the maintained Slimefun Legacy API directly; modernization keeps gameplay, item IDs, and saved-data keys stable while obsolete pre-Legacy API fallbacks are removed.
 
+Machine tickers, accelerators, and data helpers use the canonical Slimefun Legacy block-data record directly. Removing a stored value no longer goes through the deprecated Config wrapper, so reset sequences can finish without interrupting the machine's tick. CI exercises these data and dispatch behaviors on each supported Paper API.
+
 Some startup warnings inherited from the Changed lineage may be harmless when the addon otherwise enables correctly, but unexpected exceptions should still be investigated rather than ignored.
 
 ---

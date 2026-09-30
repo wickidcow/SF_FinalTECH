@@ -1,8 +1,9 @@
 package io.taraxacum.libs.slimefun.dto;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
@@ -18,9 +19,8 @@ import java.util.Map;
  * @since 2.0
  */
 /**
- * Helper contract retained for RC-37 Config-backed ticker data.
+ * Helper contract for canonical Slimefun Legacy ticker data.
  */
-@SuppressWarnings("deprecation")
 public abstract class BlockStorageHelper {
     public static final String ID_CARGO = "cargo";
     protected static final Map<String, Map<String, BlockStorageHelper>> BLOCK_STORAGE_HELPER_FACTORY = new HashMap<>();
@@ -107,16 +107,16 @@ public abstract class BlockStorageHelper {
     }
 
     @Nonnull
-    public String getOrDefaultValue(@Nonnull Config config) {
-        return config.contains(this.getKey()) ? config.getString(this.getKey()) : this.defaultValue();
+    public String getOrDefaultValue(@Nonnull SlimefunBlockData config) {
+        return (config.getData(this.getKey()) != null) ? config.getData(this.getKey()) : this.defaultValue();
     }
 
     public void setOrClearValue(@Nonnull Location location, @Nullable String value) {
         LegacyBlockDataCompat.setValue(location, this.getKey(), value);
     }
 
-    public void setOrClearValue(@Nonnull Config config, @Nullable String value) {
-        config.setValue(this.getKey(), value);
+    public void setOrClearValue(@Nonnull SlimefunBlockData config, @Nullable String value) {
+        LegacyTickerDataCompat.setValue(config, this.getKey(), value);
     }
 
     public int valueSize() {

@@ -3,18 +3,14 @@ package io.taraxacum.libs.slimefun.compat;
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ASlimefunDataContainer;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
 
 /**
- * Compatibility boundary for Slimefun APIs that remain part of FinalTECH's RC-37 floor.
- *
- * <p>Current Slimefun Legacy marks these historical entry points deprecated, but
- * upstream RC-37 does not expose their newer replacements. FinalTECH keeps this
- * narrow adapter so normal addon code is warning-clean without raising the
- * supported Slimefun API floor or changing machine behavior.</p>
+ * Adapter preserving FinalTECH's existing research and integer energy behavior.
+ * Data-aware operations use the modern Slimefun Legacy container overloads.
  */
 @SuppressWarnings("deprecation")
 public final class LegacySlimefunApiCompat {
@@ -46,22 +42,22 @@ public final class LegacySlimefunApiCompat {
     public static int getCharge(
             @Nonnull EnergyNetComponent component,
             @Nonnull Location location,
-            @Nonnull Object data) {
-        return component.getCharge(location, (Config) data);
+            @Nonnull ASlimefunDataContainer data) {
+        return component.getCharge(location, data);
     }
 
     public static int getGeneratedOutput(
             @Nonnull EnergyNetProvider provider,
             @Nonnull Location location,
-            @Nonnull Object data) {
-        return provider.getGeneratedOutput(location, (Config) data);
+            @Nonnull ASlimefunDataContainer data) {
+        return provider.getGeneratedOutput(location, data);
     }
 
     public static boolean willExplode(
             @Nonnull EnergyNetProvider provider,
             @Nonnull Location location,
-            @Nonnull Object data) {
-        return provider.willExplode(location, (Config) data);
+            @Nonnull ASlimefunDataContainer data) {
+        return provider.willExplode(location, data);
     }
 
     public static void setCharge(

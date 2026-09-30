@@ -1,25 +1,24 @@
 package io.taraxacum.finaltech.util;
 
 import io.taraxacum.finaltech.FinalTechChanged;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 
 import javax.annotation.Nonnull;
 
 public class PerformanceLimitUtil {
     public static String KEY = "tps-charge";
 
-    @SuppressWarnings("deprecation")
-    public static boolean charge(@Nonnull Config config) {
-        int charge = config.contains(KEY) ? Integer.parseInt(config.getString(KEY)) : 0;
+    public static boolean charge(@Nonnull SlimefunBlockData config) {
+        int charge = (config.getData(KEY) != null) ? Integer.parseInt(config.getData(KEY)) : 0;
         charge += FinalTechChanged.getTps();
         if (charge >= 20) {
             if (charge >= 40) {
                 charge -= 20;
             }
-            config.setValue(KEY, String.valueOf(charge - 20));
+            config.setData(KEY, String.valueOf(charge - 20));
             return true;
         } else {
-            config.setValue(KEY, String.valueOf(charge));
+            config.setData(KEY, String.valueOf(charge));
             return false;
         }
     }

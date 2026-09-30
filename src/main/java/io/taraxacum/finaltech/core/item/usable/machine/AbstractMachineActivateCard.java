@@ -112,7 +112,11 @@ public abstract class AbstractMachineActivateCard extends UsableSlimefunItem {
                     int storedEnergy = LegacySlimefunApiCompat.getCharge(energyNetComponent, location);
                     storedEnergy = chargeEnergy / 2 + storedEnergy / 2 > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE : chargeEnergy + storedEnergy;
                     LegacySlimefunApiCompat.setCharge(energyNetComponent, location, Math.min(capacity, storedEnergy));
-                    blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location));
+                    var data = LegacyTickerDataCompat.getData(location);
+                    if (data == null) {
+                        return;
+                    }
+                    blockTicker.tick(block, slimefunItem, data);
                 }
             };
 
@@ -134,7 +138,11 @@ public abstract class AbstractMachineActivateCard extends UsableSlimefunItem {
 
             Runnable runnable = () -> {
                 for (int i = 0; i < time; i++) {
-                    blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location));
+                    var data = LegacyTickerDataCompat.getData(location);
+                    if (data == null) {
+                        return;
+                    }
+                    blockTicker.tick(block, slimefunItem, data);
                 }
             };
 

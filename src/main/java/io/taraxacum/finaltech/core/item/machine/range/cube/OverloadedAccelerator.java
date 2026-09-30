@@ -18,7 +18,7 @@ import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -61,8 +61,7 @@ public class OverloadedAccelerator extends AbstractCubeMachine implements Recipe
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         Location blockLocation = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         boolean hasViewer = blockMenu.hasViewer();
@@ -110,7 +109,7 @@ public class OverloadedAccelerator extends AbstractCubeMachine implements Recipe
                                 int currentMachineEnergy;
                                 int times = 1;
                                 while (machineEnergy >= capacity * 0.8) {
-                                    blockTicker.tick(machineBlock, locationInfo.getSlimefunItem(), locationInfo.getConfig());
+                                    blockTicker.tick(machineBlock, locationInfo.getSlimefunItem(), locationInfo.getData());
                                     currentMachineEnergy = Integer.parseInt(EnergyUtil.getCharge(locationInfo.getLocation()));
                                     if (machineEnergy == currentMachineEnergy) {
                                         break;

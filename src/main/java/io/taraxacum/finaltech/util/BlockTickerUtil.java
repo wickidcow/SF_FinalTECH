@@ -7,9 +7,10 @@ import io.taraxacum.common.api.RunnableLockFactory;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -26,11 +27,9 @@ import java.util.Random;
 import java.util.function.Supplier;
  
 /**
- * Ticker wrappers intentionally retain the RC-37 {@link Config} callback
- * signatures. Deprecated calls outside that compatibility contract are routed
- * through the dedicated Slimefun compatibility boundaries.
+ * Ticker wrappers forward the canonical {@link SlimefunBlockData} record while
+ * preserving scheduling, interval, acceleration, and performance-limit rules.
  */
-@SuppressWarnings("deprecation")
 public class BlockTickerUtil {
     @SafeVarargs
     public static <T> void runTask(@Nonnull ServerRunnableLockFactory<T> serverRunnableLockFactory, boolean async, @Nonnull Runnable runnable, T... locks) {
@@ -50,22 +49,22 @@ public class BlockTickerUtil {
         }
     }
 
-    public static void setSleep(@Nonnull Config config, @Nullable String sleep) {
-        config.setValue(ConstantTableUtil.CONFIG_SLEEP, sleep);
+    public static void setSleep(@Nonnull SlimefunBlockData config, @Nullable String sleep) {
+        LegacyTickerDataCompat.setValue(config, ConstantTableUtil.CONFIG_SLEEP, sleep);
     }
 
-    public static boolean hasSleep(@Nonnull Config config) {
-        return config.contains(ConstantTableUtil.CONFIG_SLEEP);
+    public static boolean hasSleep(@Nonnull SlimefunBlockData config) {
+        return (config.getData(ConstantTableUtil.CONFIG_SLEEP) != null);
     }
 
-    public static void subSleep(@Nonnull Config config) {
-        String sleepStr = config.getString(ConstantTableUtil.CONFIG_SLEEP);
+    public static void subSleep(@Nonnull SlimefunBlockData config) {
+        String sleepStr = config.getData(ConstantTableUtil.CONFIG_SLEEP);
         if (sleepStr != null) {
             double sleep = Double.parseDouble(sleepStr) - 1;
             if (sleep > 0) {
-                config.setValue(ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
+                config.setData(ConstantTableUtil.CONFIG_SLEEP, String.valueOf(sleep));
             } else {
-                config.setValue(ConstantTableUtil.CONFIG_SLEEP, "0");
+                config.setData(ConstantTableUtil.CONFIG_SLEEP, "0");
             }
         }
     }
@@ -79,7 +78,7 @@ public class BlockTickerUtil {
             }
 
             @Override
-            public void tick(Block b, SlimefunItem item, Config data) {
+            public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                 FinalTechChanged.logger().info("DEBUG MODE: " + slimefunItem.getId() + " | Location: " + b.getLocation());
                 blockTicker.tick(b, item, data);
             }
@@ -99,7 +98,7 @@ public class BlockTickerUtil {
             }
 
             @Override
-            public void tick(Block b, SlimefunItem item, Config data) {
+            public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                 if (FinalTechChanged.getSlimefunTickCount() % interval == 0) {
                     blockTicker.tick(b, item, data);
                 }
@@ -121,7 +120,7 @@ public class BlockTickerUtil {
             }
 
             @Override
-            public void tick(Block b, SlimefunItem item, Config data) {
+            public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                 if (BlockTickerUtil.hasSleep(data)) {
                     BlockTickerUtil.subSleep(data);
                 }
@@ -148,7 +147,7 @@ public class BlockTickerUtil {
             }
 
             @Override
-            public void tick(Block block, SlimefunItem item, Config data) {
+            public void tick(Block block, SlimefunItem item, SlimefunBlockData data) {
                 if (this.lastLocationList.size() > 1) {
                     Location randomLocation = this.lastLocationList.get(this.random.nextInt(this.lastLocationList.size()));
                     Location location = block.getLocation();
@@ -217,7 +216,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (!AntiAccelerationUtil.isAccelerated(data) && PerformanceLimitUtil.charge(data)) {
                         this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
                     }
@@ -238,7 +237,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (!AntiAccelerationUtil.isAccelerated(data)) {
                         this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
                     }
@@ -259,7 +258,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (PerformanceLimitUtil.charge(data)) {
                         this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
                     }
@@ -280,7 +279,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     this.runnableLockFactory.waitThenRun(() -> blockTicker.tick(b, item, data), b.getLocation());
                 }
 
@@ -297,7 +296,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (!AntiAccelerationUtil.isAccelerated(data) && PerformanceLimitUtil.charge(data)) {
                         blockTicker.tick(b, item, data);
                     }
@@ -316,7 +315,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (!AntiAccelerationUtil.isAccelerated(data)) {
                         blockTicker.tick(b, item, data);
                     }
@@ -335,7 +334,7 @@ public class BlockTickerUtil {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     if (PerformanceLimitUtil.charge(data)) {
                         blockTicker.tick(b, item, data);
                     }

@@ -149,8 +149,12 @@ public class ItemConfigurationUtil {
             return false;
         }
 
+        var data = LegacyTickerDataCompat.getData(location);
+        if (data == null) {
+            return false;
+        }
         Map<String, String> configMap = new HashMap<>();
-        for (String key : LegacyTickerDataCompat.getConfig(location).getKeys()) {
+        for (String key : new HashSet<>(data.getAllData().keySet())) {
             configMap.put(key, getValue(location, key));
         }
 
@@ -169,8 +173,8 @@ public class ItemConfigurationUtil {
         }
 
         Map<String, String> configMap = new HashMap<>();
-        for (String key : locationInfo.getConfig().getKeys()) {
-            configMap.put(key, locationInfo.getConfig().getString(key));
+        for (String key : new HashSet<>(locationInfo.getData().getAllData().keySet())) {
+            configMap.put(key, locationInfo.getData().getData(key));
         }
 
         configMap = ItemConfigurationUtil.filterByItem(locationInfo.getId(), configMap);
@@ -219,7 +223,7 @@ public class ItemConfigurationUtil {
         configMap = ItemConfigurationUtil.filterByItem(itemId, configMap);
 
         for (Map.Entry<String, String> entry : configMap.entrySet()) {
-            if (locationInfo.getConfig().contains(entry.getKey())) {
+            if (locationInfo.getData().getData(entry.getKey()) != null) {
                 LegacyBlockDataCompat.setValue(locationInfo.getLocation(), entry.getKey(), entry.getValue());
             }
         }

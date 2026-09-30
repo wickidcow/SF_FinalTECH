@@ -18,7 +18,7 @@ import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -63,8 +63,7 @@ public class EnergizedAccelerator extends AbstractCubeMachine implements EnergyN
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         Location blockLocation = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(blockLocation);
         boolean hasViewer = blockMenu.hasViewer();
@@ -122,9 +121,9 @@ public class EnergizedAccelerator extends AbstractCubeMachine implements EnergyN
                         BlockTicker blockTicker = locationInfo.getSlimefunItem().getBlockTicker();
                         if (blockTicker != null && locationInfo.getId().equals(LegacyBlockDataCompat.getSlimefunId(locationInfo.getLocation()))) {
                             if (blockTicker.isSynchronized()) {
-                                javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getConfig()));
+                                javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getData()));
                             } else {
-                                BlockTickerUtil.runTask(FinalTechChanged.getLocationRunnableFactory(), FinalTechChanged.isAsyncSlimefunItem(locationInfo.getId()), () -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getConfig()), locationInfo.getLocation());
+                                BlockTickerUtil.runTask(FinalTechChanged.getLocationRunnableFactory(), FinalTechChanged.isAsyncSlimefunItem(locationInfo.getId()), () -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getData()), locationInfo.getLocation());
                             }
                             if (hasViewer) {
                                 javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.WAX_OFF, 0, locationInfo.getLocation().getBlock()));

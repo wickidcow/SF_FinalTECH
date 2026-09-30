@@ -1,7 +1,7 @@
 package io.taraxacum.libs.slimefun.dto;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
@@ -14,16 +14,15 @@ import javax.annotation.Nullable;
  * @since 2.4
  */
 /**
- * Legacy ticker-data DTO retained for RC-37 source/binary compatibility.
+ * Location and identity view over the canonical Slimefun Legacy block-data record.
  */
-@SuppressWarnings("deprecation")
 public class LocationInfo {
     private Location location;
-    private Config config;
+    private SlimefunBlockData config;
     private String id;
     private SlimefunItem slimefunItem;
 
-    private LocationInfo(@Nonnull Location location, @Nonnull Config config, @Nonnull String id, @Nonnull SlimefunItem slimefunItem) {
+    private LocationInfo(@Nonnull Location location, @Nonnull SlimefunBlockData config, @Nonnull String id, @Nonnull SlimefunItem slimefunItem) {
         this.location = location;
         this.config = config;
         this.id = id;
@@ -32,9 +31,9 @@ public class LocationInfo {
 
     @Nullable
     public static LocationInfo get(@Nonnull Location location) {
-        Config config = LegacyTickerDataCompat.getConfig(location);
+        SlimefunBlockData config = LegacyTickerDataCompat.getData(location);
         String id = LegacyBlockDataCompat.getSlimefunId(location);
-        if (id != null) {
+        if (config != null && id != null) {
             SlimefunItem slimefunItem = SlimefunItem.getById(id);
             if (slimefunItem != null) {
                 return new LocationInfo(location, config, id, slimefunItem);
@@ -56,7 +55,7 @@ public class LocationInfo {
         return location;
     }
 
-    public Config getConfig() {
+    public SlimefunBlockData getData() {
         return config;
     }
 
@@ -72,9 +71,9 @@ public class LocationInfo {
      * @return false if there is no location info
      */
     public boolean newInstance(@Nonnull Location location) {
-        Config config = LegacyTickerDataCompat.getConfig(location);
+        SlimefunBlockData config = LegacyTickerDataCompat.getData(location);
         String id = LegacyBlockDataCompat.getSlimefunId(location);
-        if (id == null) {
+        if (config == null || id == null) {
             return false;
         }
         SlimefunItem slimefunItem = SlimefunItem.getById(id);
