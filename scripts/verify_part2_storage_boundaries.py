@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -183,8 +184,6 @@ MIGRATED = {
     "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedMeshTransfer.java":
         "LegacyBlockDataCompat",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/range/point/EquivalentConcept.java":
-        "LegacyBlockDataCompat",
-    "src/main/java/io/taraxacum/finaltech/setup/SetupUtil.java":
         "LegacyBlockDataCompat",
 }
 
@@ -940,10 +939,6 @@ setup_util = read(
 for expected in (
     "public static boolean hasBlockData(@Nonnull Location location)",
     "public static boolean hasMenu(@Nonnull Location location)",
-    "return MODERN.hasBlockData(location);",
-    "return MODERN.hasMenu(location);",
-    "BlockStorage.hasBlockInfo(location)",
-    "BlockStorage.hasInventory(location.getBlock())",
 ):
     require(
         expected in legacy_block_data,
@@ -1036,12 +1031,19 @@ require(
 )
 require("BlockStorage." not in equivalent_concept, "EquivalentConcept must not directly use deprecated BlockStorage")
 
+# SetupUtil no longer accesses storage. Keep the old configuration entry harmless
+# instead of requiring the compatibility boundary that its retired repair used.
 require(
-    "legacy BlockStorage recovery is not required" in setup_util,
+    re.search(
+        r'public static void dataLossFix\(\)\s*\{\s*'
+        r'FinalTechChanged\.logger\(\)\.info\("[^"\n]*"\);\s*\}',
+        setup_util,
+    ) is not None,
     "SetupUtil must retain a harmless compatibility no-op for the retired data-loss repair option",
 )
 require(
     "LegacyBlockDataCompat" not in setup_util
+    and "ReflectionUtil" not in setup_util
     and "BlockStorage." not in setup_util,
     "SetupUtil must not retain the retired BlockStorage recovery path",
 )
@@ -1049,19 +1051,37 @@ require(
 for marker in (
     "BlockDataController",
     "SlimefunBlockData",
-    "controller().getBlockData(location)",
+    "Slimefun.getDatabaseManager().getBlockDataController()",
+    "controller.getBlockData(location)",
+    "blockData != null && !blockData.isDataLoaded()",
     "controller.loadBlockData(blockData)",
     "blockData.getData(key)",
+    "blockData.removeData(key)",
+    "blockData.setData(key, value)",
     "blockData.getSfId()",
     "blockData.getBlockMenu()",
+    "controller().createBlock(location, slimefunId)",
 ):
     require(marker in compat, f"modern storage boundary is missing: {marker}")
+
+for marker in (
+    "java.lang.reflect",
+    "ReflectionUtil",
+    "Class.forName(",
+    ".getMethod(",
+    ".getDeclaredField(",
+    "LegacyAccess",
+    "NO_RECORD_OBJECT",
+    "getLegacyWorldInventories",
+):
+    require(marker not in compat, f"retired storage fallback returned: {marker}")
 
 finaltech_changed = read(
     "src/main/java/io/taraxacum/finaltech/FinalTechChanged.java"
 )
 require(
     "flushLegacyStorage" not in legacy_block_data
+    and "flushLegacyStorage" not in finaltech_changed
     and "saveBlockStorageCompat" not in finaltech_changed,
     "FinalTECH must rely on current Slimefun Legacy storage lifecycle instead of RC-37 flush hooks",
 )
@@ -1074,7 +1094,7 @@ require(
 # Global regression guards for the completed Part 2 cleanup.
 java_root = ROOT / "src/main/java"
 direct_storage_allowlist = {
-    "io/taraxacum/libs/slimefun/compat/LegacyBlockDataCompat.java",
+    # The Config ticker bridge is intentionally retained for the next batch.
     "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
 }
 

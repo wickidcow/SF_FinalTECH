@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -234,7 +235,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             String language = this.config.getOrDefault("en-US", "language");
             this.languageManager = LanguageManager.getOrNewInstance(this, language);
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "Failed to initialize FinalTECH configuration", e);
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -261,8 +262,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             try {
                 updater.update(this);
             } catch (Exception e) {
-                e.printStackTrace();
-                this.logger.warning("Some error occurred while doing update..");
+                getLogger().log(Level.WARNING, "An error occurred while updating FinalTECH configuration.", e);
             }
         } else {
             this.logger.info("You have disabled the config updater.");
@@ -440,23 +440,33 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             this.bukkitTask.cancel();
         }
 
-        try {
-            FinalTechChanged.logger().info("Waiting all task to end.(" + FinalTechChanged.getLocationRunnableFactory().taskSize() + ")");
-            FinalTechChanged.getLocationRunnableFactory().waitAllTask();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+        if (this.locationRunnableFactory != null) {
+            getLogger().info("Waiting for FinalTECH location tasks to end. (" + this.locationRunnableFactory.taskSize() + ")");
+            try {
+                this.locationRunnableFactory.waitAllTask();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                getLogger().log(Level.WARNING, "Interrupted while waiting for FinalTECH location tasks to stop.", exception);
+            } catch (ExecutionException exception) {
+                getLogger().log(Level.SEVERE, "A FinalTECH location task failed during shutdown.", exception);
+            }
         }
 
-        try {
-            FinalTechChanged.getEntityRunnableFactory().waitAllTask();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+        if (this.entityRunnableFactory != null) {
+            try {
+                this.entityRunnableFactory.waitAllTask();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                getLogger().log(Level.WARNING, "Interrupted while waiting for FinalTECH entity tasks to stop.", exception);
+            } catch (ExecutionException exception) {
+                getLogger().log(Level.SEVERE, "A FinalTECH entity task failed during shutdown.", exception);
+            }
         }
     }
 
     @Override
     public String getBugTrackerURL() {
-        return "???";
+        return "https://github.com/wickidcow/SF_FinalTECH/issues";
     }
 
     @Nonnull
