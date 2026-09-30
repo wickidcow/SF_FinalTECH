@@ -158,6 +158,11 @@ class ModernTickerDataTest {
         TestBlockData data = new TestBlockData();
         EnergyNetProvider provider = new EnergyNetProvider() {
             @Override
+            public String getId() {
+                return "FINALTECH_TEST";
+            }
+
+            @Override
             public int getCapacity() {
                 return 200;
             }
