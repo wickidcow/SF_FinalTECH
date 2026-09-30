@@ -55,98 +55,14 @@ public class ConfigFileManager {
         this.configFile = YamlConfiguration.loadConfiguration(this.file);
     }
 
-    /**
-     * FinalTECH 3.0 briefly shipped English localization prose containing raw
-     * or otherwise malformed apostrophe runs inside YAML single-quoted scalars.
-     * YAML requires apostrophes inside those values to be represented by pairs.
-     * Repair every affected one-line value before Bukkit/SnakeYAML attempts to
-     * load the file so existing server copies self-heal after the JAR is updated.
-     */
+    /** Preserve valid folded YAML and back up a known malformed English locale before repair. */
     private static void repairKnownLanguageSyntax(@Nonnull File file) {
-        if (!"en-US.yml".equalsIgnoreCase(file.getName()) || !file.isFile()) {
-            return;
-        }
-
         try {
-            List<String> sourceLines = Files.readAllLines(file.toPath());
-            List<String> repairedLines = new ArrayList<>(sourceLines.size());
-            boolean changed = false;
-
-            for (String line : sourceLines) {
-                String repairedLine = repairSingleQuotedYamlScalar(line);
-                repairedLines.add(repairedLine);
-                changed |= !line.equals(repairedLine);
-            }
-
-            if (changed) {
-                Files.write(file.toPath(), repairedLines);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            EnglishYamlQuoteRepair.repair(file.toPath());
+        } catch (IOException failure) {
+            // Do not load an empty configuration and overwrite an unreadable owner file.
+            throw new IllegalStateException("Cannot safely load English locale; original file retained: " + file, failure);
         }
-    }
-
-    @Nonnull
-    private static String repairSingleQuotedYamlScalar(@Nonnull String line) {
-        int scalarStart = -1;
-        int listMarker = line.indexOf("- '");
-        int valueMarker = line.indexOf(": '");
-
-        if (listMarker >= 0) {
-            scalarStart = listMarker + 2;
-        } else if (valueMarker >= 0) {
-            scalarStart = valueMarker + 2;
-        }
-
-        if (scalarStart < 0 || scalarStart >= line.length() || line.charAt(scalarStart) != '\'') {
-            return line;
-        }
-
-        int scalarEnd = line.lastIndexOf('\'');
-        if (scalarEnd <= scalarStart) {
-            return line;
-        }
-
-        String body = line.substring(scalarStart + 1, scalarEnd);
-        String repairedBody = escapeYamlSingleQuotedBody(body);
-        if (body.equals(repairedBody)) {
-            return line;
-        }
-
-        return line.substring(0, scalarStart + 1) + repairedBody + line.substring(scalarEnd);
-    }
-
-    @Nonnull
-    private static String escapeYamlSingleQuotedBody(@Nonnull String body) {
-        StringBuilder result = new StringBuilder(body.length() + 2);
-        int index = 0;
-
-        while (index < body.length()) {
-            if (body.charAt(index) != '\'') {
-                result.append(body.charAt(index));
-                index++;
-                continue;
-            }
-
-            int runStart = index;
-            while (index < body.length() && body.charAt(index) == '\'') {
-                index++;
-            }
-
-            int runLength = index - runStart;
-            if ((runLength & 1) == 0) {
-                result.append("'".repeat(runLength));
-            } else if (runLength == 1) {
-                result.append("''");
-            } else {
-                // A run such as ''' was produced by a broken 3.0 language file.
-                // Drop the unmatched quote instead of expanding it to four and
-                // displaying a doubled apostrophe to players.
-                result.append("'".repeat(runLength - 1));
-            }
-        }
-
-        return result.toString();
     }
 
     @Nonnull
