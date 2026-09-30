@@ -11,9 +11,9 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
-        <slimefun.groupId>com.github.Slimefun</slimefun.groupId>
-        <slimefun.artifactId>Slimefun4</slimefun.artifactId>
-        <slimefun.version>RC-37</slimefun.version>
+        <slimefun.groupId>com.github.slimefun</slimefun.groupId>
+        <slimefun.artifactId>Slimefun</slimefun.artifactId>
+        <slimefun.version>ALBION-SNAPSHOT</slimefun.version>
     </properties>
 
     <repositories>

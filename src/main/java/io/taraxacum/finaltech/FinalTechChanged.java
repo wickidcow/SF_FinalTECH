@@ -11,7 +11,6 @@ import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.CustomLogger;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
-import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.dto.ItemValueTable;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
@@ -441,8 +440,6 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
             this.bukkitTask.cancel();
         }
 
-        saveBlockStorageCompat();
-
         if (this.locationRunnableFactory != null) {
             getLogger().info("Waiting for FinalTECH location tasks to end. (" + this.locationRunnableFactory.taskSize() + ")");
             try {
@@ -452,8 +449,6 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
                 getLogger().log(Level.WARNING, "Interrupted while waiting for FinalTECH location tasks to stop.", exception);
             } catch (ExecutionException exception) {
                 getLogger().log(Level.SEVERE, "A FinalTECH location task failed during shutdown.", exception);
-            } finally {
-                saveBlockStorageCompat();
             }
         }
 
@@ -465,21 +460,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
                 getLogger().log(Level.WARNING, "Interrupted while waiting for FinalTECH entity tasks to stop.", exception);
             } catch (ExecutionException exception) {
                 getLogger().log(Level.SEVERE, "A FinalTECH entity task failed during shutdown.", exception);
-            } finally {
-                saveBlockStorageCompat();
             }
-        }
-    }
-
-    /**
-     * Flushes storage only on legacy Slimefun builds that still expose explicit
-     * save hooks. Current Slimefun Legacy persists through its storage controller.
-     */
-    private void saveBlockStorageCompat() {
-        try {
-            LegacyBlockDataCompat.flushLegacyStorage();
-        } catch (RuntimeException exception) {
-            getLogger().log(Level.WARNING, "Could not invoke legacy storage save hooks.", exception);
         }
     }
 

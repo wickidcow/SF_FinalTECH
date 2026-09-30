@@ -20,14 +20,9 @@ import io.taraxacum.libs.plugin.dto.LanguageManager;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.LegacyTextCompat;
 import io.taraxacum.libs.plugin.util.TextUtil;
-import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.util.ResearchUtil;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
-import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
-import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
@@ -1015,48 +1010,15 @@ public final class SetupUtil {
         }
     }
 
+    /**
+     * Retained as a configuration-compatible no-op.
+     *
+     * <p>The historical repair scanned RC-37's private storage inventory
+     * registry. Current Slimefun Legacy owns persistence through
+     * BlockDataController, so that registry no longer exists.</p>
+     */
     public static void dataLossFix() {
-        for (World world : FinalTechChanged.getInstance().getServer().getWorlds()) {
-            try {
-                Map<Location, BlockMenu> inventories = LegacyBlockDataCompat.getLegacyWorldInventories(world);
-                if (inventories != null) {
-                    int count = 0;
-                    FinalTechChanged.logger().info("Data Loss Fix: start work for world: " + world.getName());
-                    for (Map.Entry<Location, BlockMenu> entry : inventories.entrySet()) {
-                        Location location = entry.getKey();
-                        if (location.getBlock().getType().isAir()) {
-                            continue;
-                        }
-                        LocationInfo locationInfo = LocationInfo.get(location);
-                        if (locationInfo == null) {
-                            String id = entry.getValue().getPreset().getID();
-                            SlimefunItem slimefunItem = SlimefunItem.getById(id);
-                            if (slimefunItem != null && !(slimefunItem instanceof AbstractMachine) && slimefunItem.getItem().getType().equals(location.getBlock().getType())) {
-                                FinalTechChanged.logger().warning("Data Loss Fix: location " + location + " seems loss its data. There should be " + id + " (" + slimefunItem.getItemName() + ")");
-                                Map<String, String> configMap = FinalTechChanged.getDataLossFixCustomMap(id);
-                                if (configMap == null) {
-                                    FinalTechChanged.logger().warning("Data Loss Fix: I don't know how to fix it. Config me in config.yml with path: " + "data-loss-fix-custom" + "." + "config" + "." + id);
-                                    continue;
-                                }
-
-                                LegacyBlockDataCompat.setSlimefunId(location, id);
-                                for (Map.Entry<String, String> configEntry : configMap.entrySet()) {
-                                    LegacyBlockDataCompat.setValue(location, configEntry.getKey(), configEntry.getValue());
-                                }
-                                FinalTechChanged.logger().info("Data Loss Fix: added location info to location: " + location);
-                                count++;
-                            }
-                        }
-                    }
-                    if (count > 0) {
-                        FinalTechChanged.logger().info("Data Loss Fix: totally " + count + " block" + (count == 1 ? " is" : "s are") + " fixed");
-                    } else {
-                        FinalTechChanged.logger().info("Data Loss Fix: nothing changed! This is the best situation!");
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FinalTechChanged.logger().info("Data Loss Fix: legacy BlockStorage recovery is not required on current Slimefun Legacy.");
     }
+
 }

@@ -74,7 +74,9 @@ jobs:
           grep -Fq 'api-version: 1.17' src/main/resources/plugin.yml
 
       - name: Verify Part 2 storage boundaries
-        run: python3 scripts/verify_part2_storage_boundaries.py
+        run: |
+          python3 scripts/verify_part2_storage_boundaries.py
+          python3 scripts/test_storage_boundary_verifier.py
 
       - name: Verify ItemStack text compatibility
         run: python3 scripts/verify_itemstack_text_compat.py
@@ -137,7 +139,7 @@ jobs:
           version = versions[-1]
           print(f'Using Paper 26.3 API: {version}')
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as stream:
-              stream.write(f'PAPER_26_3_VERSION={version}\\n')
+              stream.write(f'PAPER_26_3_VERSION={version}\n')
           PY
 
       - name: Verify Paper 26.3 primary compatibility
