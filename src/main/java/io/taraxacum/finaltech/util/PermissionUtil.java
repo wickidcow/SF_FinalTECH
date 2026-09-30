@@ -5,7 +5,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction
 import io.taraxacum.finaltech.core.helper.IgnorePermission;
 import io.taraxacum.libs.plugin.util.PlayerUtil;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -49,11 +49,10 @@ public class PermissionUtil {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull Config config, @Nonnull Location... targetLocations) {
+    public static boolean checkOfflinePermission(@Nonnull Location sourceLocation, @Nonnull SlimefunBlockData config, @Nonnull Location... targetLocations) {
         return PermissionUtil.checkOfflinePermission(
                 sourceLocation,
-                config.getString(ConstantTableUtil.CONFIG_UUID),
+                config.getData(ConstantTableUtil.CONFIG_UUID),
                 IgnorePermission.VALUE_TRUE.equals(IgnorePermission.HELPER.getOrDefaultValue(config)),
                 targetLocations);
     }

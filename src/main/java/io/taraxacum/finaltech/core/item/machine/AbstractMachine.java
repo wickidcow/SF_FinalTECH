@@ -9,7 +9,7 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.item.AbstractMySlimefunItem;
 import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -23,11 +23,9 @@ import javax.annotation.Nullable;
  */
 // TODO: Optimization
 /**
- * RC-37 ticker compatibility bridge. The deprecated Config/BlockTicker tick
- * signatures are intentionally retained here; gameplay storage access is
- * routed through dedicated compatibility helpers elsewhere.
+ * Machine base using the canonical Slimefun Legacy block-data callback.
+ * Scheduling and machine-specific tick behavior are preserved.
  */
-@SuppressWarnings("deprecation")
 public abstract class AbstractMachine extends AbstractMySlimefunItem {
     private AbstractMachineMenu menu;
 
@@ -57,7 +55,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     AbstractMachine.this.tick(b, item, data);
                 }
 
@@ -75,7 +73,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
                 }
 
                 @Override
-                public void tick(Block b, SlimefunItem item, Config data) {
+                public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                     AbstractMachine.this.tick(b, item, data);
                 }
 
@@ -114,7 +112,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
     @Nullable
     protected abstract AbstractMachineMenu setMachineMenu();
 
-    protected abstract void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config);
+    protected abstract void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config);
 
     protected abstract boolean isSynchronized();
 }

@@ -18,7 +18,7 @@ import io.taraxacum.finaltech.util.BlockTickerUtil;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -43,8 +43,7 @@ public class VariableWireResistance extends AbstractElectricMachine implements R
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         Location location = block.getLocation();
         String charge = EnergyUtil.getCharge(location);
         if (this.capacityString.equals(charge)) {

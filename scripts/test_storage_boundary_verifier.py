@@ -47,9 +47,17 @@ class StorageBoundaryVerifierTest(unittest.TestCase):
         finally:
             target.write_text(original, encoding="utf-8")
 
-    def test_current_boundary_and_retained_ticker_bridge_pass(self):
+    def test_current_storage_and_modern_ticker_boundaries_pass(self):
         result = self.verify()
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_deprecated_ticker_wrapper_cannot_return(self):
+        self.assert_rejected(
+            JAVA / "libs/slimefun/compat/LegacyTickerDataCompat.java",
+            "public final class LegacyTickerDataCompat {",
+            "public final class LegacyTickerDataCompat {\n    private BlockDataConfigWrapper retired;",
+            "reintroduced a deprecated Config ticker wrapper",
+        )
 
     def test_recovery_option_cannot_resume_storage_writes(self):
         for call in (

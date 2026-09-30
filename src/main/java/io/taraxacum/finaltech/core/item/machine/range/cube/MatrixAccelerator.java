@@ -19,7 +19,7 @@ import io.taraxacum.finaltech.util.MachineUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import io.taraxacum.libs.slimefun.dto.LocationInfo;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -66,8 +66,7 @@ public class MatrixAccelerator extends AbstractCubeMachine implements RecipeItem
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         Location blockLocation = block.getLocation();
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(blockLocation);
         boolean hasViewer = blockMenu.hasViewer();
@@ -140,7 +139,7 @@ public class MatrixAccelerator extends AbstractCubeMachine implements RecipeItem
                     if (blockTicker.isSynchronized()) {
                         javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> {
                             for (int i = 0; i < finalAccelerate; i++) {
-                                long testTime = JavaUtil.testTime(() -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getConfig()));
+                                long testTime = JavaUtil.testTime(() -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getData()));
                                 if (this.safeMode && testTime > MatrixAccelerator.this.syncThreshold) {
                                     FinalTechChanged.logger().warning(this.getId() + " cost " + testTime + "ns to run blockTicker for " + locationInfo.getId());
                                     MatrixAccelerator.this.notAllowedId.add(locationInfo.getId());
@@ -151,7 +150,7 @@ public class MatrixAccelerator extends AbstractCubeMachine implements RecipeItem
                     } else if (!this.safeMode || FinalTechChanged.isAsyncSlimefunItem(locationInfo.getId()) == FinalTechChanged.isAsyncSlimefunItem(this.getId())) {
                         BlockTickerUtil.runTask(FinalTechChanged.getLocationRunnableFactory(), FinalTechChanged.isAsyncSlimefunItem(locationInfo.getId()), () -> {
                             for (int i = 0; i < finalAccelerate; i++) {
-                                long testTime = JavaUtil.testTime(() -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getConfig()));
+                                long testTime = JavaUtil.testTime(() -> blockTicker.tick(locationInfo.getLocation().getBlock(), locationInfo.getSlimefunItem(), locationInfo.getData()));
                                 if (this.safeMode && testTime > MatrixAccelerator.this.asyncThreshold) {
                                     FinalTechChanged.logger().warning(this.getId() + " cost " + testTime + "ns to run blockTicker for " + locationInfo.getId());
                                     MatrixAccelerator.this.notAllowedId.add(locationInfo.getId());

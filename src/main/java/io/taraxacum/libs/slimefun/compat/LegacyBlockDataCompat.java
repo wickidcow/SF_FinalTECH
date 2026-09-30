@@ -27,7 +27,7 @@ public final class LegacyBlockDataCompat {
     }
 
     @Nullable
-    private static SlimefunBlockData getLoadedData(@Nonnull Location location) {
+    public static SlimefunBlockData getLoadedData(@Nonnull Location location) {
         BlockDataController controller = controller();
         SlimefunBlockData blockData = controller.getBlockData(location);
         if (blockData != null && !blockData.isDataLoaded()) {

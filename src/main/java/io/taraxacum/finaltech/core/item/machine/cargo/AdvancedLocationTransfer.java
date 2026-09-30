@@ -17,7 +17,7 @@ import io.taraxacum.finaltech.core.menu.cargo.AdvancedLocationTransferMenu;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -72,8 +72,7 @@ public class AdvancedLocationTransfer extends AbstractCargo implements RecipeIte
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();

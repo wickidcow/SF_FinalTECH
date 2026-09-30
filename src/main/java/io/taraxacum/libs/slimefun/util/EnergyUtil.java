@@ -7,17 +7,15 @@ import io.taraxacum.common.util.StringNumberUtil;
 import io.taraxacum.finaltech.util.ConstantTableUtil;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * Legacy Config overloads are retained for RC-37 compatibility; location-based
- * energy access uses the maintained compatibility adapter.
+ * Energy access through the canonical ticker record or location adapter.
  */
-@SuppressWarnings("deprecation")
 public class EnergyUtil {
     @Nonnull
     public static String getCharge(@Nonnull Location location) {
@@ -29,8 +27,8 @@ public class EnergyUtil {
     }
 
     @Nonnull
-    public static String getCharge(@Nonnull Config config) {
-        return Objects.requireNonNull(JavaUtil.getFirstNotNull(config.getString(ConstantTableUtil.CONFIG_CHARGE), StringNumberUtil.ZERO));
+    public static String getCharge(@Nonnull SlimefunBlockData config) {
+        return Objects.requireNonNull(JavaUtil.getFirstNotNull(config.getData(ConstantTableUtil.CONFIG_CHARGE), StringNumberUtil.ZERO));
     }
 
     public static void setCharge(@Nonnull Location location, @Nonnull String energy) {
@@ -47,12 +45,12 @@ public class EnergyUtil {
                 LegacySlimefunApiCompat.setCharge((EnergyNetComponent) it, location, energy);
     }
 
-    public static void setCharge(@Nonnull Config config, @Nonnull String energy) {
-        config.setValue(ConstantTableUtil.CONFIG_CHARGE, energy);
+    public static void setCharge(@Nonnull SlimefunBlockData config, @Nonnull String energy) {
+        config.setData(ConstantTableUtil.CONFIG_CHARGE, energy);
     }
 
-    public static void setCharge(@Nonnull Config config, int energy) {
-        config.setValue(ConstantTableUtil.CONFIG_CHARGE, String.valueOf(energy));
+    public static void setCharge(@Nonnull SlimefunBlockData config, int energy) {
+        config.setData(ConstantTableUtil.CONFIG_CHARGE, String.valueOf(energy));
     }
 
 

@@ -263,8 +263,8 @@ require(
     "PermissionUtil location-based permission cache must use the location compatibility boundary",
 )
 require(
-    "@Nonnull Config config" in permission_util,
-    "PermissionUtil must retain the RC-37 Config overload for ticker compatibility",
+    "@Nonnull SlimefunBlockData config" in permission_util,
+    "PermissionUtil must use the canonical block-data record for ticker permission checks",
 )
 
 for path, expected_call in {
@@ -294,8 +294,8 @@ for path in (
     "src/main/java/io/taraxacum/finaltech/core/item/machine/manual/CardOperationTable.java",
 ):
     require(
-        "@Nonnull Config config" in read(path),
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in read(path),
+        f"{path} must use the modern SlimefunBlockData ticker signature",
     )
 
 for path, expected_call in {
@@ -347,8 +347,8 @@ for path in (
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{path} must use the modern SlimefunBlockData ticker signature",
     )
 
 for path in (
@@ -369,8 +369,8 @@ for path in (
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{path} must use the modern SlimefunBlockData ticker signature",
     )
 
 for path in (
@@ -391,8 +391,8 @@ for path in (
         f"{path} must route its menu lookup through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{path} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{path} must use the modern SlimefunBlockData ticker signature",
     )
 
 for path, expected_count in {
@@ -405,8 +405,8 @@ for path, expected_count in {
         f"{path} lost one or more validated menu compatibility lookups",
     )
     require(
-        "Config config" in source or "Config data" in source,
-        f"{path} must retain its RC-37 Config ticker signature",
+        "SlimefunBlockData config" in source or "SlimefunBlockData data" in source,
+        f"{path} must use its modern SlimefunBlockData ticker signature",
     )
 
 matrix_expanded = read(
@@ -462,8 +462,8 @@ for source, name in (
     (item_dismantle, "ItemDismantleTable"),
 ):
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
 
 expanded_capacitor = read(
@@ -487,8 +487,8 @@ for expected in (
 ):
     require(expected in expanded_capacitor, f"AbstractExpandedElectricCapacitor lost storage behavior: {expected}")
 require(
-    "@Nonnull Config config" in expanded_capacitor,
-    "AbstractExpandedElectricCapacitor must retain the RC-37 ticker Config signature",
+    "@Nonnull SlimefunBlockData config" in expanded_capacitor,
+    "AbstractExpandedElectricCapacitor must use the modern SlimefunBlockData ticker signature",
 )
 
 for source, name in (
@@ -512,8 +512,8 @@ for source, name in (
         f"{name} must preserve recipe-offset clearing",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
 
 energized_accelerator = read(
@@ -545,8 +545,8 @@ for source, name in (
         f"{name} must verify accelerated machine identity through the dedicated Slimefun-id boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
 
 require(
@@ -562,8 +562,8 @@ require(
     "AbstractManualCraftMachine must use the compatibility menu boundary",
 )
 require(
-    "@Nonnull Config config" in manual_craft,
-    "AbstractManualCraftMachine must retain the RC-37 ticker Config signature",
+    "@Nonnull SlimefunBlockData config" in manual_craft,
+    "AbstractManualCraftMachine must use the modern SlimefunBlockData ticker signature",
 )
 
 require(
@@ -638,8 +638,8 @@ for source, name in (
         f"{name} must preserve operation-state clearing",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
     require(
         "BlockStorage." not in source,
@@ -660,19 +660,21 @@ activate_card = read(
 )
 
 require(
-    "public static Config getConfig(@Nonnull Location location)" in legacy_ticker_data
-    and "me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location)" in legacy_ticker_data,
-    "LegacyTickerDataCompat must isolate the intentional RC-37 location-to-Config bridge",
+    "public static SlimefunBlockData getData(@Nonnull Location location)" in legacy_ticker_data
+    and "LegacyBlockDataCompat.getLoadedData(location)" in legacy_ticker_data,
+    "LegacyTickerDataCompat must return the canonical loaded block-data record",
 )
 require(
-    '@SuppressWarnings("deprecation")' in legacy_ticker_data,
-    "LegacyTickerDataCompat must explicitly mark its intentional deprecated compatibility surface",
+    "data.removeData(key)" in legacy_ticker_data
+    and "data.setData(key, value)" in legacy_ticker_data
+    and "@Nullable String value" in legacy_ticker_data,
+    "LegacyTickerDataCompat must distinguish key removal from non-null string writes",
 )
 
 require(
-    location_info.count("LegacyTickerDataCompat.getConfig(location)") == 2
+    location_info.count("LegacyTickerDataCompat.getData(location)") == 2
     and location_info.count("LegacyBlockDataCompat.getSlimefunId(location)") == 2,
-    "LocationInfo must route Config and identity retrieval through the compatibility boundaries",
+    "LocationInfo must route canonical block-data and identity retrieval through the storage boundaries",
 )
 require(
     "BlockStorage." not in location_info,
@@ -693,8 +695,13 @@ for source, name, config_calls in (
         f"{name} must route menu permission checks through the compatibility boundary",
     )
     require(
-        source.count("LegacyTickerDataCompat.getConfig(location)") == config_calls,
-        f"{name} must route legacy ticker Config retrieval through LegacyTickerDataCompat",
+        source.count("LegacyTickerDataCompat.getData(location)") == config_calls,
+        f"{name} must resolve canonical data for each manual tick",
+    )
+    require(
+        "if (data == null)" in source
+        and "blockTicker.tick(block, slimefunItem, data)" in source,
+        f"{name} must stop manual ticking when its block data disappears",
     )
     require(
         "BlockStorage." not in source
@@ -727,8 +734,8 @@ require(
     "AdvancedAutoCraft must re-resolve the adjacent menu before crafting",
 )
 require(
-    "@Nonnull Config config" in advanced_auto_craft,
-    "AdvancedAutoCraft must retain the RC-37 ticker Config signature",
+    "@Nonnull SlimefunBlockData config" in advanced_auto_craft,
+    "AdvancedAutoCraft must use the modern SlimefunBlockData ticker signature",
 )
 
 require(
@@ -741,8 +748,8 @@ require(
     "StorageInteractPort must preserve vanilla-inventory fallback only when the adjacent block has no Slimefun menu",
 )
 require(
-    "Config config" in storage_interact_port,
-    "StorageInteractPort must retain the RC-37 ticker Config signature",
+    "SlimefunBlockData config" in storage_interact_port,
+    "StorageInteractPort must use the modern SlimefunBlockData ticker signature",
 )
 
 legacy_block_data = read(
@@ -785,8 +792,9 @@ require(
     "BlockTickerUtil must route identity/removal through the block-data compatibility boundary",
 )
 require(
-    '@SuppressWarnings("deprecation")' in block_ticker_util,
-    "BlockTickerUtil must document/suppress its intentionally retained RC-37 Config callback signatures",
+    "SlimefunBlockData data" in block_ticker_util
+    and "LegacyTickerDataCompat.setValue(config, ConstantTableUtil.CONFIG_SLEEP, sleep)" in block_ticker_util,
+    "BlockTickerUtil must forward modern ticker data and safely remove null sleep values",
 )
 require(
     "BlockStorage." not in block_ticker_util,
@@ -842,8 +850,8 @@ for source, name, target_id in (
         f"{name} must route status-menu access through the compatibility boundary",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
     require(
         "ConstantTableUtil.CONFIG_ID" not in source
@@ -892,8 +900,10 @@ require(
     "ItemConfigurationUtil must distinguish Slimefun identity from ordinary values",
 )
 require(
-    "LegacyTickerDataCompat.getConfig(location).getKeys()" in item_configuration,
-    "ItemConfigurationUtil must enumerate legacy-compatible config keys through LegacyTickerDataCompat",
+    "new HashSet<>(data.getAllData().keySet())" in item_configuration
+    and "LegacyTickerDataCompat.getData(location)" in item_configuration
+    and "if (data == null)" in item_configuration,
+    "ItemConfigurationUtil must enumerate a snapshot of canonical data keys and reject absent records",
 )
 require(
     "LegacyBlockDataCompat.setValue(location, entry.getKey(), entry.getValue())" in item_configuration
@@ -993,8 +1003,8 @@ for source, name, has_menu_count, get_menu_count in (
         f"{name} must preserve owner UUID persistence",
     )
     require(
-        "@Nonnull Config config" in source,
-        f"{name} must retain the RC-37 ticker Config signature",
+        "@Nonnull SlimefunBlockData config" in source,
+        f"{name} must use the modern SlimefunBlockData ticker signature",
     )
 
 for source, name in (
@@ -1016,7 +1026,7 @@ for expected in (
     "LegacyBlockDataCompat.getSlimefunId(location) == null",
     "LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId())",
     "LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId())",
-    "LegacyTickerDataCompat.getConfig(location)",
+    'LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_SLEEP, String.valueOf(EquivalentConcept.this.life - finalLife))',
     "LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate))",
     "LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1))",
 ):
@@ -1026,8 +1036,8 @@ require(
     "EquivalentConcept must preserve both full block-data removal transitions",
 )
 require(
-    "@Nonnull Config config" in equivalent_concept,
-    "EquivalentConcept must retain the RC-37 ticker Config signature",
+    "@Nonnull SlimefunBlockData config" in equivalent_concept,
+    "EquivalentConcept must use the modern SlimefunBlockData ticker signature",
 )
 require("BlockStorage." not in equivalent_concept, "EquivalentConcept must not directly use deprecated BlockStorage")
 
@@ -1093,18 +1103,13 @@ require(
 
 # Global regression guards for the completed Part 2 cleanup.
 java_root = ROOT / "src/main/java"
-direct_storage_allowlist = {
-    # The Config ticker bridge is intentionally retained for the next batch.
-    "io/taraxacum/libs/slimefun/compat/LegacyTickerDataCompat.java",
-}
-
 global_violations = []
 
 for java_path in java_root.rglob("*.java"):
     relative = java_path.relative_to(java_root).as_posix()
     source = java_path.read_text(encoding="utf-8")
 
-    if relative not in direct_storage_allowlist and (
+    if (
         "me.mrCookieSlime.Slimefun.api.BlockStorage" in source
         or "BlockStorage." in source
     ):
@@ -1113,11 +1118,11 @@ for java_path in java_root.rglob("*.java"):
         )
 
     if (
-        "import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;" in source
-        and '@SuppressWarnings("deprecation")' not in source
+        "me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config" in source
+        or "BlockDataConfigWrapper" in source
     ):
         global_violations.append(
-            f"{relative} uses the deprecated RC-37 Config type without an explicit compatibility suppression"
+            f"{relative} reintroduced a deprecated Config ticker wrapper"
         )
 
     if (

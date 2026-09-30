@@ -93,7 +93,11 @@ public abstract class AbstractMachineAccelerateCard extends UsableSlimefunItem {
 
         Runnable runnable = () -> {
             for (int i = 0; i < time; i++) {
-                blockTicker.tick(block, slimefunItem, LegacyTickerDataCompat.getConfig(location));
+                var data = LegacyTickerDataCompat.getData(location);
+                if (data == null) {
+                    return;
+                }
+                blockTicker.tick(block, slimefunItem, data);
             }
         };
 

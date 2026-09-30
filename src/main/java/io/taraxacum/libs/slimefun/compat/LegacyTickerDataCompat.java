@@ -1,55 +1,46 @@
 package io.taraxacum.libs.slimefun.compat;
 
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ASlimefunDataContainer;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import org.bukkit.Location;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Zero-allocation access boundary for the legacy ticker data object.
+ * Zero-allocation access to the canonical Slimefun Legacy ticker data.
  *
- * <p>RC-37 passes Config directly. Current Slimefun Legacy supplies a
- * BlockDataConfigWrapper through its binary-compatibility bridge, which remains
- * a Config instance. These helpers therefore preserve the exact object and
- * mutation semantics without reflective calls or per-tick wrapper allocation.</p>
+ * <p>The historical helper name remains stable, but no deprecated Config
+ * wrapper or storage facade is used. A null value removes the persisted
+ * key and returns normally so machine reset sequences can complete.</p>
  */
-@SuppressWarnings("deprecation")
 public final class LegacyTickerDataCompat {
 
     private LegacyTickerDataCompat() {
     }
 
-    private static Config config(@Nonnull Object data) {
-        return (Config) data;
+    @Nullable
+    public static SlimefunBlockData getData(@Nonnull Location location) {
+        return LegacyBlockDataCompat.getLoadedData(location);
     }
 
-    /**
-     * Returns the legacy ticker data view for a block location.
-     *
-     * <p>On current Slimefun Legacy this is a BlockDataConfigWrapper over the
-     * canonical block-data record. On RC-37 it preserves the historical Config
-     * object. Keeping this call here intentionally isolates the deprecated
-     * compatibility facade from gameplay classes.</p>
-     */
-    @Nonnull
-    public static Config getConfig(@Nonnull Location location) {
-        return me.mrCookieSlime.Slimefun.api.BlockStorage.getLocationInfo(location);
-    }
-
-    public static boolean contains(@Nonnull Object data, @Nonnull String key) {
-        return config(data).contains(key);
+    public static boolean contains(@Nonnull ASlimefunDataContainer data, @Nonnull String key) {
+        return data.getData(key) != null;
     }
 
     @Nullable
-    public static String getString(@Nonnull Object data, @Nonnull String key) {
-        return config(data).getString(key);
+    public static String getString(@Nonnull ASlimefunDataContainer data, @Nonnull String key) {
+        return data.getData(key);
     }
 
     public static void setValue(
-            @Nonnull Object data,
+            @Nonnull ASlimefunDataContainer data,
             @Nonnull String key,
-            @Nullable Object value) {
-        config(data).setValue(key, value);
+            @Nullable String value) {
+        if (value == null) {
+            data.removeData(key);
+        } else {
+            data.setData(key, value);
+        }
     }
 }

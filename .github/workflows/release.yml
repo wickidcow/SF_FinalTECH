@@ -98,7 +98,7 @@ jobs:
 
       - name: Verify Paper 1.21.11 baseline compilation
         run: >-
-          mvn -B --no-transfer-progress -DskipTests
+          mvn -B --no-transfer-progress
           -Dpaper.version=1.21.11-R0.1-SNAPSHOT
           -Dslimefun.groupId=com.github.slimefun
           -Dslimefun.artifactId=Slimefun
@@ -107,7 +107,7 @@ jobs:
 
       - name: Verify Paper 26.2 compatibility
         run: >-
-          mvn -B --no-transfer-progress -DskipTests
+          mvn -B --no-transfer-progress
           -Dpaper.version=26.2.build.112-stable
           -Dslimefun.groupId=com.github.slimefun
           -Dslimefun.artifactId=Slimefun
@@ -144,7 +144,7 @@ jobs:
 
       - name: Verify Paper 26.3 primary compatibility
         run: >-
-          mvn -B --no-transfer-progress -DskipTests
+          mvn -B --no-transfer-progress
           -Dpaper.version=$PAPER_26_3_VERSION
           -Dslimefun.groupId=com.github.slimefun
           -Dslimefun.artifactId=Slimefun

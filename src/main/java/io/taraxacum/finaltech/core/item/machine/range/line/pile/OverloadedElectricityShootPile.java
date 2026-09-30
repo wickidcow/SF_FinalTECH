@@ -47,7 +47,7 @@ public class OverloadedElectricityShootPile extends AbstractElectricityShootPile
                     if (componentEnergy < componentCapacity * 2)  {
                         int transferEnergy = Math.min(summary.getCapacitorEnergy(), (int) ((componentCapacity * 2 - componentEnergy)));
                         if (transferEnergy > 0) {
-                            EnergyUtil.setCharge(locationInfo.getConfig(), String.valueOf(componentEnergy + transferEnergy));
+                            EnergyUtil.setCharge(locationInfo.getData(), String.valueOf(componentEnergy + transferEnergy));
                             summary.setCapacitorEnergy(summary.getCapacitorEnergy() - transferEnergy);
                             summary.setEnergyCharge(StringNumberUtil.add(summary.getEnergyCharge(), String.valueOf(transferEnergy)));
                             return 1;

@@ -19,7 +19,7 @@ import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
 import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
@@ -70,10 +70,9 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         String energyStr = EnergyUtil.getCharge(config);
-        String energyStackStr = JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO);
+        String energyStackStr = JavaUtil.getFirstNotNull(config.getData(this.key), StringNumberUtil.ZERO);
         long energy = Integer.parseInt(energyStr);
         long energyStack = Integer.parseInt(energyStackStr);
 
@@ -100,9 +99,8 @@ public abstract class AbstractExpandedElectricCapacitor extends AbstractElectric
                 String.format("%.2f", Slimefun.getTickerTask().getTickRate() / 20.0));
     }
 
-    @SuppressWarnings("deprecation")
-    public int getStack(@Nonnull Config config) {
-        return Integer.parseInt(JavaUtil.getFirstNotNull(config.getString(this.key), StringNumberUtil.ZERO));
+    public int getStack(@Nonnull SlimefunBlockData config) {
+        return Integer.parseInt(JavaUtil.getFirstNotNull(config.getData(this.key), StringNumberUtil.ZERO));
     }
 
     public long getMaxEnergy() {

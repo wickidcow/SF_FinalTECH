@@ -50,9 +50,9 @@ public class RouteViewer extends UsableSlimefunItem implements RecipeItem {
             Location location = block.getLocation();
             LocationInfo locationInfo = LocationInfo.get(location);
             if (locationInfo != null && this.allowedId.contains(locationInfo.getId())) {
-                String value = RouteShow.HELPER.getOrDefaultValue(locationInfo.getConfig());
+                String value = RouteShow.HELPER.getOrDefaultValue(locationInfo.getData());
                 value = RouteShow.HELPER.nextOrDefaultValue(value);
-                RouteShow.HELPER.setOrClearValue(locationInfo.getConfig(), value);
+                RouteShow.HELPER.setOrClearValue(locationInfo.getData(), value);
             }
         }
     }

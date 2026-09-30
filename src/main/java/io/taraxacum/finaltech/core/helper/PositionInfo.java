@@ -10,7 +10,7 @@ import io.taraxacum.libs.plugin.dto.KeyValueStringOrderHelper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.dto.BlockStorageHelper;
 import io.taraxacum.libs.slimefun.dto.BlockStorageLoreHelper;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import org.bukkit.Location;
@@ -134,8 +134,8 @@ public class PositionInfo {
 
     @Nonnull
     @SuppressWarnings("deprecation")
-    public static BlockFace[] getBlockFaces(@Nonnull Config config, @Nonnull String... values) {
-        String string = JavaUtil.getFirstNotNull(config.getString(KEY), "");
+    public static BlockFace[] getBlockFaces(@Nonnull SlimefunBlockData config, @Nonnull String... values) {
+        String string = JavaUtil.getFirstNotNull(config.getData(KEY), "");
         return PositionInfo.getBlockFaces(string, values);
     }
 
@@ -167,8 +167,8 @@ public class PositionInfo {
         @Nonnull
         @Override
         @SuppressWarnings("deprecation")
-        public String getOrDefaultValue(@Nonnull Config config) {
-            String valueMap = config.getString(this.getKey());
+        public String getOrDefaultValue(@Nonnull SlimefunBlockData config) {
+            String valueMap = config.getData(this.getKey());
             KeyValueStringHelper keyValueStringHelper = MAP_EXAMPLE.parseString(valueMap);
             String value = keyValueStringHelper.getValue(BlockStorageLoreMaterialHelper.this.getValueKey());
             if ("".equals(value)) {

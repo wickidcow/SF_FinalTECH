@@ -16,9 +16,8 @@ import io.taraxacum.libs.plugin.dto.ItemWrapper;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
-import io.taraxacum.libs.slimefun.compat.LegacyTickerDataCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -112,8 +111,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull Config config) {
+    protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
         try  {
             if (FinalTechChanged.y) {
                 FinalTechChanged.getInstance().getServer().getScheduler().runTask(FinalTechChanged.getInstance(), () -> block.setType(Material.AIR));
@@ -162,7 +160,7 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
                                 LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId());
                                 LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
                                 LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1));
-                                BlockTickerUtil.setSleep(LegacyTickerDataCompat.getConfig(location), String.valueOf(EquivalentConcept.this.life - finalLife));
+                                LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_SLEEP, String.valueOf(EquivalentConcept.this.life - finalLife));
                                 JavaPlugin javaPlugin = EquivalentConcept.this.getAddon().getJavaPlugin();
                                 javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> targetBlock.setType(EquivalentConcept.this.getItem().getType()));
                             }
