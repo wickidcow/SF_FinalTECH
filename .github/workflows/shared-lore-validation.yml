@@ -1,0 +1,153 @@
+name: FinalTECH Shared Lore Preservation Validation
+
+on:
+  push:
+    branches: ['work/shared-lore-components-validation']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shared-component-lore-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Apply exact reviewed utility and regression source
+        run: |
+          set -euo pipefail
+          mkdir -p audit-evidence
+          python3 - <<'PY'
+          import gzip,hashlib,json,re,subprocess
+          from pathlib import Path
+          patch=gzip.decompress(Path('.audit/shared-component-lore.patch.gz').read_bytes())
+          assert hashlib.sha256(patch).hexdigest()=='3fcf8049b358966c6cb86941b21a629a8f3e28941a224c4ec941fbc18335dd89'
+          names=[]
+          for part in patch.decode().split('diff --git ')[1:]:
+              name=part.splitlines()[0].split(' b/',1)[1]
+              old,new=re.search(r'^index ([0-9a-f]{40})\.\.([0-9a-f]{40})',part,re.M).groups()
+              path=Path(name)
+              assert not path.is_absolute() and '..' not in path.parts
+              assert name.startswith(('src/main/java/','src/test/java/'))
+              if old=='0'*40: assert not path.exists()
+              else:
+                  data=path.read_bytes()
+                  assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==old,name
+              names.append((name,new))
+          assert len(names)==3
+          subprocess.run(['git','apply','--check','-'],input=patch,check=True)
+          subprocess.run(['git','apply','-'],input=patch,check=True)
+          for name,expected in names:
+              data=Path(name).read_bytes()
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==expected,name
+          Path('audit-evidence/paths.json').write_text(json.dumps([name for name,_ in names]))
+          PY
+          git diff --check
+      - name: Build and publish the exact coordinated Legacy API locally
+        run: |
+          set -euo pipefail
+          CORE="$RUNNER_TEMP/verified-core"
+          git init "$CORE"
+          git -C "$CORE" remote add origin https://github.com/wickidcow/Slimefun-Legacy.git
+          git -C "$CORE" fetch --depth=1 origin 9e8de71adf70e9a361a74c21afe5e7006c85faf6
+          git -C "$CORE" checkout --detach FETCH_HEAD
+          test "$(git -C "$CORE" rev-parse HEAD)" = 9e8de71adf70e9a361a74c21afe5e7006c85faf6
+          (cd "$CORE" && chmod +x gradlew && ./gradlew shadowJar -x test --console=plain --no-daemon)
+          JAR="$(find "$CORE/build/libs" -name 'Slimefun-*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' -print -quit)"
+          test -s "$JAR"
+          mvn -q org.apache.maven.plugins:maven-install-plugin:3.1.4:install-file \
+            -Dfile="$JAR" -DgroupId=com.github.slimefun -DartifactId=Slimefun \
+            -Dversion=ALBION-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
+          echo 'Core source: 9e8de71adf70e9a361a74c21afe5e7006c85faf6' > audit-evidence/core.txt
+          sha256sum "$JAR" >> audit-evidence/core.txt
+      - name: Run all existing English source storage and API guards
+        run: |
+          set -euo pipefail
+          python3 scripts/normalize_english_yaml.py --check
+          python3 -m pip install --quiet --disable-pip-version-check pyyaml
+          python3 - <<'PY'
+          import yaml
+          from pathlib import Path
+          yaml.safe_load(Path('src/main/resources/language/en-US.yml').read_text())
+          PY
+          for guard in verify_source_hygiene verify_part2_storage_boundaries test_storage_boundary_verifier \
+            verify_itemstack_text_compat verify_itemstack_type_compat verify_legacy_text_compat \
+            verify_entity_api_compat verify_nonnetwork_energy_compat verify_recipe_api_compat; do
+            python3 "scripts/$guard.py"
+          done
+      - name: Build and test actual utility on the supported floor
+        run: |
+          set -euo pipefail
+          mvn -B --no-transfer-progress -Dpaper.version=1.21.11-R0.1-SNAPSHOT clean verify 2>&1 | tee audit-evidence/build.log
+          git diff --check
+      - name: Require actual cases and Java21 output
+        run: |
+          python3 - <<'PY'
+          import json,struct,zipfile
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          totals=dict.fromkeys(('tests','failures','errors','skipped'),0)
+          found=False
+          for path in Path('target/surefire-reports').glob('TEST-*.xml'):
+              suite=ET.parse(path).getroot()
+              for key in totals: totals[key]+=int(suite.get(key,'0'))
+              if path.name.endswith('.ComponentLoreTest.xml'):
+                  found=True
+                  assert int(suite.get('tests'))==14,suite.attrib
+                  assert all(int(suite.get(k,'0'))==0 for k in ('failures','errors','skipped')),suite.attrib
+          assert found and totals['tests']==34,totals
+          assert totals['failures']==totals['errors']==totals['skipped']==0,totals
+          with zipfile.ZipFile('target/SF_FinalTECH3.0.2.jar') as z:
+              assert z.testzip() is None
+              assert not any('junit' in n.lower() or 'mockbukkit' in n.lower() for n in z.namelist())
+              for name in z.namelist():
+                  if name.endswith('.class') and not name.startswith('META-INF/versions/'):
+                      assert struct.unpack('>H',z.read(name)[6:8])[0]<=65,name
+          Path('audit-evidence/results.json').write_text(json.dumps(totals,indent=2))
+          print(totals)
+          PY
+      - name: Preserve only validated source blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,os,subprocess
+          from pathlib import Path
+          manifest={}
+          for name in json.loads(Path('audit-evidence/paths.json').read_text()):
+              data=Path(name).read_bytes()
+              expected=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              payload=json.dumps({'content':base64.b64encode(data).decode(),'encoding':'base64'})
+              result=subprocess.run(['gh','api','--method','POST',f"repos/{os.environ['GITHUB_REPOSITORY']}/git/blobs",'--input','-','--jq','.sha'],input=payload,text=True,capture_output=True,check=True)
+              assert result.stdout.strip()==expected,name
+              manifest[name]=expected
+          Path('audit-evidence/validated-blobs.json').write_text(json.dumps(manifest,indent=2))
+          print(manifest)
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: finaltech-component-preservation-evidence
+          path: |
+            audit-evidence/
+            target/surefire-reports/TEST-*.xml
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v7
+        if: success()
+        with:
+          path: target/SF_FinalTECH3.0.2.jar
+          archive: false
+          if-no-files-found: error
