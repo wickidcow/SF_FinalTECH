@@ -678,21 +678,8 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null) {
-            lore = new ArrayList<>(8);
-            lore.add(s);
-            setLegacyLore(itemMeta, lore);
-            item.setItemMeta(itemMeta);
-        } else {
-            List<String> newLore = new ArrayList<>(lore.size() + 1);
-            newLore.add(s);
-            for (String string : lore) {
-                newLore.add(string);
-            }
-            setLegacyLore(itemMeta, newLore);
-            item.setItemMeta(itemMeta);
-        }
+        itemMeta.lore(ComponentLore.prepend(itemMeta.lore(), s));
+        item.setItemMeta(itemMeta);
     }
 
     public static void addLoreToLast(@Nullable ItemStack item, @Nonnull String s) {
@@ -700,22 +687,12 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null) {
-            lore = new ArrayList<>(8);
-        }
-        lore.add(s);
-        setLegacyLore(itemMeta, lore);
+        addLoreToLast(itemMeta, s);
         item.setItemMeta(itemMeta);
     }
 
     public static void addLoreToLast(@Nonnull ItemMeta itemMeta, @Nonnull String s) {
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null) {
-            lore = new ArrayList<>(8);
-        }
-        lore.add(s);
-        setLegacyLore(itemMeta, lore);
+        itemMeta.lore(ComponentLore.append(itemMeta.lore(), s));
     }
 
     public static void addLoresToLast(@Nullable ItemStack item, @Nonnull String... s) {
@@ -723,22 +700,12 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null) {
-            lore = new ArrayList<>(8);
-        }
-        lore.addAll(Arrays.stream(s).toList());
-        setLegacyLore(itemMeta, lore);
+        addLoresToLast(itemMeta, s);
         item.setItemMeta(itemMeta);
     }
 
     public static void addLoresToLast(@Nonnull ItemMeta itemMeta, @Nonnull String... s) {
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null) {
-            lore = new ArrayList<>(8);
-        }
-        lore.addAll(Arrays.stream(s).toList());
-        setLegacyLore(itemMeta, lore);
+        itemMeta.lore(ComponentLore.append(itemMeta.lore(), s));
     }
 
     public static void removeLastLore(@Nullable ItemStack item) {
@@ -746,22 +713,20 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
+        List<Component> lore = itemMeta.lore();
+        if (lore == null || lore.isEmpty()) {
             return;
         }
-        lore = lore.subList(0, Math.max(lore.size() - 1, 0));
-        setLegacyLore(itemMeta, lore);
+        itemMeta.lore(ComponentLore.removeLast(lore));
         item.setItemMeta(itemMeta);
     }
 
     public static void removeLastLore(@Nonnull ItemMeta itemMeta) {
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
+        List<Component> lore = itemMeta.lore();
+        if (lore == null || lore.isEmpty()) {
             return;
         }
-        lore = lore.subList(0, Math.max(lore.size() - 1, 0));
-        setLegacyLore(itemMeta, lore);
+        itemMeta.lore(ComponentLore.removeLast(lore));
     }
 
     public static void setLastLore(@Nonnull ItemStack item, @Nonnull String s) {
@@ -769,26 +734,12 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
-            lore = new ArrayList<>();
-            lore.add(s);
-        } else {
-            lore.set(lore.size() - 1, s);
-        }
-        setLegacyLore(itemMeta, lore);
+        setLastLore(itemMeta, s);
         item.setItemMeta(itemMeta);
     }
 
     public static void setLastLore(@Nonnull ItemMeta itemMeta, @Nonnull String s) {
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
-            lore = new ArrayList<>();
-            lore.add(s);
-        } else {
-            lore.set(lore.size() - 1, s);
-        }
-        setLegacyLore(itemMeta, lore);
+        itemMeta.lore(ComponentLore.setLast(itemMeta.lore(), s));
     }
 
     @Nullable
@@ -796,21 +747,12 @@ public final class ItemStackUtil {
         if (ItemStackUtil.isItemNull(item)) {
             return null;
         }
-        ItemMeta itemMeta = item.getItemMeta();
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
-            return null;
-        }
-        return lore.get(lore.size() - 1);
+        return getLastLore(item.getItemMeta());
     }
 
     @Nullable
     public static String getLastLore(@Nonnull ItemMeta itemMeta) {
-        List<String> lore = getLegacyLore(itemMeta);
-        if (lore == null || lore.size() == 0) {
-            return null;
-        }
-        return lore.get(lore.size() - 1);
+        return ComponentLore.last(itemMeta.lore());
     }
 
     public static void setLore(@Nonnull ItemStack item, @Nonnull String... lore) {
@@ -840,21 +782,7 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> oldLore = getLegacyLore(itemMeta);
-        if (oldLore == null) {
-            oldLore = new ArrayList<>();
-        }
-        while (oldLore.size() < loreOffset) {
-            oldLore.add("");
-        }
-        for (int i = 0; i < lore.length; i++) {
-            if (oldLore.size() <= loreOffset + i) {
-                oldLore.add(loreOffset + i, lore[i]);
-            } else {
-                oldLore.set(loreOffset + i, lore[i]);
-            }
-        }
-        setLegacyLore(itemMeta, oldLore);
+        itemMeta.lore(ComponentLore.replace(itemMeta.lore(), loreOffset, Arrays.asList(lore)));
         item.setItemMeta(itemMeta);
     }
 
@@ -867,21 +795,7 @@ public final class ItemStackUtil {
             return;
         }
         ItemMeta itemMeta = item.getItemMeta();
-        List<String> oldLore = getLegacyLore(itemMeta);
-        if (oldLore == null) {
-            oldLore = new ArrayList<>();
-        }
-        while (oldLore.size() < loreOffset) {
-            oldLore.add("");
-        }
-        for (int i = 0; i < lore.size(); i++) {
-            if (oldLore.size() <= loreOffset + i) {
-                oldLore.add(loreOffset + i, lore.get(i));
-            } else {
-                oldLore.set(loreOffset + i, lore.get(i));
-            }
-        }
-        setLegacyLore(itemMeta, oldLore);
+        itemMeta.lore(ComponentLore.replace(itemMeta.lore(), loreOffset, lore));
         item.setItemMeta(itemMeta);
     }
 
