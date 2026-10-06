@@ -88,11 +88,24 @@ class StorageBoundaryVerifierTest(unittest.TestCase):
             "controller.loadBlockData(blockData)",
             "blockData.removeData(key)",
             "blockData.setData(key, value)",
-            "controller().createBlock(location, slimefunId)",
         ):
             with self.subTest(expression=expression):
                 self.assert_rejected(COMPAT, expression + ";", ";",
                                      "modern storage boundary is missing")
+
+        # Identity creation now has two guarded call sites. Remove both so this mutation
+        # still proves that the verifier requires the current controller operation.
+        target = self.root / COMPAT
+        original = target.read_text(encoding="utf-8")
+        expression = "controller().createBlock(location, slimefunId);"
+        self.assertGreaterEqual(original.count(expression), 2)
+        try:
+            target.write_text(original.replace(expression, ";"), encoding="utf-8")
+            result = self.verify()
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertIn("modern storage boundary is missing", result.stderr)
+        finally:
+            target.write_text(original, encoding="utf-8")
 
     def test_menu_less_blocks_do_not_become_inventories(self):
         self.assert_rejected(

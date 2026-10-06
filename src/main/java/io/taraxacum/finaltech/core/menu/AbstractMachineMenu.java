@@ -7,7 +7,6 @@ import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.helper.Icon;
 import io.taraxacum.finaltech.core.item.machine.AbstractMachine;
-import io.taraxacum.libs.slimefun.dto.LocationInfo;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
@@ -64,13 +63,20 @@ public abstract class AbstractMachineMenu extends BlockMenuPreset {
 
         if (FinalTechChanged.getDataLossFix()) {
             Location location = block.getLocation();
-            LocationInfo locationInfo = LocationInfo.get(block.getLocation());
-            if (locationInfo == null && this.slimefunItem.getItem().getType().equals(block.getType())) {
-                FinalTechChanged.logger().warning("Data Loss Fix For " + FinalTechChanged.getInstance().getName() + ": location " + location + " seems loss its data. There should be " + this.slimefunItem.getId());
+            if (!LegacyBlockDataCompat.hasBlockData(location)
+                    && this.slimefunItem.getItem().getType().equals(block.getType())) {
+                FinalTechChanged.logger().warning("Data Loss Fix For " + FinalTechChanged.getInstance().getName()
+                        + ": location " + location + " seems to have lost its block-data record. There should be "
+                        + this.slimefunItem.getId());
 
-                // TODO
-                LegacyBlockDataCompat.setSlimefunId(location, this.slimefunItem.getId());
-                FinalTechChanged.logger().info("Data Loss Fix For " + FinalTechChanged.getInstance().getName() + ": added location info to location: " + location);
+                if (LegacyBlockDataCompat.createSlimefunIdIfAbsent(location, this.slimefunItem.getId())) {
+                    FinalTechChanged.logger().info("Data Loss Fix For " + FinalTechChanged.getInstance().getName()
+                            + ": added location info to location: " + location);
+                } else {
+                    FinalTechChanged.logger().warning("Data Loss Fix For " + FinalTechChanged.getInstance().getName()
+                            + ": another block-data record appeared before repair at " + location
+                            + "; leaving that record untouched.");
+                }
             }
         }
 

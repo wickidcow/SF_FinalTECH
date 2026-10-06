@@ -812,8 +812,9 @@ variable_wire_resistance = read(
 )
 
 require(
-    "LegacyBlockDataCompat.setSlimefunId(location, this.slimefunItem.getId())" in abstract_machine_menu,
-    "AbstractMachineMenu data-loss repair must recreate the Slimefun identity through the dedicated identity boundary",
+    "LegacyBlockDataCompat.createSlimefunIdIfAbsent(location, this.slimefunItem.getId())" in abstract_machine_menu
+    and "LegacyBlockDataCompat.hasBlockData(location)" in abstract_machine_menu,
+    "AbstractMachineMenu data-loss repair must use the non-destructive identity creation boundary",
 )
 require(
     "ConstantTableUtil.CONFIG_ID" not in abstract_machine_menu

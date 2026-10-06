@@ -18,6 +18,12 @@ import javax.annotation.Nullable;
  */
 public final class LegacyBlockDataCompat {
 
+    enum IdentityDecision {
+        CREATE,
+        ALREADY_TARGET,
+        CONFLICT
+    }
+
     private LegacyBlockDataCompat() {
     }
 
@@ -79,11 +85,61 @@ public final class LegacyBlockDataCompat {
         return blockData != null && blockData.getBlockMenu() != null;
     }
 
+    static IdentityDecision identityDecision(
+            @Nullable SlimefunBlockData existing,
+            @Nonnull String slimefunId) {
+        if (existing == null) {
+            return IdentityDecision.CREATE;
+        }
+        return slimefunId.equals(existing.getSfId())
+                ? IdentityDecision.ALREADY_TARGET
+                : IdentityDecision.CONFLICT;
+    }
+
     /**
-     * Creates or recreates the Slimefun identity record at this location.
-     * Persisted FinalTECH keys remain unchanged.
+     * Creates the requested identity only when no block-data record currently exists.
+     *
+     * <p>This is the safe boundary for the historical menu repair path. It never replaces
+     * an existing record, including a record whose Slimefun ID is unresolved by this addon.</p>
+     *
+     * @return true only when this call created a new record
+     */
+    public static boolean createSlimefunIdIfAbsent(
+            @Nonnull Location location,
+            @Nonnull String slimefunId) {
+        if (identityDecision(getLoadedData(location), slimefunId) != IdentityDecision.CREATE) {
+            return false;
+        }
+
+        try {
+            controller().createBlock(location, slimefunId);
+            return true;
+        } catch (IllegalStateException race) {
+            // A record may have appeared between the preflight and createBlock's own cache check.
+            // Preserve whichever record won that race instead of replacing it.
+            if (getLoadedData(location) != null) {
+                return false;
+            }
+            throw race;
+        }
+    }
+
+    /**
+     * Creates a Slimefun identity at an empty location.
+     *
+     * <p>Calling this for the same existing identity is idempotent. A different existing identity
+     * is never overwritten: intentional identity transitions must remove the old block-data record
+     * first, as FinalTECH's transformation machines already do.</p>
      */
     public static void setSlimefunId(@Nonnull Location location, @Nonnull String slimefunId) {
+        IdentityDecision decision = identityDecision(getLoadedData(location), slimefunId);
+        if (decision == IdentityDecision.ALREADY_TARGET) {
+            return;
+        }
+        if (decision == IdentityDecision.CONFLICT) {
+            throw new IllegalStateException(
+                    "Refusing to replace existing Slimefun block identity at " + location);
+        }
         controller().createBlock(location, slimefunId);
     }
 
