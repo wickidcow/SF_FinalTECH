@@ -5,6 +5,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.taraxacum.common.util.JavaUtil;
+import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.finaltech.core.item.machine.cargo.AbstractCargo;
 import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
