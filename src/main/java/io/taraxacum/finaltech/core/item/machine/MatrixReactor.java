@@ -30,7 +30,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -87,8 +86,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
                         "0",
                         String.valueOf(difficulty));
             }
-            JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-            javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> blockMenu.dropItems(location, MatrixReactorMenu.ITEM_INPUT_SLOT));
+            blockMenu.dropItems(location, MatrixReactorMenu.ITEM_INPUT_SLOT);
             return;
         }
 
@@ -224,7 +222,7 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
 
     @Override
     protected boolean isSynchronized() {
-        return false;
+        return true;
     }
 
     @Override
