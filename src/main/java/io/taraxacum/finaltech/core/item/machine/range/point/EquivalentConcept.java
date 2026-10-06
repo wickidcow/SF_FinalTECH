@@ -18,6 +18,7 @@ import io.taraxacum.libs.slimefun.interfaces.SimpleValidItem;
 import io.taraxacum.libs.slimefun.util.SfItemUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -28,7 +29,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -112,12 +112,22 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
-        try  {
-            if (FinalTechChanged.y) {
-                FinalTechChanged.getInstance().getServer().getScheduler().runTask(FinalTechChanged.getInstance(), () -> block.setType(Material.AIR));
-                LegacyBlockDataCompat.removeBlock(block.getLocation());
-                return ;
+        LegacySlimefunApiCompat.runAt(block.getLocation(), () -> tickAt(block));
+    }
+
+    private void tickAt(@Nonnull Block block) {
+        try {
+            Location source = block.getLocation();
+            if (!this.getId().equals(LegacyBlockDataCompat.getSlimefunId(source))) {
+                return;
             }
+
+            if (FinalTechChanged.y) {
+                LegacyBlockDataCompat.removeBlock(block.getLocation());
+                LegacySlimefunApiCompat.runAt(source, () -> block.setType(Material.AIR));
+                return;
+            }
+
             if (LegacyBlockDataCompat.getValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP) != null) {
                 String sleepStr = LegacyBlockDataCompat.getValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP);
                 if (sleepStr != null) {
@@ -127,45 +137,50 @@ public class EquivalentConcept extends AbstractPointMachine implements RecipeIte
                         return;
                     } else {
                         LegacyBlockDataCompat.setValue(block.getLocation(), ConstantTableUtil.CONFIG_SLEEP, String.valueOf(0));
-
                     }
                 }
             }
+
             Location l = block.getLocation();
-            double life = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_LIFE) != null) ? Double.parseDouble(LegacyBlockDataCompat.getValue(l, KEY_LIFE)) : 0;
+            double life = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_LIFE) != null)
+                    ? Double.parseDouble(LegacyBlockDataCompat.getValue(l, KEY_LIFE)) : 0;
             if (life < 1) {
                 Location location = block.getLocation();
                 LegacyBlockDataCompat.setValue(location, KEY_LIFE, "0");
                 LegacyBlockDataCompat.setValue(location, KEY_RANGE, "0");
                 LegacyBlockDataCompat.setValue(l, ConstantTableUtil.CONFIG_SLEEP, "0");
                 LegacyBlockDataCompat.removeBlock(location);
-                JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-                javaPlugin.getServer().getScheduler().runTaskLaterAsynchronously(javaPlugin, () -> {
-                    if (!location.getBlock().getType().isAir() && LegacyBlockDataCompat.getSlimefunId(location) == null) {
+                LegacySlimefunApiCompat.runAt(location, () -> {
+                    if (!location.getBlock().getType().isAir()
+                            && LegacyBlockDataCompat.getSlimefunId(location) == null) {
                         LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.JUSTIFIABILITY.getItemId());
                     }
-                }, Slimefun.getTickerTask().getTickRate() + 1);
+                }, Slimefun.getTickerTask().getTickRate() + 1L);
                 return;
             }
 
-            final int range = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_RANGE) != null) ? Integer.parseInt(LegacyBlockDataCompat.getValue(l, KEY_RANGE)) : this.range;
+            final int range = (LegacyBlockDataCompat.getValue(block.getLocation(), KEY_RANGE) != null)
+                    ? Integer.parseInt(LegacyBlockDataCompat.getValue(l, KEY_RANGE)) : this.range;
 
             while (life > 1) {
                 final double finalLife = life--;
                 this.pointFunction(block, range, location -> {
-                    FinalTechChanged.getLocationRunnableFactory().waitThenRun(() -> {
+                    LegacySlimefunApiCompat.runAt(location, () -> {
                         Block targetBlock = location.getBlock();
-                        if (!LegacyBlockDataCompat.hasBlockData(location)) {
-                            if (targetBlock.getType() == Material.AIR) {
-                                LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId());
-                                LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
-                                LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1));
-                                LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_SLEEP, String.valueOf(EquivalentConcept.this.life - finalLife));
-                                JavaPlugin javaPlugin = EquivalentConcept.this.getAddon().getJavaPlugin();
-                                javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> targetBlock.setType(EquivalentConcept.this.getItem().getType()));
-                            }
+                        if (!LegacyBlockDataCompat.hasBlockData(location)
+                                && targetBlock.getType() == Material.AIR) {
+                            LegacyBlockDataCompat.setSlimefunId(location, EquivalentConcept.this.getId());
+                            LegacyBlockDataCompat.setValue(location, KEY_LIFE, String.valueOf(finalLife * attenuationRate));
+                            LegacyBlockDataCompat.setValue(location, KEY_RANGE, String.valueOf(range + 1));
+                            LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_SLEEP, String.valueOf(EquivalentConcept.this.life - finalLife));
+                            LegacySlimefunApiCompat.runAt(location, () -> {
+                                if (targetBlock.getType() == Material.AIR
+                                        && EquivalentConcept.this.getId().equals(LegacyBlockDataCompat.getSlimefunId(location))) {
+                                    targetBlock.setType(EquivalentConcept.this.getItem().getType());
+                                }
+                            });
                         }
-                    }, location);
+                    });
                     return 0;
                 });
             }
