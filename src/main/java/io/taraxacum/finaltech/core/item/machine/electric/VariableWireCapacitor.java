@@ -13,17 +13,16 @@ import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.finaltech.core.menu.AbstractMachineMenu;
 import io.taraxacum.finaltech.core.menu.unit.StatusMenu;
 import io.taraxacum.finaltech.setup.FinalTechItemStacks;
-import io.taraxacum.finaltech.util.BlockTickerUtil;
 import io.taraxacum.finaltech.util.ConfigUtil;
 import io.taraxacum.finaltech.util.RecipeUtil;
 import io.taraxacum.libs.slimefun.util.EnergyUtil;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 
@@ -45,19 +44,20 @@ public class VariableWireCapacitor extends AbstractElectricMachine implements Re
         Location location = block.getLocation();
         String charge = EnergyUtil.getCharge(location);
         if (StringNumberUtil.ZERO.equals(charge)) {
-            JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-            Runnable runnable = () -> {
+            LegacySlimefunApiCompat.runAt(location, () -> {
+                if (!this.getId().equals(LegacyBlockDataCompat.getSlimefunId(location))) {
+                    return;
+                }
+
                 LegacyBlockDataCompat.removeBlock(location);
                 LegacyBlockDataCompat.setSlimefunId(location, FinalTechItemStacks.VARIABLE_WIRE_RESISTANCE.getItemId());
                 Slimefun.getNetworkManager().updateAllNetworks(location);
-                javaPlugin.getServer().getScheduler().runTaskLater(javaPlugin, () -> {
+                LegacySlimefunApiCompat.runAt(location, () -> {
                     if (!location.getBlock().getType().isAir() && FinalTechItemStacks.VARIABLE_WIRE_RESISTANCE.getItemId().equals(LegacyBlockDataCompat.getSlimefunId(location))) {
                         block.setType(FinalTechItemStacks.VARIABLE_WIRE_RESISTANCE.getType());
                     }
-                }, 0);
-            };
-
-            javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> BlockTickerUtil.runTask(FinalTechChanged.getLocationRunnableFactory(), FinalTechChanged.isAsyncSlimefunItem(this.getId()), runnable, location));
+                });
+            });
         } else {
             BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
             if (blockMenu.hasViewer()) {
