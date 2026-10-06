@@ -40,14 +40,18 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
         this.addItemHandler(this.onBlockPlace());
         this.menu = this.setMachineMenu();
 
-        if (FinalTechChanged.getMultiThreadLevel() == 2) {
+        boolean requiresLocationOwnedTick = this.requiresLocationOwnedTick();
+        boolean forceAsync = FinalTechChanged.getMultiThreadLevel() == 2 && !requiresLocationOwnedTick;
+
+        if (forceAsync) {
             this.getAddon().getJavaPlugin().getLogger().info(this.getId() + "(" + this.getItemName() + ")" + " is optimized for multi-thread！！！");
-        } else if (!this.isSynchronized() && (FinalTechChanged.getMultiThreadLevel() == 1 || FinalTechChanged.isAsyncSlimefunItem(this.getId()))) {
+        } else if (!requiresLocationOwnedTick && !this.isSynchronized()
+                && (FinalTechChanged.getMultiThreadLevel() == 1 || FinalTechChanged.isAsyncSlimefunItem(this.getId()))) {
             this.getAddon().getJavaPlugin().getLogger().info(this.getId() + "(" + this.getItemName() + ")" + " is optimized for multi-thread！！！");
         }
 
         BlockTicker blockTicker;
-        if (FinalTechChanged.getMultiThreadLevel() == 2) {
+        if (forceAsync) {
             blockTicker = new BlockTicker() {
                 @Override
                 public boolean isSynchronized() {
@@ -69,7 +73,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
             blockTicker = new BlockTicker() {
                 @Override
                 public boolean isSynchronized() {
-                    return AbstractMachine.this.isSynchronized();
+                    return requiresLocationOwnedTick || AbstractMachine.this.isSynchronized();
                 }
 
                 @Override
@@ -82,7 +86,7 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
                     AbstractMachine.this.uniqueTick();
                 }
             };
-            if (!this.isSynchronized() && FinalTechChanged.getMultiThreadLevel() >= 1) {
+            if (!requiresLocationOwnedTick && !this.isSynchronized() && FinalTechChanged.getMultiThreadLevel() >= 1) {
                 FinalTechChanged.addAsyncSlimefunItem(this.getId());
             }
         }
@@ -101,6 +105,14 @@ public abstract class AbstractMachine extends AbstractMySlimefunItem {
 
     protected void uniqueTick() {
 
+    }
+
+    /**
+     * Returns whether this machine must remain on Slimefun's location-owned ticker even when
+     * FinalTECH's global multi-thread level requests asynchronous ticking.
+     */
+    protected boolean requiresLocationOwnedTick() {
+        return false;
     }
 
     @Nonnull
