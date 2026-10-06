@@ -3,6 +3,7 @@ package io.taraxacum.libs.slimefun.compat;
 import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ASlimefunDataContainer;
 import org.bukkit.Location;
 
@@ -16,6 +17,24 @@ import javax.annotation.Nonnull;
 public final class LegacySlimefunApiCompat {
 
     private LegacySlimefunApiCompat() {
+    }
+
+    /**
+     * Runs block/world work on the scheduler that owns this location.
+     * This maps to the global server thread on Paper/Purpur and to the owning region on Folia.
+     */
+    public static void runAt(@Nonnull Location location, @Nonnull Runnable runnable) {
+        Slimefun.runSyncAt(location, runnable);
+    }
+
+    /**
+     * Runs delayed block/world work on the scheduler that owns this location.
+     */
+    public static void runAt(
+            @Nonnull Location location,
+            @Nonnull Runnable runnable,
+            long delay) {
+        Slimefun.runSyncAt(location, runnable, delay);
     }
 
     public static int getResearchLevelCost(@Nonnull Research research) {
