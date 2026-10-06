@@ -226,6 +226,11 @@ public class MatrixReactor extends AbstractTickerDataMachine implements RecipeIt
     }
 
     @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
+    @Override
     public void registerDefaultRecipes() {
         RecipeUtil.registerDescriptiveRecipe(FinalTechChanged.getLanguageManager(), this,
                 String.valueOf(this.difficulty),

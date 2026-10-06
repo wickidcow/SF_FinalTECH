@@ -87,6 +87,9 @@ jobs:
       - name: Verify Part 3 Matrix Reactor scheduler safety
         run: python3 scripts/verify_part3_matrix_reactor_scheduler.py
 
+      - name: Verify Part 3 owned-tick override safety
+        run: python3 scripts/verify_part3_owned_tick_override.py
+
       - name: Verify ItemStack text compatibility
         run: python3 scripts/verify_itemstack_text_compat.py
 

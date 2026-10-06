@@ -108,17 +108,18 @@ public class AdvancedAutoCraft extends AbstractFaceMachine implements RecipeItem
                     }
                 }
             };
-            if (FinalTechChanged.isAsyncSlimefunItem(containerId)) {
-                FinalTechChanged.getLocationRunnableFactory().waitThenRun(runnable, block.getLocation(), containerBlock.getLocation());
-            } else {
-                runnable.run();
-            }
+            runnable.run();
         }
     }
 
     @Override
     protected boolean isSynchronized() {
-        return false;
+        return true;
+    }
+
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
     }
 
     @Override

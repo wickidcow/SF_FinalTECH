@@ -21,7 +21,6 @@ import io.taraxacum.libs.plugin.util.StringItemUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -30,7 +29,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -60,21 +58,10 @@ public class StorageInteractPort extends AbstractCargo implements RecipeItem {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         BlockMenu targetBlockMenu = LegacyBlockDataCompat.getMenu(targetBlock.getLocation());
         if (targetBlockMenu == null) {
-            if (Bukkit.isPrimaryThread()) {
-                BlockState blockState = targetBlock.getState();
-                if (blockState instanceof InventoryHolder) {
-                    Inventory targetInventory = ((InventoryHolder) blockState).getInventory();
-                    this.doFunction(targetInventory, blockMenu, block.getLocation());
-                }
-            } else {
-                JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-                javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> {
-                    BlockState blockState = targetBlock.getState();
-                    if (blockState instanceof InventoryHolder) {
-                        Inventory targetInventory = ((InventoryHolder) blockState).getInventory();
-                        FinalTechChanged.getLocationRunnableFactory().waitThenRun(() -> StorageInteractPort.this.doFunction(targetInventory, blockMenu, block.getLocation()), targetBlock.getLocation(), block.getLocation());
-                    }
-                });
+            BlockState blockState = targetBlock.getState();
+            if (blockState instanceof InventoryHolder) {
+                Inventory targetInventory = ((InventoryHolder) blockState).getInventory();
+                this.doFunction(targetInventory, blockMenu, block.getLocation());
             }
         }
     }
@@ -100,8 +87,7 @@ public class StorageInteractPort extends AbstractCargo implements RecipeItem {
         for (int slot : this.getInputSlot()) {
             ItemStack item = blockMenu.getItemInSlot(slot);
             if (!ItemStackUtil.isItemNull(item) && !FinalTechItems.STORAGE_CARD.isTargetItem(item)) {
-                JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-                javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> blockMenu.dropItems(location, MatrixReactorMenu.ITEM_INPUT_SLOT));
+                blockMenu.dropItems(location, MatrixReactorMenu.ITEM_INPUT_SLOT);
                 return;
             }
         }
@@ -189,6 +175,11 @@ public class StorageInteractPort extends AbstractCargo implements RecipeItem {
                 storageCardItem.getItemStack().setItemMeta(itemMeta);
             }
         }
+    }
+
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
     }
 
     @Override
