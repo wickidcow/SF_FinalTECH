@@ -56,9 +56,7 @@ public class VariableWireResistance extends AbstractElectricMachine implements R
                 LegacySlimefunApiCompat.setCharge((EnergyNetComponent) FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR, location, this.getCapacity());
                 Slimefun.getNetworkManager().updateAllNetworks(location);
                 LegacySlimefunApiCompat.runAt(location, () -> {
-                    if (!location.getBlock().getType().isAir()
-                            && FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getItemId()
-                            .equals(LegacyBlockDataCompat.getSlimefunId(location))) {
+                    if (!location.getBlock().getType().isAir() && FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getItemId().equals(LegacyBlockDataCompat.getSlimefunId(location))) {
                         block.setType(FinalTechItemStacks.VARIABLE_WIRE_CAPACITOR.getType());
                     }
                 });
