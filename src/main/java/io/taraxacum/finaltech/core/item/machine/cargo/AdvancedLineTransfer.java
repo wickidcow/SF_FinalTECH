@@ -17,10 +17,10 @@ import io.taraxacum.finaltech.core.menu.cargo.AdvancedLineTransferMenu;
 import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.util.*;
 import io.taraxacum.libs.plugin.dto.InvWithSlots;
-import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -29,7 +29,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -94,305 +93,174 @@ public class AdvancedLineTransfer extends AbstractCargo implements RecipeItem {
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
-        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
+        if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(location)) {
+            return;
+        }
+
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
+        if (blockMenu == null) {
+            return;
+        }
+
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-        boolean primaryThread = javaPlugin.getServer().isPrimaryThread();
         boolean drawParticle = blockMenu.hasViewer() || RouteShow.VALUE_TRUE.equals(RouteShow.HELPER.getOrDefaultValue(config));
 
-        if (primaryThread) {
-            BlockData blockData = block.getState().getBlockData();
-            if (!(blockData instanceof Directional)) {
-                return;
-            }
-            BlockFace blockFace = ((Directional) blockData).getFacing();
-            List<Block> blockList = this.searchBlock(block, blockFace, BlockSearchMode.LINE_HELPER.getOrDefaultValue(config));
-
-            if (!PermissionUtil.checkOfflinePermission(location, config, LocationUtil.transferToLocation(blockList))) {
-                return;
-            }
-
-            switch (BlockSearchSelf.HELPER.getOrDefaultValue(config)) {
-                case BlockSearchSelf.VALUE_START -> blockList.add(0, block);
-                case BlockSearchSelf.VALUE_END -> blockList.add(block);
-            }
-
-            final List<Block> finalBlockList;
-            switch (BlockSearchOrder.HELPER.getOrDefaultValue(config)) {
-                case BlockSearchOrder.VALUE_POSITIVE -> finalBlockList = blockList;
-                case BlockSearchOrder.VALUE_REVERSE -> finalBlockList = JavaUtil.reserve(blockList);
-                case BlockSearchOrder.VALUE_RANDOM -> finalBlockList = JavaUtil.shuffle(blockList);
-                default -> finalBlockList = null;
-            }
-            if (finalBlockList == null) {
-                return;
-            }
-
-            if (BlockSearchCycle.VALUE_TRUE.equals(BlockSearchCycle.HELPER.getOrDefaultValue(config)) && finalBlockList.size() > 1) {
-                if (CargoOrder.VALUE_REVERSE.equals(CargoOrder.HELPER.getOrDefaultValue(config))) {
-                    finalBlockList.add(0, finalBlockList.get(finalBlockList.size() - 1));
-                } else {
-                    finalBlockList.add(finalBlockList.get(0));
-                }
-            }
-
-            if (drawParticle && finalBlockList.size() > 0 && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
-                javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.ELECTRIC_SPARK, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / finalBlockList.size(), finalBlockList));
-            }
-
-            int cargoNumber = Integer.parseInt(CargoNumber.HELPER.getOrDefaultValue(config));
-            String cargoNumberMode = CargoNumberMode.HELPER.getOrDefaultValue(config);
-            String cargoOrder = CargoOrder.HELPER.getOrDefaultValue(config);
-            String cargoMode = CargoMode.HELPER.getOrDefaultValue(config);
-            String inputSize = SlotSearchSize.INPUT_HELPER.getOrDefaultValue(config);
-            String inputOrder = SlotSearchOrder.INPUT_HELPER.getOrDefaultValue(config);
-            String outputSize = SlotSearchSize.OUTPUT_HELPER.getOrDefaultValue(config);
-            String outputOrder = SlotSearchOrder.OUTPUT_HELPER.getOrDefaultValue(config);
-
-            int number;
-            Block inputBlock;
-            Block outputBlock;
-            InvWithSlots inputMap;
-            InvWithSlots outputMap;
-
-            SimpleCargoDTO simpleCargoDTO = new SimpleCargoDTO();
-            simpleCargoDTO.setInputSize(inputSize);
-            simpleCargoDTO.setInputOrder(inputOrder);
-            simpleCargoDTO.setOutputSize(outputSize);
-            simpleCargoDTO.setOutputOrder(outputOrder);
-            simpleCargoDTO.setCargoLimit(CargoLimit.HELPER.getOrDefaultValue(config));
-            simpleCargoDTO.setCargoFilter(CargoFilter.HELPER.getOrDefaultValue(config));
-            simpleCargoDTO.setFilterInv(blockMenu.toInventory());
-            simpleCargoDTO.setFilterSlots(AdvancedLineTransferMenu.ITEM_MATCH);
-
-            for (int i = 0, size = finalBlockList.size(); i < size - 1; i++) {
-                switch (cargoOrder) {
-                    case CargoOrder.VALUE_POSITIVE:
-                        inputBlock = finalBlockList.get(i);
-                        outputBlock = finalBlockList.get((i + 1) % size);
-                        break;
-                    case CargoOrder.VALUE_REVERSE:
-                        inputBlock = finalBlockList.get((i + 1) % size);
-                        outputBlock = finalBlockList.get(i);
-                        break;
-                    default:
-                        continue;
-                }
-
-                if (inputBlock.getLocation().equals(outputBlock.getLocation())) {
-                    continue;
-                }
-
-                if (CargoMode.VALUE_INPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
-                    outputMap = null;
-                } else {
-                    outputMap = CargoUtil.getInvWithSlots(outputBlock, outputSize, outputOrder);
-                }
-                if (CargoMode.VALUE_OUTPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
-                    inputMap = null;
-                } else {
-                    inputMap = CargoUtil.getInvWithSlots(inputBlock, inputSize, inputOrder);
-                }
-
-                if (inputMap != null && outputMap != null && LocationUtil.isSameLocation(inputMap.getInventory().getLocation(), outputMap.getInventory().getLocation())) {
-                    continue;
-                }
-
-                simpleCargoDTO.setInputBlock(inputBlock);
-                simpleCargoDTO.setInputMap(inputMap);
-                simpleCargoDTO.setOutputBlock(outputBlock);
-                simpleCargoDTO.setOutputMap(outputMap);
-                simpleCargoDTO.setCargoNumber(cargoNumber);
-
-                number = CargoUtil.doSimpleCargo(simpleCargoDTO, cargoMode);
-
-                if (CargoNumberMode.VALUE_UNIVERSAL.equals(cargoNumberMode)) {
-                    cargoNumber -= number;
-                    if (cargoNumber <= 0) {
-                        break;
-                    }
-                }
-            }
-        } else {
-            javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> {
-                BlockData blockData = block.getState().getBlockData();
-                if (!(blockData instanceof Directional)) {
-                    return;
-                }
-                BlockFace blockFace = ((Directional) blockData).getFacing();
-                final List<Block> blockList = AdvancedLineTransfer.this.searchBlock(block, blockFace, BlockSearchMode.LINE_HELPER.getOrDefaultValue(config));
-                if (blockList.isEmpty()) {
-                    return;
-                }
-
-                List<Inventory> vanillaInventories = new ArrayList<>();
-                for (Block b : blockList) {
-                    vanillaInventories.add(CargoUtil.getVanillaInventory(b));
-                }
-
-                ServerRunnableLockFactory.getInstance(javaPlugin, Location.class).waitThenRun(() -> {
-                    if (!LegacyBlockDataCompat.hasBlockData(location)) {
-                        return;
-                    }
-
-                    if (!PermissionUtil.checkOfflinePermission(location, config, LocationUtil.transferToLocation(blockList))) {
-                        return;
-                    }
-
-                    switch (BlockSearchSelf.HELPER.getOrDefaultValue(config)) {
-                        case BlockSearchSelf.VALUE_START -> {
-                            blockList.add(0, block);
-                            vanillaInventories.add(0, null);
-                        }
-                        case BlockSearchSelf.VALUE_END -> {
-                            blockList.add(block);
-                            vanillaInventories.add(null);
-                        }
-                    }
-
-                    final List<Block> finalBlockList;
-                    final List<Inventory> finalVanillaInventories;
-                    switch (BlockSearchOrder.HELPER.getOrDefaultValue(config)) {
-                        case BlockSearchOrder.VALUE_POSITIVE -> {
-                            finalBlockList = blockList;
-                            finalVanillaInventories = vanillaInventories;
-                        }
-                        case BlockSearchOrder.VALUE_REVERSE -> {
-                            finalBlockList = JavaUtil.reserve(blockList);
-                            finalVanillaInventories = JavaUtil.reserve(vanillaInventories);
-                        }
-                        case BlockSearchOrder.VALUE_RANDOM -> {
-                            int[] key = JavaUtil.generateRandomInts(blockList.size());
-                            finalBlockList = JavaUtil.shuffleByInts(blockList, key);
-                            finalVanillaInventories = JavaUtil.shuffleByInts(vanillaInventories, key);
-                        }
-                        default -> {
-                            finalBlockList = null;
-                            finalVanillaInventories = null;
-                        }
-                    }
-                    if (finalBlockList == null) {
-                        return;
-                    }
-
-                    if (BlockSearchCycle.VALUE_TRUE.equals(BlockSearchCycle.HELPER.getOrDefaultValue(config)) && finalBlockList.size() > 1) {
-                        if (CargoOrder.VALUE_REVERSE.equals(CargoOrder.HELPER.getOrDefaultValue(config))) {
-                            finalBlockList.add(0, finalBlockList.get(finalBlockList.size() - 1));
-                        } else {
-                            finalBlockList.add(finalBlockList.get(0));
-                        }
-                    }
-
-                    if (drawParticle && finalBlockList.size() > 0 && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
-                        javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.ELECTRIC_SPARK, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / finalBlockList.size(), finalBlockList));
-                    }
-
-                    int cargoNumber = Integer.parseInt(CargoNumber.HELPER.getOrDefaultValue(config));
-                    String cargoNumberMode = CargoNumberMode.HELPER.getOrDefaultValue(config);
-                    String cargoOrder = CargoOrder.HELPER.getOrDefaultValue(config);
-                    String cargoMode = CargoMode.HELPER.getOrDefaultValue(config);
-                    String inputSize = SlotSearchSize.INPUT_HELPER.getOrDefaultValue(config);
-                    String inputOrder = SlotSearchOrder.INPUT_HELPER.getOrDefaultValue(config);
-                    String outputSize = SlotSearchSize.OUTPUT_HELPER.getOrDefaultValue(config);
-                    String outputOrder = SlotSearchOrder.OUTPUT_HELPER.getOrDefaultValue(config);
-
-                    int number;
-                    Block inputBlock;
-                    Block outputBlock;
-                    InvWithSlots inputMap;
-                    InvWithSlots outputMap;
-
-                    SimpleCargoDTO simpleCargoDTO = new SimpleCargoDTO();
-                    simpleCargoDTO.setInputSize(inputSize);
-                    simpleCargoDTO.setInputOrder(inputOrder);
-                    simpleCargoDTO.setOutputSize(outputSize);
-                    simpleCargoDTO.setOutputOrder(outputOrder);
-                    simpleCargoDTO.setCargoLimit(CargoLimit.HELPER.getOrDefaultValue(config));
-                    simpleCargoDTO.setCargoFilter(CargoFilter.HELPER.getOrDefaultValue(config));
-                    simpleCargoDTO.setFilterInv(blockMenu.toInventory());
-                    simpleCargoDTO.setFilterSlots(AdvancedLineTransferMenu.ITEM_MATCH);
-
-                    int input;
-                    int output;
-                    for (int i = 0, size = finalBlockList.size(); i < size - 1; i++) {
-                        switch (cargoOrder) {
-                            case CargoOrder.VALUE_POSITIVE:
-                                input = i;
-                                output = (i + 1) % size;
-                                break;
-                            case CargoOrder.VALUE_REVERSE:
-                                input = (i + 1) % size;
-                                output = i;
-                                break;
-                            default:
-                                continue;
-                        }
-
-                        inputBlock = finalBlockList.get(input);
-                        outputBlock = finalBlockList.get(output);
-                        if (inputBlock.getLocation().equals(outputBlock.getLocation())) {
-                            continue;
-                        }
-
-                        if (CargoMode.VALUE_OUTPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
-                            inputMap = null;
-                        } else if (LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
-                            inputMap = CargoUtil.getInvWithSlots(inputBlock, inputSize, inputOrder);
-                        } else if (finalVanillaInventories.get(input) != null) {
-                            inputMap = CargoUtil.calInvWithSlots(finalVanillaInventories.get(input), inputOrder);
-                        } else {
-                            continue;
-                        }
-                        if (CargoMode.VALUE_INPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
-                            outputMap = null;
-                        } else if (LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
-                            outputMap = CargoUtil.getInvWithSlots(outputBlock, outputSize, outputOrder);
-                        } else if (finalVanillaInventories.get(output) != null) {
-                            outputMap = CargoUtil.calInvWithSlots(finalVanillaInventories.get(output), outputOrder);
-                        } else {
-                            continue;
-                        }
-
-                        if (inputMap != null && outputMap != null && LocationUtil.isSameLocation(inputMap.getInventory().getLocation(), outputMap.getInventory().getLocation())) {
-                            continue;
-                        }
-
-                        simpleCargoDTO.setInputBlock(inputBlock);
-                        simpleCargoDTO.setInputMap(inputMap);
-                        simpleCargoDTO.setOutputBlock(outputBlock);
-                        simpleCargoDTO.setOutputMap(outputMap);
-                        simpleCargoDTO.setCargoNumber(cargoNumber);
-
-                        number = CargoUtil.doSimpleCargo(simpleCargoDTO, cargoMode);
-
-                        if (CargoNumberMode.VALUE_UNIVERSAL.equals(cargoNumberMode)) {
-                            cargoNumber -= number;
-                            if (cargoNumber <= 0) {
-                                break;
-                            }
-                        }
-                    }
-                }, LocationUtil.transferToLocation(blockList));
-            });
+        BlockData blockData = block.getState().getBlockData();
+        if (!(blockData instanceof Directional)) {
+            return;
         }
+        BlockFace blockFace = ((Directional) blockData).getFacing();
+        List<Block> blockList = this.searchBlock(block, blockFace, BlockSearchMode.LINE_HELPER.getOrDefaultValue(config));
+
+        if (blockList.isEmpty()) {
+            return;
+        }
+
+        if (!PermissionUtil.checkOfflinePermission(location, config, LocationUtil.transferToLocation(blockList))) {
+            return;
+        }
+
+        switch (BlockSearchSelf.HELPER.getOrDefaultValue(config)) {
+            case BlockSearchSelf.VALUE_START -> blockList.add(0, block);
+            case BlockSearchSelf.VALUE_END -> blockList.add(block);
+        }
+
+        final List<Block> finalBlockList;
+        switch (BlockSearchOrder.HELPER.getOrDefaultValue(config)) {
+            case BlockSearchOrder.VALUE_POSITIVE -> finalBlockList = blockList;
+            case BlockSearchOrder.VALUE_REVERSE -> finalBlockList = JavaUtil.reserve(blockList);
+            case BlockSearchOrder.VALUE_RANDOM -> finalBlockList = JavaUtil.shuffle(blockList);
+            default -> finalBlockList = null;
+        }
+        if (finalBlockList == null) {
+            return;
+        }
+
+        if (BlockSearchCycle.VALUE_TRUE.equals(BlockSearchCycle.HELPER.getOrDefaultValue(config)) && finalBlockList.size() > 1) {
+            if (CargoOrder.VALUE_REVERSE.equals(CargoOrder.HELPER.getOrDefaultValue(config))) {
+                finalBlockList.add(0, finalBlockList.get(finalBlockList.size() - 1));
+            } else {
+                finalBlockList.add(finalBlockList.get(0));
+            }
+        }
+
+        if (drawParticle && finalBlockList.size() > 0 && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
+            javaPlugin.getServer().getScheduler().runTaskAsynchronously(javaPlugin, () -> ParticleUtil.drawCubeByBlock(javaPlugin, Particle.ELECTRIC_SPARK, this.particleInterval * Slimefun.getTickerTask().getTickRate() * 50L / finalBlockList.size(), finalBlockList));
+        }
+
+        int cargoNumber = Integer.parseInt(CargoNumber.HELPER.getOrDefaultValue(config));
+        String cargoNumberMode = CargoNumberMode.HELPER.getOrDefaultValue(config);
+        String cargoOrder = CargoOrder.HELPER.getOrDefaultValue(config);
+        String cargoMode = CargoMode.HELPER.getOrDefaultValue(config);
+        String inputSize = SlotSearchSize.INPUT_HELPER.getOrDefaultValue(config);
+        String inputOrder = SlotSearchOrder.INPUT_HELPER.getOrDefaultValue(config);
+        String outputSize = SlotSearchSize.OUTPUT_HELPER.getOrDefaultValue(config);
+        String outputOrder = SlotSearchOrder.OUTPUT_HELPER.getOrDefaultValue(config);
+
+        int number;
+        Block inputBlock;
+        Block outputBlock;
+        InvWithSlots inputMap;
+        InvWithSlots outputMap;
+
+        SimpleCargoDTO simpleCargoDTO = new SimpleCargoDTO();
+        simpleCargoDTO.setInputSize(inputSize);
+        simpleCargoDTO.setInputOrder(inputOrder);
+        simpleCargoDTO.setOutputSize(outputSize);
+        simpleCargoDTO.setOutputOrder(outputOrder);
+        simpleCargoDTO.setCargoLimit(CargoLimit.HELPER.getOrDefaultValue(config));
+        simpleCargoDTO.setCargoFilter(CargoFilter.HELPER.getOrDefaultValue(config));
+        simpleCargoDTO.setFilterInv(blockMenu.toInventory());
+        simpleCargoDTO.setFilterSlots(AdvancedLineTransferMenu.ITEM_MATCH);
+
+        for (int i = 0, size = finalBlockList.size(); i < size - 1; i++) {
+            switch (cargoOrder) {
+                case CargoOrder.VALUE_POSITIVE:
+                    inputBlock = finalBlockList.get(i);
+                    outputBlock = finalBlockList.get((i + 1) % size);
+                    break;
+                case CargoOrder.VALUE_REVERSE:
+                    inputBlock = finalBlockList.get((i + 1) % size);
+                    outputBlock = finalBlockList.get(i);
+                    break;
+                default:
+                    continue;
+            }
+
+            if (inputBlock.getLocation().equals(outputBlock.getLocation())) {
+                continue;
+            }
+
+            if (CargoMode.VALUE_INPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(outputBlock.getLocation())) {
+                outputMap = null;
+            } else {
+                outputMap = CargoUtil.getInvWithSlots(outputBlock, outputSize, outputOrder);
+            }
+            if (CargoMode.VALUE_OUTPUT_MAIN.equals(cargoMode) && LegacyBlockDataCompat.hasMenu(inputBlock.getLocation())) {
+                inputMap = null;
+            } else {
+                inputMap = CargoUtil.getInvWithSlots(inputBlock, inputSize, inputOrder);
+            }
+
+            if (inputMap != null && outputMap != null && LocationUtil.isSameLocation(inputMap.getInventory().getLocation(), outputMap.getInventory().getLocation())) {
+                continue;
+            }
+
+            simpleCargoDTO.setInputBlock(inputBlock);
+            simpleCargoDTO.setInputMap(inputMap);
+            simpleCargoDTO.setOutputBlock(outputBlock);
+            simpleCargoDTO.setOutputMap(outputMap);
+            simpleCargoDTO.setCargoNumber(cargoNumber);
+
+            number = CargoUtil.doSimpleCargo(simpleCargoDTO, cargoMode);
+
+            if (CargoNumberMode.VALUE_UNIVERSAL.equals(cargoNumberMode)) {
+                cargoNumber -= number;
+                if (cargoNumber <= 0) {
+                    break;
+                }
+            }
+        }
+        
     }
 
     @Nonnull
     public List<Block> searchBlock(@Nonnull Block begin, @Nonnull BlockFace blockFace, @Nonnull String blockSearchMode) {
         List<Block> list = new ArrayList<>();
         Block block = begin.getRelative(blockFace);
+
         if (BlockSearchMode.VALUE_ZERO.equals(blockSearchMode)) {
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())) {
+                return list;
+            }
             if (CargoUtil.hasInventory(block)) {
                 list.add(block);
             }
+
             block = block.getRelative(blockFace);
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())) {
+                list.clear();
+                return list;
+            }
             if (CargoUtil.hasInventory(block)) {
                 list.add(block);
             }
             return list;
         }
-        while (CargoUtil.hasInventory(block)) {
-            if (LegacyBlockDataCompat.hasMenu(block.getLocation()) && LegacyBlockDataCompat.getMenu(block.getLocation()).getPreset().getID().equals(FinalTechItemStacks.LINE_TRANSFER.getItemId())) {
+
+        while (true) {
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())) {
+                list.clear();
+                return list;
+            }
+            if (!CargoUtil.hasInventory(block)) {
+                break;
+            }
+
+            if (LegacyBlockDataCompat.hasMenu(block.getLocation())
+                    && LegacyBlockDataCompat.getMenu(block.getLocation()).getPreset().getID()
+                    .equals(FinalTechItemStacks.LINE_TRANSFER.getItemId())) {
                 if (BlockSearchMode.VALUE_PENETRATE.equals(blockSearchMode)) {
                     block = block.getRelative(blockFace);
                     continue;
@@ -401,6 +269,7 @@ public class AdvancedLineTransfer extends AbstractCargo implements RecipeItem {
                     break;
                 }
             }
+
             list.add(block);
             block = block.getRelative(blockFace);
         }
