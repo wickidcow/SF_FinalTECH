@@ -64,11 +64,6 @@ public class AdvancedAutoCraftFrame extends AbstractConfigFreeMachine implements
     }
 
     @Override
-    protected boolean requiresLocationOwnedTick() {
-        return true;
-    }
-
-    @Override
     public void registerDefaultRecipes() {
         RecipeUtil.registerDescriptiveRecipeWithBorder(FinalTechChanged.getLanguageManager(), this);
 
