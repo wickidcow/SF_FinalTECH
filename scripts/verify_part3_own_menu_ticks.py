@@ -13,6 +13,18 @@ def require(condition: bool, message: str) -> None:
         raise SystemExit(message)
 
 
+OWN_LOCATION_BASES = (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/AbstractElectricMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/AbstractEnergyProviderMachine.java",
+)
+
+for path in OWN_LOCATION_BASES:
+    source = read(path)
+    require(
+        "protected boolean requiresLocationOwnedTick() {\n        return true;\n    }" in source,
+        f"{path} must opt its single-location hierarchy out of forced asynchronous ticking",
+    )
+
 OWN_MENU_MACHINES = (
     "src/main/java/io/taraxacum/finaltech/core/item/machine/template/basic/AbstractBasicMachine.java",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/template/advanced/AbstractAdvanceMachine.java",
@@ -54,6 +66,19 @@ require(
     and "Icon.updateQuantityModule(" in frame,
     "AdvancedAutoCraftFrame must retain its live-menu viewer/module update behavior",
 )
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/DustGenerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/TimeGenerator.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireCapacitor.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/VariableWireResistance.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/capacitor/AbstractElectricCapacitor.java",
+):
+    source = read(path)
+    require(
+        "LegacyBlockDataCompat.getMenu(" in source,
+        f"{path} must remain a single-location live-menu consumer under its owned base",
+    )
 
 for path in (
     "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/PointTransfer.java",
