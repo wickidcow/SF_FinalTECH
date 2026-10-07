@@ -150,6 +150,7 @@ public class JavaUtil {
         return result;
     }
 
+    @SafeVarargs
     public static <T> boolean matchOnce(T source, T... targets) {
         for (T object : targets) {
             if (object.equals(source)) {
@@ -168,6 +169,7 @@ public class JavaUtil {
     /**
      * @return In most case, it will not return null. (￣▽￣)"
      */
+    @SafeVarargs
     public static <T> T getFirstNotNull(T... objects) {
         for (T object : objects) {
             if (object != null) {

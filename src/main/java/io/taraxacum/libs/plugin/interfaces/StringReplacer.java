@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface StringReplacer {
+    // Keep the public generic-varargs contract; abstract methods cannot use @SafeVarargs.
+    @SuppressWarnings("unchecked")
     void addFunction(@Nonnull Function<String, String>... function);
 
     @Nonnull

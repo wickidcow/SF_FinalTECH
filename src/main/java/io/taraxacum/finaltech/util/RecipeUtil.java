@@ -44,9 +44,10 @@ public class RecipeUtil {
             Method method = ReflectionUtil.getMethod(slimefunItem.getClass(), "getMachineRecipes");
             if (method != null && method.getReturnType().equals(List.class)) {
                 method.setAccessible(true);
-                List<MachineRecipe> recipes = (List<MachineRecipe>) method.invoke(slimefunItem);
+                List<?> recipes = (List<?>) method.invoke(slimefunItem);
                 if (recipes != null) {
-                    for (MachineRecipe recipe : recipes) {
+                    for (Object value : recipes) {
+                        MachineRecipe recipe = (MachineRecipe) value;
                         boolean disabled = false;
                         for (ItemStack itemStack : recipe.getOutput()) {
                             SlimefunItem sfItem = SlimefunItem.getByItem(itemStack);
@@ -66,11 +67,11 @@ public class RecipeUtil {
             method = ReflectionUtil.getMethod(slimefunItem.getClass(), "getRecipes");
             if (method != null) {
                 method.setAccessible(true);
-                List<ItemStack[]> recipes = (List<ItemStack[]>) method.invoke(slimefunItem);
+                List<?> recipes = (List<?>) method.invoke(slimefunItem);
                 if (recipes != null) {
                     for (int i = 0; i * 2 + 1 < recipes.size(); i++) {
-                        ItemStack[] inputs = recipes.get(i * 2);
-                        ItemStack[] outputs = recipes.get(i * 2 + 1);
+                        ItemStack[] inputs = (ItemStack[]) recipes.get(i * 2);
+                        ItemStack[] outputs = (ItemStack[]) recipes.get(i * 2 + 1);
 
                         boolean disabled = false;
                         for (ItemStack itemStack : outputs) {
@@ -176,9 +177,10 @@ public class RecipeUtil {
         try {
             Field field = ReflectionUtil.getField(goldPan.getClass(), "drops");
             field.setAccessible(true);
-            Set<GoldPanDrop> goldPanDrops = (Set<GoldPanDrop>) field.get(goldPan);
+            Set<?> goldPanDrops = (Set<?>) field.get(goldPan);
             List<RandomMachineRecipe.RandomOutput> randomOutputList = new ArrayList<>(goldPanDrops.size());
-            for (GoldPanDrop goldPanDrop : goldPanDrops) {
+            for (Object value : goldPanDrops) {
+                GoldPanDrop goldPanDrop = (GoldPanDrop) value;
                 randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{goldPanDrop.getOutput()}, goldPanDrop.getValue()));
             }
             recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(goldPan))}, randomOutputList));
@@ -198,9 +200,10 @@ public class RecipeUtil {
         try {
             Field field = ReflectionUtil.getField(netherGoldPan.getClass(), "drops");
             field.setAccessible(true);
-            Set<GoldPanDrop> goldPanDrops = (Set<GoldPanDrop>) field.get(netherGoldPan);
+            Set<?> goldPanDrops = (Set<?>) field.get(netherGoldPan);
             List<RandomMachineRecipe.RandomOutput> randomOutputList = new ArrayList<>(goldPanDrops.size());
-            for (GoldPanDrop goldPanDrop : goldPanDrops) {
+            for (Object value : goldPanDrops) {
+                GoldPanDrop goldPanDrop = (GoldPanDrop) value;
                 randomOutputList.add(new RandomMachineRecipe.RandomOutput(new ItemStack[]{goldPanDrop.getOutput()}, goldPanDrop.getValue()));
             }
             recipeItem.registerRecipe(new RandomMachineRecipe(new ItemStack[]{new ItemStack(LegacyRecipeApiCompat.getPrimaryGoldPanInput(netherGoldPan))}, randomOutputList));

@@ -60,7 +60,10 @@ public class ReflectionUtil {
             field.setAccessible(true);
             Object result = field.get(o);
             field.setAccessible(b);
-            return (T) result;
+            // The legacy API lets the caller select T; clazz describes the field owner, not T.
+            @SuppressWarnings("unchecked")
+            T property = (T) result;
+            return property;
         }
 
         return null;

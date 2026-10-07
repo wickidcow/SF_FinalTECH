@@ -179,7 +179,10 @@ public class ConfigFileManager {
         String path = ConfigFileManager.calPath(paths);
         if (this.configFile.contains(path)) {
             try {
-                return (T) this.configFile.get(path, defaultValue);
+                // Preserve the caller-selected legacy type and the original Bukkit value.
+                @SuppressWarnings("unchecked")
+                T value = (T) this.configFile.get(path, defaultValue);
+                return value;
             } catch (Exception e) {
                 e.printStackTrace();
                 return defaultValue;
