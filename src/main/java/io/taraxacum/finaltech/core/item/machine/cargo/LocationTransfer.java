@@ -19,6 +19,7 @@ import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -68,8 +69,16 @@ public class LocationTransfer extends AbstractCargo implements RecipeItem {
 
     @Override
     protected void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
-        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
+        if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(location)) {
+            return;
+        }
+
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
+        if (blockMenu == null) {
+            return;
+        }
+
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
         boolean drawParticle = blockMenu.hasViewer() || RouteShow.VALUE_TRUE.equals(RouteShow.HELPER.getOrDefaultValue(config));
 
@@ -78,7 +87,8 @@ public class LocationTransfer extends AbstractCargo implements RecipeItem {
             return;
         }
         Location targetLocation = LocationUtil.parseLocationInItem(locationRecorder);
-        if (targetLocation == null || targetLocation.equals(location)) {
+        if (targetLocation == null || targetLocation.equals(location)
+                || !LegacySlimefunApiCompat.isOwnedByCurrentRegion(targetLocation)) {
             return;
         }
         Block targetBlock = targetLocation.getBlock();
