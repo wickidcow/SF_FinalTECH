@@ -34,5 +34,10 @@ public abstract class AbstractEnergyProviderMachine extends AbstractTickerDataMa
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     protected abstract int getGeneratedOutputCompat(@Nonnull Location location);
 }
