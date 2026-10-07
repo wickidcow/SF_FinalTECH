@@ -14,6 +14,7 @@ def require(condition: bool, message: str) -> None:
 
 
 OWN_LOCATION_BASES = (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/AbstractConfigFreeMachine.java",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/electric/AbstractElectricMachine.java",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/AbstractEnergyProviderMachine.java",
 )
@@ -32,7 +33,6 @@ OWN_MENU_MACHINES = (
     "src/main/java/io/taraxacum/finaltech/core/item/machine/template/extraction/AbstractExtractionMachine.java",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/template/generator/AbstractGeneratorMachine.java",
     "src/main/java/io/taraxacum/finaltech/core/item/machine/logic/AbstractLogicComparator.java",
-    "src/main/java/io/taraxacum/finaltech/core/item/machine/AdvancedAutoCraftFrame.java",
 )
 
 for path in OWN_MENU_MACHINES:
@@ -50,7 +50,7 @@ for path in OWN_MENU_MACHINES:
         f"{path} historical machine synchronization declaration unexpectedly changed",
     )
 
-for path in OWN_MENU_MACHINES[:-1]:
+for path in OWN_MENU_MACHINES:
     source = read(path)
     require(
         "blockMenu.toInventory()" in source
@@ -60,11 +60,42 @@ for path in OWN_MENU_MACHINES[:-1]:
         f"{path} no longer mutates its own live menu; revisit whether the owned-tick override is still needed",
     )
 
-frame = read(OWN_MENU_MACHINES[-1])
+frame = read("src/main/java/io/taraxacum/finaltech/core/item/machine/AdvancedAutoCraftFrame.java")
 require(
-    "blockMenu.hasViewer()" in frame
+    "extends AbstractConfigFreeMachine" in frame
+    and "blockMenu.hasViewer()" in frame
     and "Icon.updateQuantityModule(" in frame,
-    "AdvancedAutoCraftFrame must retain its live-menu viewer/module update behavior",
+    "AdvancedAutoCraftFrame must inherit the config-free owned tick and retain its live-menu viewer/module update behavior",
+)
+
+for path in (
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/AutoItemDismantleTable.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/BasicFrameMachine.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/CobbleStoneFactory.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/DigitAdder.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/DustFactoryStone.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EnergyInputTable.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EnergyOutputTable.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EnergyTable.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/EntropyConstructor.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/ItemDeserializeParser.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/ItemFixer.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/LogicCrafter.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/MatrixItemDeserializeParser.java",
+    "src/main/java/io/taraxacum/finaltech/core/item/machine/MatrixItemDismantleTable.java",
+):
+    source = read(path)
+    require(
+        "extends AbstractConfigFreeMachine" in source
+        and "LegacyBlockDataCompat.getMenu(" in source,
+        f"{path} must remain an own-menu config-free machine under the shared owned-tick contract",
+    )
+
+entropy_seed = read("src/main/java/io/taraxacum/finaltech/core/item/machine/EntropySeed.java")
+require(
+    "extends AbstractConfigFreeMachine" in entropy_seed
+    and "LegacySlimefunApiCompat.runAt(location, () -> transformAt(block));" in entropy_seed,
+    "EntropySeed must inherit the config-free owned tick while retaining its same-location transition boundary",
 )
 
 for path in (
