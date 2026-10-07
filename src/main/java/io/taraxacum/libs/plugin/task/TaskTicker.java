@@ -24,7 +24,10 @@ public class TaskTicker<T> {
 
     protected TaskTicker(@Nonnull T t) {
         this.object = t;
-        this.clazz = (Class<T>) t.getClass();
+        // Preserve the runtime-class lock key used by the legacy ticker for this object.
+        @SuppressWarnings("unchecked")
+        Class<T> runtimeClass = (Class<T>) t.getClass();
+        this.clazz = runtimeClass;
     }
 
     @Nonnull
@@ -45,7 +48,7 @@ public class TaskTicker<T> {
         for (TickerTask<T> existedTickerTask : tickerTaskList) {
             if (existedTickerTask.getId().equals(tickerTask.getId())) {
                 existedTickerTask.addTime(tickerTask.getTime());
-                if (tickerTask instanceof AddTask addTask && existedTickerTask instanceof AddTask existedAddTask) {
+                if (tickerTask instanceof AddTask<T> addTask && existedTickerTask instanceof AddTask<T> existedAddTask) {
                     taskTicker.addTick(existedAddTask, addTask);
                 }
                 return taskTicker;
@@ -53,7 +56,7 @@ public class TaskTicker<T> {
         }
 
         taskTicker.tickerTaskList.add(tickerTask);
-        if (tickerTask instanceof StartTask startTask) {
+        if (tickerTask instanceof StartTask<T> startTask) {
             taskTicker.startTick(startTask);
         }
 
@@ -84,7 +87,7 @@ public class TaskTicker<T> {
         }
 
         taskTicker.tickerTaskList.add(tickerTask);
-        if (tickerTask instanceof StartTask startTask) {
+        if (tickerTask instanceof StartTask<T> startTask) {
             taskTicker.startTick(startTask);
         }
 
@@ -153,7 +156,7 @@ public class TaskTicker<T> {
                         TickerTask<T> tickerTask = iterator.next();
                         if (tickerTask.getTime() <= 0) {
                             iterator.remove();
-                            if (tickerTask instanceof EndTask endTask) {
+                            if (tickerTask instanceof EndTask<T> endTask) {
                                 TaskTicker.this.endTick(endTask);
                             }
                         } else {
@@ -214,6 +217,7 @@ public class TaskTicker<T> {
         }
 
         @Nonnull
+        @SuppressWarnings("unchecked") // Private construction binds each cached map to its Class<T> key.
         protected static <T> TaskMap<T> getInstance(@Nonnull Class<T> clazz) {
             if (INSTANCE_MAP.containsKey(clazz)) {
                 return (TaskTicker.TaskMap<T>) INSTANCE_MAP.get(clazz);

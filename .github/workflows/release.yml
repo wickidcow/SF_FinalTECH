@@ -108,6 +108,9 @@ jobs:
       - name: Verify Part 3 particle region scheduler safety
         run: python3 scripts/verify_part3_particle_region_scheduler.py
 
+      - name: Verify unchecked generics boundary
+        run: python3 scripts/verify_unchecked_generics_boundary.py
+
       - name: Verify ItemStack text compatibility
         run: python3 scripts/verify_itemstack_text_compat.py
 

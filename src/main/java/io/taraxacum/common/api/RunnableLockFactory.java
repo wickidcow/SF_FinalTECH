@@ -9,6 +9,7 @@ import java.util.concurrent.FutureTask;
  *
  * @param <T>
  */
+@SuppressWarnings("unchecked")
 public interface RunnableLockFactory<T> {
 
     /**

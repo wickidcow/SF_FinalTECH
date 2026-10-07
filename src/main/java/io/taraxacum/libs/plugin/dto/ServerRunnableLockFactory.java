@@ -39,6 +39,7 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
         ServerRunnableLockFactory.serverStop = true;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> ServerRunnableLockFactory<T> getInstance(@Nonnull Plugin plugin, @Nonnull Class<T> clazz) {
         Map<Class<?>, ServerRunnableLockFactory<?>> instanceClassMap = INSTANCE_MAP.get(plugin);
         if (instanceClassMap != null) {
@@ -248,6 +249,7 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
         }
 
         @Nonnull
+        @SuppressWarnings("unchecked")
         protected static <T> ObjectMap<T> getInstance(@Nonnull Class<T> clazz) {
             if (INSTANCE_MAP.containsKey(clazz)) {
                 return (ObjectMap<T>) INSTANCE_MAP.get(clazz);
@@ -282,7 +284,8 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
             this.factoryMap.remove(object);
         }
 
-        protected void remove(@Nonnull T... objects) {
+        @SafeVarargs
+        protected final void remove(@Nonnull T... objects) {
             for (T object : objects) {
                 this.taskMap.remove(object);
                 this.factoryMap.remove(object);

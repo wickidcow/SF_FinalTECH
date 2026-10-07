@@ -62,7 +62,7 @@ public class FuelOperator extends AbstractFaceMachine implements RecipeItem {
         this.pointFunction(block, 1, location -> {
             LocationInfo locationInfo = LocationInfo.get(location);
             if (locationInfo != null && !this.notAllowedId.contains(locationInfo.getId())) {
-                if (locationInfo.getSlimefunItem() instanceof EnergyNetProvider && locationInfo.getSlimefunItem() instanceof MachineProcessHolder machineProcessHolder) {
+                if (locationInfo.getSlimefunItem() instanceof EnergyNetProvider && locationInfo.getSlimefunItem() instanceof MachineProcessHolder<?> machineProcessHolder) {
                     BlockTickerUtil.runTask(FinalTechChanged.getLocationRunnableFactory(), FinalTechChanged.isAsyncSlimefunItem(locationInfo.getId()), () -> FuelOperator.this.doCharge(machineProcessHolder, location), location);
                 }
             }
@@ -70,11 +70,14 @@ public class FuelOperator extends AbstractFaceMachine implements RecipeItem {
         });
     }
 
-    private void doCharge(@Nonnull MachineProcessHolder<FuelOperation> MachineProcessHolder, @Nonnull Location location) {
-        MachineOperation machineOperation = MachineProcessHolder.getMachineProcessor().getOperation(location);
+    private void doCharge(@Nonnull MachineProcessHolder<?> holder, @Nonnull Location location) {
+        // Retain the historical fuel-provider contract without narrowing eligible machines.
+        @SuppressWarnings("unchecked")
+        MachineProcessHolder<FuelOperation> machineProcessHolder = (MachineProcessHolder<FuelOperation>) holder;
+        MachineOperation machineOperation = machineProcessHolder.getMachineProcessor().getOperation(location);
         if (machineOperation == null) {
             machineOperation = new FuelOperation(new MachineFuel(2, new ItemStack(Material.COBBLESTONE)));
-            MachineProcessHolder.getMachineProcessor().startOperation(location, (FuelOperation) machineOperation);
+            machineProcessHolder.getMachineProcessor().startOperation(location, (FuelOperation) machineOperation);
         }
     }
 
