@@ -191,33 +191,31 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
 
     @SafeVarargs
     private void waitFor(int index, @Nonnull T... objects) {
-        int i = index;
-        try {
-            do {
+        // A failed/cancelled predecessor still advances in order, without recursive recovery.
+        for (int i = index; i < objects.length; i++) {
+            try {
                 FutureTask<?> task = this.objectMap.getTask(objects[i]);
                 if (task != null && !task.isDone()) {
                     synchronized (task) {
                         task.get();
                     }
                 }
-            } while (++i < objects.length);
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                T object = objects[i];
-                if (object != null) {
-                    if (objects[i] instanceof Location) {
-                        this.plugin.getLogger().severe("An error occurred in location: " + object);
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    T object = objects[i];
+                    if (object != null) {
+                        if (objects[i] instanceof Location) {
+                            this.plugin.getLogger().severe("An error occurred in location: " + object);
+                        } else {
+                            this.plugin.getLogger().severe("An error occurred in object: " + object);
+                        }
                     } else {
-                        this.plugin.getLogger().severe("An error occurred in object: " + object);
+                        this.plugin.getLogger().severe("An error occurred.");
                     }
-                } else {
-                    this.plugin.getLogger().severe("An error occurred.");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            } finally {
-                this.waitFor(++i, objects);
             }
         }
     }
