@@ -6,12 +6,11 @@ import io.taraxacum.finaltech.core.dto.SimpleCargoDTO;
 import io.taraxacum.finaltech.core.helper.*;
 import io.taraxacum.libs.plugin.dto.InvWithSlots;
 import io.taraxacum.libs.plugin.dto.ItemWrapper;
-import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ItemStackUtil;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.Inventory;
@@ -51,173 +50,119 @@ public class CargoUtil {
     }
 
     public static Future<Integer> doCargoStrongSymmetry(@Nonnull CargoDTO cargoDTO) {
-        if (cargoDTO.getJavaPlugin().getServer().isPrimaryThread()) {
-            InvWithSlots inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-            if (inputMap == null) {
-                return ZERO_FUTURE;
-            }
-            InvWithSlots outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-            if (outputMap == null) {
-                return ZERO_FUTURE;
-            }
-            FutureTask<Integer> futureTask = new FutureTask<>(() -> CargoUtil.doSimpleCargoStrongSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
-            // Hard to ensure data security in asynchronous threads. So just run it.
-            futureTask.run();
-            return futureTask;
-        } else {
-            cargoDTO.getJavaPlugin().getServer().getScheduler().runTask(cargoDTO.getJavaPlugin(), () -> {
-                InvWithSlots inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-                if (inputMap == null) {
-                    return;
-                }
-                InvWithSlots outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-                if (outputMap == null) {
-                    return;
-                }
-                ServerRunnableLockFactory.getInstance(cargoDTO.getJavaPlugin(), Location.class).waitThenRun(() -> CargoUtil.doSimpleCargoStrongSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)), cargoDTO.getInputBlock().getLocation(), cargoDTO.getOutputBlock().getLocation());
-            });
+        if (!LegacySlimefunApiCompat.areOwnedByCurrentRegion(
+                cargoDTO.getInputBlock().getLocation(),
+                cargoDTO.getOutputBlock().getLocation())) {
             return ZERO_FUTURE;
         }
+
+        InvWithSlots inputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
+        if (inputMap == null) {
+            return ZERO_FUTURE;
+        }
+        InvWithSlots outputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
+        if (outputMap == null) {
+            return ZERO_FUTURE;
+        }
+
+        FutureTask<Integer> futureTask =
+                new FutureTask<>(() -> CargoUtil.doSimpleCargoStrongSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
+        futureTask.run();
+        return futureTask;
     }
 
     public static Future<Integer> doCargoWeakSymmetry(@Nonnull CargoDTO cargoDTO) {
-        if (cargoDTO.getJavaPlugin().getServer().isPrimaryThread()) {
-            InvWithSlots inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-            if (inputMap == null) {
-                return ZERO_FUTURE;
-            }
-            InvWithSlots outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-            if (outputMap == null) {
-                return ZERO_FUTURE;
-            }
-            FutureTask<Integer> futureTask = new FutureTask<>(() -> CargoUtil.doSimpleCargoWeakSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
-            // Hard to ensure data security in asynchronous threads. So just run it.
-            futureTask.run();
-            return futureTask;
-        } else {
-            cargoDTO.getJavaPlugin().getServer().getScheduler().runTask(cargoDTO.getJavaPlugin(), () -> {
-                InvWithSlots inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-                if (inputMap == null) {
-                    return;
-                }
-                InvWithSlots outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-                if (outputMap == null) {
-                    return;
-                }
-                ServerRunnableLockFactory.getInstance(cargoDTO.getJavaPlugin(), Location.class).waitThenRun(() -> CargoUtil.doSimpleCargoWeakSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)), cargoDTO.getInputBlock().getLocation(), cargoDTO.getOutputBlock().getLocation());
-            });
+        if (!LegacySlimefunApiCompat.areOwnedByCurrentRegion(
+                cargoDTO.getInputBlock().getLocation(),
+                cargoDTO.getOutputBlock().getLocation())) {
             return ZERO_FUTURE;
         }
+
+        InvWithSlots inputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
+        if (inputMap == null) {
+            return ZERO_FUTURE;
+        }
+        InvWithSlots outputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
+        if (outputMap == null) {
+            return ZERO_FUTURE;
+        }
+
+        FutureTask<Integer> futureTask =
+                new FutureTask<>(() -> CargoUtil.doSimpleCargoWeakSymmetry(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
+        futureTask.run();
+        return futureTask;
     }
 
     public static Future<Integer> doCargoInputMain(@Nonnull CargoDTO cargoDTO) {
-        // OutputMap will be null if BlockStorage has inventory in output block.
-        //      In this situation, we will get output inventory dynamically.
-        // If there is no output inventory, just return 0.
-
-        // Get inventory.
-        if (cargoDTO.getJavaPlugin().getServer().isPrimaryThread()) {
-            InvWithSlots inputMap;
-            InvWithSlots outputMap;
-            // Just get inputMap.
-            inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-            if (LegacyBlockDataCompat.hasMenu(cargoDTO.getOutputBlock().getLocation())) {
-                outputMap = null;
-            } else {
-                if (cargoDTO.getOutputBlock().getState() instanceof InventoryHolder) {
-                    // Output Inventory is vanilla container.
-                    outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-                    if (outputMap == null) {
-                        return ZERO_FUTURE;
-                    }
-                } else {
-                    // Output Inventory not existed.
-                    return ZERO_FUTURE;
-                }
-            }
-            FutureTask<Integer> futureTask = new FutureTask<>(() -> CargoUtil.doSimpleCargoInputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
-            // Hard to ensure data security in asynchronous threads. So just run it.
-            futureTask.run();
-            return futureTask;
-        } else {
-            cargoDTO.getJavaPlugin().getServer().getScheduler().runTask(cargoDTO.getJavaPlugin(), () -> {
-                InvWithSlots inputMap;
-                InvWithSlots outputMap;
-                // Just get inputMap.
-                inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-                if (LegacyBlockDataCompat.hasMenu(cargoDTO.getOutputBlock().getLocation())) {
-                    outputMap = null;
-                } else {
-                    if (cargoDTO.getOutputBlock().getState() instanceof InventoryHolder) {
-                        // Output Inventory is vanilla container.
-                        outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-                        if (outputMap == null) {
-                            return;
-                        }
-                    } else {
-                        // Output Inventory not existed.
-                        return;
-                    }
-                }
-                ServerRunnableLockFactory.getInstance(cargoDTO.getJavaPlugin(), Location.class).waitThenRun(() -> CargoUtil.doSimpleCargoInputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)), cargoDTO.getInputBlock().getLocation(), cargoDTO.getOutputBlock().getLocation());
-            });
+        // OutputMap will be null if Slimefun owns a dynamic output inventory.
+        // The dynamic lookup still occurs inside doSimpleCargoInputMain.
+        if (!LegacySlimefunApiCompat.areOwnedByCurrentRegion(
+                cargoDTO.getInputBlock().getLocation(),
+                cargoDTO.getOutputBlock().getLocation())) {
             return ZERO_FUTURE;
         }
+
+        InvWithSlots inputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
+        if (inputMap == null) {
+            return ZERO_FUTURE;
+        }
+
+        InvWithSlots outputMap;
+        if (LegacyBlockDataCompat.hasMenu(cargoDTO.getOutputBlock().getLocation())) {
+            outputMap = null;
+        } else if (cargoDTO.getOutputBlock().getState() instanceof InventoryHolder) {
+            outputMap = CargoUtil.getInvWithSlots(
+                    cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
+            if (outputMap == null) {
+                return ZERO_FUTURE;
+            }
+        } else {
+            return ZERO_FUTURE;
+        }
+
+        FutureTask<Integer> futureTask =
+                new FutureTask<>(() -> CargoUtil.doSimpleCargoInputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
+        futureTask.run();
+        return futureTask;
     }
 
     public static Future<Integer> doCargoOutputMain(@Nonnull CargoDTO cargoDTO) {
-        // InputMap will be null if BlockStorage has inventory in input block.
-        //      In this situation, we will get input inventory dynamically.
-        // If there is no input inventory, just return 0.
-
-        // Get inventory.
-        if (cargoDTO.getJavaPlugin().getServer().isPrimaryThread()) {
-            InvWithSlots inputMap;
-            InvWithSlots outputMap;
-            // Just get outputMap.
-            outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-            if (LegacyBlockDataCompat.hasMenu(cargoDTO.getInputBlock().getLocation())) {
-                inputMap = null;
-            } else {
-                if (cargoDTO.getInputBlock().getState() instanceof InventoryHolder) {
-                    // Input Inventory is vanilla container.
-                    inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-                    if (inputMap == null) {
-                        return ZERO_FUTURE;
-                    }
-                } else {
-                    // Input Inventory not existed.
-                    return ZERO_FUTURE;
-                }
-            }
-            FutureTask<Integer> futureTask = new FutureTask<>(() -> CargoUtil.doSimpleCargoOutputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
-            // Hard to ensure data security in asynchronous threads. So just run it.
-            futureTask.run();
-            return futureTask;
-        } else {
-            cargoDTO.getJavaPlugin().getServer().getScheduler().runTask(cargoDTO.getJavaPlugin(), () -> {
-                InvWithSlots inputMap;
-                InvWithSlots outputMap;
-                // Just get outputMap.
-                outputMap = CargoUtil.getInvWithSlots(cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
-                if (LegacyBlockDataCompat.hasMenu(cargoDTO.getInputBlock().getLocation())) {
-                    inputMap = null;
-                } else {
-                    if (cargoDTO.getInputBlock().getState() instanceof InventoryHolder) {
-                        // Input Inventory is vanilla container.
-                        inputMap = CargoUtil.getInvWithSlots(cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
-                        if (inputMap == null) {
-                            return;
-                        }
-                    } else {
-                        // Input Inventory not existed.
-                        return;
-                    }
-                }
-                ServerRunnableLockFactory.getInstance(cargoDTO.getJavaPlugin(), Location.class).waitThenRun(() -> CargoUtil.doSimpleCargoInputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)), cargoDTO.getInputBlock().getLocation(), cargoDTO.getOutputBlock().getLocation());
-            });
+        // InputMap will be null if Slimefun owns a dynamic input inventory.
+        // The dynamic lookup still occurs inside doSimpleCargoOutputMain.
+        if (!LegacySlimefunApiCompat.areOwnedByCurrentRegion(
+                cargoDTO.getInputBlock().getLocation(),
+                cargoDTO.getOutputBlock().getLocation())) {
             return ZERO_FUTURE;
         }
+
+        InvWithSlots outputMap = CargoUtil.getInvWithSlots(
+                cargoDTO.getOutputBlock(), cargoDTO.getOutputSize(), cargoDTO.getOutputOrder());
+        if (outputMap == null) {
+            return ZERO_FUTURE;
+        }
+
+        InvWithSlots inputMap;
+        if (LegacyBlockDataCompat.hasMenu(cargoDTO.getInputBlock().getLocation())) {
+            inputMap = null;
+        } else if (cargoDTO.getInputBlock().getState() instanceof InventoryHolder) {
+            inputMap = CargoUtil.getInvWithSlots(
+                    cargoDTO.getInputBlock(), cargoDTO.getInputSize(), cargoDTO.getInputOrder());
+            if (inputMap == null) {
+                return ZERO_FUTURE;
+            }
+        } else {
+            return ZERO_FUTURE;
+        }
+
+        FutureTask<Integer> futureTask =
+                new FutureTask<>(() -> CargoUtil.doSimpleCargoOutputMain(new SimpleCargoDTO(cargoDTO, inputMap, outputMap)));
+        futureTask.run();
+        return futureTask;
     }
 
     /**

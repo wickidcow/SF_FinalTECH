@@ -36,4 +36,9 @@ public abstract class AbstractCargo extends AbstractMachine {
     protected boolean isSynchronized() {
         return true;
     }
+
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
 }

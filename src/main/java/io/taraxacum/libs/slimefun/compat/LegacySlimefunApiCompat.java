@@ -37,6 +37,24 @@ public final class LegacySlimefunApiCompat {
         Slimefun.runSyncAt(location, runnable, delay);
     }
 
+    /**
+     * Returns whether the current thread owns the target location according to Slimefun's
+     * platform scheduler. On Paper/Purpur this maps to the main thread; on Folia it maps
+     * to the owning region thread.
+     */
+    public static boolean isOwnedByCurrentRegion(@Nonnull Location location) {
+        return Slimefun.getSchedulerService().isOwnedByCurrentRegion(location);
+    }
+
+    public static boolean areOwnedByCurrentRegion(@Nonnull Location... locations) {
+        for (Location location : locations) {
+            if (!isOwnedByCurrentRegion(location)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static int getResearchLevelCost(@Nonnull Research research) {
         return research.getCost();
     }

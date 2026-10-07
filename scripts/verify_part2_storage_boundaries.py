@@ -343,7 +343,7 @@ for path in (
 ):
     source = read(path)
     require(
-        "LegacyBlockDataCompat.getMenu(block.getLocation())" in source,
+        "LegacyBlockDataCompat.getMenu(" in source,
         f"{path} must route its ticker menu lookup through the compatibility boundary",
     )
     require(
@@ -965,7 +965,7 @@ require(
 )
 
 require(
-    cargo_util.count("LegacyBlockDataCompat.hasMenu(") == 6
+    cargo_util.count("LegacyBlockDataCompat.hasMenu(") == 4
     and cargo_util.count("LegacyBlockDataCompat.getMenu(") == 1,
     "CargoUtil must route all Slimefun-menu existence/retrieval checks through the compatibility boundary",
 )
@@ -979,9 +979,29 @@ require(
 )
 require("BlockStorage." not in area_accessor_menu, "AreaAccessorMenu must not directly use deprecated BlockStorage")
 
+for source, name in (
+    (point_transfer, "PointTransfer"),
+    (advanced_point_transfer, "AdvancedPointTransfer"),
+):
+    require(
+        source.count("LegacyBlockDataCompat.hasMenu(") == 1,
+        f"{name} must retain the Point-chain menu topology probe",
+    )
+    require(
+        source.count("LegacyBlockDataCompat.getMenu(") == 1,
+        f"{name} must retain its source menu retrieval",
+    )
+    require(
+        "LegacySlimefunApiCompat.isOwnedByCurrentRegion(location)" in source
+        and "LegacySlimefunApiCompat.areOwnedByCurrentRegion(" in source,
+        f"{name} must replace the retired async block-data gate with current-region ownership gates",
+    )
+    require(
+        "LegacyBlockDataCompat.setValue(location, ConstantTableUtil.CONFIG_UUID, blockPlaceEvent.getPlayer().getUniqueId().toString())" in source,
+        f"{name} must preserve owner UUID persistence",
+    )
+
 for source, name, has_menu_count, get_menu_count in (
-    (point_transfer, "PointTransfer", 3, 1),
-    (advanced_point_transfer, "AdvancedPointTransfer", 3, 1),
     (line_transfer, "LineTransfer", 7, 2),
     (advanced_line_transfer, "AdvancedLineTransfer", 7, 2),
     (mesh_transfer, "MeshTransfer", 5, 2),
