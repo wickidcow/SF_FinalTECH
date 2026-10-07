@@ -21,6 +21,7 @@ import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -89,7 +90,10 @@ public class LineTransfer extends AbstractCargo implements RecipeItem {
         BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-        boolean primaryThread = javaPlugin.getServer().isPrimaryThread();
+        boolean primaryThread = LegacySlimefunApiCompat.isOwnedByCurrentRegion(location);
+        if (!primaryThread) {
+            return;
+        }
         boolean drawParticle = blockMenu.hasViewer() || RouteShow.VALUE_TRUE.equals(RouteShow.HELPER.getOrDefaultValue(config));
 
         if (primaryThread) {
@@ -373,18 +377,30 @@ public class LineTransfer extends AbstractCargo implements RecipeItem {
     public List<Block> searchBlock(@Nonnull Block begin, @Nonnull BlockFace blockFace, @Nonnull String blockSearchMode) {
         List<Block> list = new ArrayList<>();
         Block block = begin.getRelative(blockFace);
+
         if (BlockSearchMode.VALUE_ZERO.equals(blockSearchMode)) {
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())) {
+                return list;
+            }
             if (CargoUtil.hasInventory(block)) {
                 list.add(block);
             }
+
             block = block.getRelative(blockFace);
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())) {
+                return list;
+            }
             if (CargoUtil.hasInventory(block)) {
                 list.add(block);
             }
             return list;
         }
-        while (CargoUtil.hasInventory(block)) {
-            if (LegacyBlockDataCompat.hasMenu(block.getLocation()) && LegacyBlockDataCompat.getMenu(block.getLocation()).getPreset().getID().equals(FinalTechItemStacks.LINE_TRANSFER.getItemId())) {
+
+        while (LegacySlimefunApiCompat.isOwnedByCurrentRegion(block.getLocation())
+                && CargoUtil.hasInventory(block)) {
+            if (LegacyBlockDataCompat.hasMenu(block.getLocation())
+                    && LegacyBlockDataCompat.getMenu(block.getLocation()).getPreset().getID()
+                    .equals(FinalTechItemStacks.LINE_TRANSFER.getItemId())) {
                 if (BlockSearchMode.VALUE_PENETRATE.equals(blockSearchMode)) {
                     block = block.getRelative(blockFace);
                     continue;
