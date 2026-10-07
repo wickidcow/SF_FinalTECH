@@ -20,6 +20,7 @@ import io.taraxacum.libs.plugin.dto.ServerRunnableLockFactory;
 import io.taraxacum.libs.plugin.util.ParticleUtil;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.taraxacum.libs.slimefun.compat.LegacyBlockDataCompat;
+import io.taraxacum.libs.slimefun.compat.LegacySlimefunApiCompat;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,10 +96,18 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
 
     @Override
     public void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem, @Nonnull SlimefunBlockData config) {
-        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(block.getLocation());
         Location location = block.getLocation();
+        if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(location)) {
+            return;
+        }
+
+        BlockMenu blockMenu = LegacyBlockDataCompat.getMenu(location);
+        if (blockMenu == null) {
+            return;
+        }
+
         JavaPlugin javaPlugin = this.getAddon().getJavaPlugin();
-        boolean primaryThread = javaPlugin.getServer().isPrimaryThread();
+        boolean primaryThread = true;
         boolean drawParticle = blockMenu.hasViewer() || RouteShow.VALUE_TRUE.equals(RouteShow.HELPER.getOrDefaultValue(config));
 
         BlockFace[] outputBlockFaces = PositionInfo.getBlockFaces(config, PositionInfo.VALUE_OUTPUT, PositionInfo.VALUE_INPUT_AND_OUTPUT);
@@ -110,9 +120,15 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
         if (primaryThread) {
             for (int i = 0; i < outputBlocks.length; i++) {
                 outputBlocks[i] = this.searchBlock(block, outputBlockFaces[i], outputBlockSearchMode, drawParticle);
+                if (outputBlocks[i] == null) {
+                    return;
+                }
             }
             for (int i = 0; i < inputBlocks.length; i++) {
                 inputBlocks[i] = this.searchBlock(block, inputBlockFaces[i], inputBlockSearchMode, drawParticle);
+                if (inputBlocks[i] == null) {
+                    return;
+                }
             }
 
             if (!PermissionUtil.checkOfflinePermission(location, config, LocationUtil.transferToLocation(inputBlocks)) || !PermissionUtil.checkOfflinePermission(location, config, LocationUtil.transferToLocation(outputBlocks))) {
@@ -243,9 +259,15 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
             javaPlugin.getServer().getScheduler().runTask(javaPlugin, () -> {
                 for (int i = 0; i < outputBlocks.length; i++) {
                     outputBlocks[i] = AdvancedMeshTransfer.this.searchBlock(block, outputBlockFaces[i], outputBlockSearchMode, drawParticle);
+                    if (outputBlocks[i] == null) {
+                        return;
+                    }
                 }
                 for (int i = 0; i < inputBlocks.length; i++) {
                     inputBlocks[i] = AdvancedMeshTransfer.this.searchBlock(block, inputBlockFaces[i], inputBlockSearchMode, drawParticle);
+                    if (inputBlocks[i] == null) {
+                        return;
+                    }
                 }
 
                 Inventory[] outputVanillaInventories = new Inventory[outputBlocks.length];
@@ -384,11 +406,14 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
         }
     }
 
-    @Nonnull
+    @Nullable
     public Block searchBlock(@Nonnull Block sourceBlock, @Nonnull BlockFace blockFace, @Nonnull String searchMode, boolean drawParticle) {
         List<Location> particleLocationList = new ArrayList<>();
         particleLocationList.add(LocationUtil.getCenterLocation(sourceBlock));
         Block result = sourceBlock.getRelative(blockFace);
+        if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(result.getLocation())) {
+            return null;
+        }
         if (BlockSearchMode.VALUE_ZERO.equals(searchMode)) {
             particleLocationList.add(LocationUtil.getCenterLocation(result));
             if (drawParticle && FinalTechChanged.getSlimefunTickCount() % this.particleInterval == 0) {
@@ -398,6 +423,9 @@ public class AdvancedMeshTransfer extends AbstractCargo implements RecipeItem {
             return result;
         }
         while (true) {
+            if (!LegacySlimefunApiCompat.isOwnedByCurrentRegion(result.getLocation())) {
+                return null;
+            }
             particleLocationList.add(LocationUtil.getCenterLocation(result));
             if (result.getType() == Material.IRON_CHAIN) {
                 result = result.getRelative(blockFace);
