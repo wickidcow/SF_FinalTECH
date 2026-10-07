@@ -7,7 +7,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -166,7 +168,7 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
     }
 
     public int taskSize() {
-        return this.objectMap.keySet().size();
+        return this.objectMap.size();
     }
 
     @SafeVarargs
@@ -221,7 +223,8 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
     }
 
     public void waitAllTask() throws ExecutionException, InterruptedException {
-        for (T t : this.objectMap.keySet()) {
+        // Snapshot only the keys; never hold the map monitor while waiting for a worker.
+        for (T t : this.objectMap.snapshotKeys()) {
             try {
                 FutureTask<?> futureTask = this.objectMap.getTask(t);
                 if (futureTask != null && !futureTask.isDone()) {
@@ -263,33 +266,44 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
         }
 
         @Nullable
-        protected FutureTask<?> getTask(@Nonnull T object) {
+        protected synchronized FutureTask<?> getTask(@Nonnull T object) {
             return this.taskMap.get(object);
         }
 
         @Nullable
-        protected ServerRunnableLockFactory<T> getFactory(@Nonnull T object) {
+        protected synchronized ServerRunnableLockFactory<T> getFactory(@Nonnull T object) {
             return this.factoryMap.get(object);
         }
 
-        protected void put(@Nonnull T object, @Nonnull FutureTask<?> futureTask, @Nonnull ServerRunnableLockFactory<T> serverRunnableLockFactory) {
+        protected synchronized void put(@Nonnull T object, @Nonnull FutureTask<?> futureTask, @Nonnull ServerRunnableLockFactory<T> serverRunnableLockFactory) {
             this.taskMap.put(object, futureTask);
             this.factoryMap.put(object, serverRunnableLockFactory);
         }
 
-        protected void remove(@Nonnull T object) {
+        protected synchronized void remove(@Nonnull T object) {
             this.taskMap.remove(object);
             this.factoryMap.remove(object);
         }
 
         @SafeVarargs
         protected final void remove(@Nonnull T... objects) {
-            for (T object : objects) {
-                this.taskMap.remove(object);
-                this.factoryMap.remove(object);
+            synchronized (this) {
+                for (T object : objects) {
+                    this.taskMap.remove(object);
+                    this.factoryMap.remove(object);
+                }
             }
         }
 
+        private synchronized List<T> snapshotKeys() {
+            return new ArrayList<>(this.taskMap.keySet());
+        }
+
+        private synchronized int size() {
+            return this.taskMap.size();
+        }
+
+        // Retained live-view bridge; callers must hold this ObjectMap monitor while using it.
         protected Set<T> keySet() {
             return this.taskMap.keySet();
         }
