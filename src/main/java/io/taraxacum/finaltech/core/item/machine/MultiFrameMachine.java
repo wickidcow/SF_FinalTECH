@@ -146,6 +146,11 @@ public class MultiFrameMachine extends AbstractTickerDataMachine implements Reci
     }
 
     @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
+    @Override
     public void registerDefaultRecipes() {
         RecipeUtil.registerDescriptiveRecipeWithBorder(FinalTechChanged.getLanguageManager(), this);
 
