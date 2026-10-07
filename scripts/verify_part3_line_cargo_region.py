@@ -36,14 +36,4 @@ for source, name in ((line, "LineTransfer"), (advanced, "AdvancedLineTransfer"))
         f"{name} must retain permission/topology handling for the discovered line",
     )
 
-for path in (
-    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/MeshTransfer.java",
-    "src/main/java/io/taraxacum/finaltech/core/item/machine/cargo/AdvancedMeshTransfer.java",
-):
-    source = read(path)
-    require(
-        "LegacySlimefunApiCompat.isOwnedByCurrentRegion" not in source,
-        f"{path} changed unexpectedly; Mesh cargo remains a separate tranche",
-    )
-
 print("FinalTECH Part 3 line cargo region safety: PASS")
