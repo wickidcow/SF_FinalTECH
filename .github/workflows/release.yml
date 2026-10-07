@@ -93,6 +93,9 @@ jobs:
       - name: Verify Part 3 own-menu tick safety
         run: python3 scripts/verify_part3_own_menu_ticks.py
 
+      - name: Verify Part 3 single-location ticker-data safety
+        run: python3 scripts/verify_part3_single_location_ticker_data.py
+
       - name: Verify ItemStack text compatibility
         run: python3 scripts/verify_itemstack_text_compat.py
 

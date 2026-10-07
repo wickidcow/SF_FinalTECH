@@ -89,6 +89,11 @@ public class TimeCapacitor extends AbstractTickerDataMachine implements EnergyNe
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     @Nonnull
     @Override
     public EnergyNetComponentType getEnergyComponentType() {
