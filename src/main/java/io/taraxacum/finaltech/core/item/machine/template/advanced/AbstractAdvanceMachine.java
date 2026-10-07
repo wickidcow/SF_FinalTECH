@@ -78,6 +78,11 @@ public abstract class AbstractAdvanceMachine extends AbstractMachine implements 
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     protected MachineRecipe matchRecipe(@Nonnull BlockMenu blockMenu, int offset, int recipeLock) {
         int quantityModule = Icon.updateQuantityModule(blockMenu, AdvancedMachineMenu.MODULE_SLOT, AdvancedMachineMenu.STATUS_SLOT);
 

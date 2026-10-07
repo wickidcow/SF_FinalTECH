@@ -32,5 +32,10 @@ public abstract class AbstractConfigFreeMachine extends AbstractMachine {
         tick(block, slimefunItem);
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     protected abstract void tick(@Nonnull Block block, @Nonnull SlimefunItem slimefunItem);
 }

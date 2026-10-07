@@ -75,6 +75,11 @@ public abstract class AbstractLogicComparator extends AbstractMachine {
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     protected abstract boolean preCompare(@Nullable ItemStack item1, @Nullable ItemStack item2);
 
     protected abstract boolean compare(@Nullable ItemStack item1, @Nullable ItemStack item2);

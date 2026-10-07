@@ -94,6 +94,11 @@ public abstract class AbstractConversionMachine extends AbstractMachine implemen
     }
 
     @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
+    @Override
     public void registerRecipe(@Nonnull MachineRecipe recipe) {
         if (recipe.getInput().length != 1) {
             throw new IllegalArgumentException("Register recipe for " + this.getItemName() + " has occurred a error: " + " input item type should be just one");

@@ -33,4 +33,9 @@ public abstract class AbstractElectricMachine extends AbstractMachine implements
     protected boolean isSynchronized() {
         return false;
     }
+
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
 }

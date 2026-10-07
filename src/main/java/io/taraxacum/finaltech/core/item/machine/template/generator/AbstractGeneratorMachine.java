@@ -55,6 +55,11 @@ public abstract class AbstractGeneratorMachine extends AbstractMachine implement
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     @Nonnull
     @Override
     protected AbstractMachineMenu setMachineMenu() {

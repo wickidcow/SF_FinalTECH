@@ -57,6 +57,11 @@ public abstract class AbstractBasicMachine extends AbstractMachine implements Re
         return false;
     }
 
+    @Override
+    protected boolean requiresLocationOwnedTick() {
+        return true;
+    }
+
     @Nonnull
     @Override
     protected AbstractMachineMenu setMachineMenu() {
