@@ -9,7 +9,9 @@ STARTUP_TIMEOUT="${SERVER_SMOKE_STARTUP_TIMEOUT:-300}"
 SHUTDOWN_TIMEOUT="${SERVER_SMOKE_SHUTDOWN_TIMEOUT:-90}"
 USER_AGENT="${SERVER_DOWNLOAD_USER_AGENT:-SF-FinalTECH-Folia-26.3-Readiness/1.0}"
 
-for cmd in curl jq java unzip; do
+READINESS_SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+for cmd in curl jq java unzip python3; do
   command -v "$cmd" >/dev/null 2>&1 || { echo "Missing required command: $cmd" >&2; exit 1; }
 done
 
@@ -126,15 +128,14 @@ cycle() {
     return 1
   fi
 
-  grep -Fq "Enabling Slimefun v${SLIMEFUN_VERSION}" "$log"
-  grep -Fq "Enabling FinalTECH-Changed v${FINALTECH_VERSION}" "$log"
-  grep -Fq 'Slimefun Upgrade Readiness' "$log"
-  ! grep -Eq 'Overall status:[[:space:]]+BLOCKED' "$log"
-  ! grep -Eq 'Error occurred while enabling (Slimefun|FinalTECH-Changed)|Could not load .*FinalTECH' "$log"
-  ! grep -Eq 'io\.taraxacum\..*(IllegalStateException|UnsupportedOperationException|AsyncCatcher)' "$log"
-  grep -Fq 'Stopping server' "$log"
+  local log_check=("$READINESS_SCRIPT_DIR/verify_folia_runtime_log.py" "$log"
+    --slimefun-version "$SLIMEFUN_VERSION" --finaltech-version "$FINALTECH_VERSION")
   if [[ "$require_clean" == true ]]; then
-    grep -Eq 'Storage:[[:space:]]+Ready[[:space:]]+\|[[:space:]]+previous shutdown[[:space:]]+Clean' "$log"
+    log_check+=(--require-clean)
+  fi
+  if ! python3 "${log_check[@]}"; then
+    cat "$log" >&2 || true
+    return 1
   fi
 }
 

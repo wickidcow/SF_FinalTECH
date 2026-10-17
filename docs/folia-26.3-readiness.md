@@ -39,6 +39,12 @@ The gate requires:
 - normal shutdown on both cycles;
 - Slimefun storage to report the previous shutdown clean on the second boot.
 
+The runtime log verifier requires a complete Doctor status and fails explicitly on
+BLOCKED results or plugin load/enable/disable errors. It checks FinalTECH-owned Java
+exception traces across lines, including nested causes and logger-prefixed frames,
+without assigning a separate plugin's exception to FinalTECH. Offline fixtures run
+before server startup and prove that these failures return a nonzero exit status.
+
 ## What passing means
 
 A green test means the current FinalTECH binary can pass this limited startup/shutdown

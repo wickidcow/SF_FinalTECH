@@ -7,6 +7,8 @@ on:
       - 'src/**'
       - 'scripts/make_folia_probe_jar.py'
       - 'scripts/test_make_folia_probe_jar.py'
+      - 'scripts/verify_folia_runtime_log.py'
+      - 'scripts/test_verify_folia_runtime_log.py'
       - 'scripts/folia_26_3_runtime_smoke.sh'
       - '.github/workflows/folia-26.3-readiness.yml'
       - 'docs/folia-26.3-readiness.md'
@@ -57,8 +59,10 @@ jobs:
             exit 1
           fi
 
-      - name: Verify probe copier
-        run: PYTHONPATH=scripts python3 -m unittest scripts/test_make_folia_probe_jar.py -v
+      - name: Verify probe copier and runtime log failure cases
+        run: >
+          PYTHONPATH=scripts python3 -m unittest
+          scripts/test_make_folia_probe_jar.py scripts/test_verify_folia_runtime_log.py -v
 
       - name: Verify existing region-ownership contracts
         run: |
@@ -112,7 +116,10 @@ jobs:
           sha256sum "$SOURCE" | tee build-finaltech-release.sha256
           python3 scripts/make_folia_probe_jar.py "$SOURCE" build/FinalTECH-FoliaProbe.jar
           unzip -p build/FinalTECH-FoliaProbe.jar plugin.yml | grep -Eiq '^folia-supported:[[:space:]]*true[[:space:]]*$'
-          ! unzip -p "$SOURCE" plugin.yml | grep -Eiq '^folia-supported[[:space:]]*:'
+          if unzip -p "$SOURCE" plugin.yml | grep -Eiq '^folia-supported[[:space:]]*:'; then
+            echo 'Production JAR unexpectedly declares Folia support.' >&2
+            exit 1
+          fi
           unzip -tqq build/FinalTECH-FoliaProbe.jar
 
       - name: Boot Slimefun and FinalTECH twice on Folia 26.3
