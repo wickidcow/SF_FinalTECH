@@ -9,7 +9,6 @@ import io.taraxacum.finaltech.FinalTechChanged;
 import io.taraxacum.finaltech.core.interfaces.RecipeItem;
 import io.taraxacum.libs.slimefun.dto.MachineRecipeFactory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
@@ -40,7 +39,7 @@ public abstract class AbstractMySlimefunItem extends SlimefunItem {
         if (this instanceof RecipeItem recipeItem) {
             int delay = recipeItem.getRegisterRecipeDelay();
             if (delay > 0) {
-                this.getAddon().getJavaPlugin().getServer().getScheduler().runTaskLater((Plugin) addon, () -> {
+                FinalTechChanged.getInstance().getStartupScheduler().runGlobalLater(addon.getJavaPlugin(), () -> {
                     (recipeItem).registerDefaultRecipes();
                     MachineRecipeFactory.getInstance().initAdvancedRecipeMap(this.getId());
                 }, delay);
