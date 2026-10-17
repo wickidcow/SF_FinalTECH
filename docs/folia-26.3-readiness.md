@@ -10,6 +10,19 @@ transitions, and region-owned particle scheduling.
 This readiness lane deliberately does **not** add `folia-supported: true` to the
 shipping `plugin.yml`.
 
+## Startup scheduler correction in 3.0.16
+
+The strict native probe exposed an unsupported Bukkit async timer during plugin
+enable. FinalTECH now retains the original Bukkit tick timing on Paper/Purpur and
+uses Folia's native async scheduler for its elapsed-time counter. The initial delay
+and repeat period still use the configured Slimefun tick rate (50 milliseconds per
+tick on Folia's async scheduler).
+
+Delayed configuration, registry and item-recipe setup callbacks use Folia's global
+scheduler. Each task retains its original addon owner and is cancelled on disable.
+Location-owned machine and cargo execution stays on the existing compatibility
+boundaries. A startup fix does not establish gameplay readiness for those systems.
+
 ## How the test works
 
 CI builds the normal FinalTECH release JAR first and records its SHA-256. A helper then

@@ -7,6 +7,7 @@ import io.taraxacum.finaltech.setup.FinalTechItemStacks;
 import io.taraxacum.finaltech.setup.SetupUtil;
 import io.taraxacum.finaltech.setup.Updater;
 import io.taraxacum.finaltech.util.ConstantTableUtil;
+import io.taraxacum.finaltech.util.StartupScheduler;
 import io.taraxacum.libs.plugin.dto.ConfigFileManager;
 import io.taraxacum.libs.plugin.dto.CustomLogger;
 import io.taraxacum.libs.plugin.dto.LanguageManager;
@@ -18,7 +19,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,10 +74,15 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
     private Set<String> noBlockTickerSlimefunPluginSet = new HashSet<>();
     private Random random;
     private long seed;
-    private BukkitTask bukkitTask;
+    private StartupScheduler startupScheduler;
 
     public static FinalTechChanged getInstance() {
         return instance;
+    }
+
+    /** Returns the lifecycle-owned scheduler for delayed registry setup. */
+    public StartupScheduler getStartupScheduler() {
+        return Objects.requireNonNull(this.startupScheduler, "FinalTECH startup scheduler is not initialized");
     }
 
     public static Logger logger() {
@@ -337,7 +342,8 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
 
         /* run task timer to do some function */
         int tickRate = Slimefun.getTickerTask().getTickRate();
-        this.bukkitTask = this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+        this.startupScheduler = new StartupScheduler(this, Slimefun.getSchedulerService().isFolia());
+        this.startupScheduler.runAsyncTimer(new Runnable() {
             private final BigDecimal FULL_SLIMEFUN_TICK = new BigDecimal(StringNumberUtil.mul("1000000000", String.valueOf(tickRate)));
             private long currentNanoTime = System.nanoTime();
             private long lastNanoTime = System.nanoTime();
@@ -371,7 +377,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         if (this.dataLossFixCustom) {
             int dataLossFixCustomDelay = this.config.getOrDefault(1, "setups", "data-loss-fix-custom", "delay");
             if (dataLossFixCustomDelay >= 0) {
-                this.getServer().getScheduler().runTaskLater(this, SetupUtil::dataLossFix, dataLossFixCustomDelay);
+                this.startupScheduler.runGlobalLater(SetupUtil::dataLossFix, dataLossFixCustomDelay);
             } else {
                 SetupUtil.dataLossFix();
             }
@@ -380,7 +386,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         /* setup item value table */
         int itemValueTableDelay = this.config.getOrDefault(10, "setups", "item-value-table", "delay");
         if (itemValueTableDelay >= 0) {
-            this.getServer().getScheduler().runTaskLater(this, () -> ItemValueTable.getInstance().init(), itemValueTableDelay);
+            this.startupScheduler.runGlobalLater(() -> ItemValueTable.getInstance().init(), itemValueTableDelay);
         } else {
             ItemValueTable.getInstance().init();
         }
@@ -388,7 +394,7 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
         /* setup slimefun machine block ticker */
         int blockTickerRegisterDelay = this.config.getOrDefault(20, "setups", "slimefun-machine", "delay");
         if (blockTickerRegisterDelay >= 0) {
-            this.getServer().getScheduler().runTaskLater(this, SetupUtil::registerBlockTicker, blockTickerRegisterDelay);
+            this.startupScheduler.runGlobalLater(SetupUtil::registerBlockTicker, blockTickerRegisterDelay);
         } else {
             SetupUtil.registerBlockTicker();
         }
@@ -436,8 +442,8 @@ public class FinalTechChanged extends JavaPlugin implements SlimefunAddon {
     @Override
     public void onDisable() {
         ServerRunnableLockFactory.stop();
-        if (this.bukkitTask != null) {
-            this.bukkitTask.cancel();
+        if (this.startupScheduler != null) {
+            this.startupScheduler.cancelAll();
         }
 
         if (this.locationRunnableFactory != null) {
