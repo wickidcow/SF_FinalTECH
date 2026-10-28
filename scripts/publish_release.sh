@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Publish a new stable asset only from the current main push; never move an existing release.
+# Publish a new stable asset only by confirmed main dispatch; never move an existing release.
 set -euo pipefail
 
-if [[ "${GITHUB_EVENT_NAME:-}" != push || "${GITHUB_REF:-}" != refs/heads/main ]]; then
-  echo 'Stable publication requires a push to main.' >&2
+if [[ "${GITHUB_EVENT_NAME:-}" != workflow_dispatch || "${GITHUB_REF:-}" != refs/heads/main ]]; then
+  echo 'Stable publication requires explicit workflow_dispatch from main.' >&2
   exit 1
 fi
 
@@ -11,6 +11,10 @@ JAR="${1:?Usage: publish_release.sh <jar> <notes-file> <version>}"
 NOTES="${2:?Release notes file is required}"
 VERSION="${3:?Release version is required}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+if [[ "${CONFIRM_VERSION:-}" != "$VERSION" ]]; then
+  echo "Refusing publication: confirm_version must exactly match $VERSION" >&2
+  exit 1
+fi
 [[ "${GITHUB_SHA:?}" =~ ^[0-9a-f]{40}$ ]]
 test -n "${GITHUB_REPOSITORY:?}"
 test -s "$JAR"
