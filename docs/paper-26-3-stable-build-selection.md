@@ -9,3 +9,7 @@ Four offline unit cases guard unsorted metadata, candidate/alpha/RC rejection, n
 Also pin the Slimefun Legacy compile/source input to the immutable v4.1.78 published source commit `b14a3bcc5ef221c013f93d49b6b3a1bbdb3101e9` instead of mutable `master`, verifying the exact commit checked out. Keep Java 21 target, 1.21.11 baseline and existing 26.2 compiler gates.
 
 The user explicitly prioritizes 26.3+ but requires that 1.21.11 and 26.2/26.1.2 compatibility be preserved, and that future version bumps only follow exact-head validation and immutable release-asset review.
+
+## Manual release gate
+
+Builds on ordinary `main` pushes and pull requests are now read-only and never publish. New releases require a separate write-scoped job reached only through a current-main `workflow_dispatch` with `publish=true` and matching `confirm_version`. The job obtains the exact tested raw JAR by `download-artifact@v8` / `skip-decompress: true` and calls the same immutable `scripts/publish_release.sh` guard. The script independently refuses unconfirmed dispatches, stale main, differing previous tags/bytes and invalid artifacts. The fake-CLI test suite includes a wrong-confirmation failure case. No 3.0.16 release assets are touched.

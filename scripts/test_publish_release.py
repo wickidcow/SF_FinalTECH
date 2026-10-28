@@ -90,7 +90,8 @@ class TestImmutablePublication(unittest.TestCase):
         self.calls_path = self.root / "calls.jsonl"
         self.state = {"main": SOURCE, "tag": None, "release": False, "asset": None}
         self.env = dict(os.environ, PATH=str(self.bin) + os.pathsep + os.environ["PATH"],
-                        GITHUB_EVENT_NAME="push", GITHUB_REF="refs/heads/main", GITHUB_SHA=SOURCE,
+                        GITHUB_EVENT_NAME="workflow_dispatch", GITHUB_REF="refs/heads/main",
+                        CONFIRM_VERSION="3.0.16", GITHUB_SHA=SOURCE,
                         GITHUB_REPOSITORY="wickidcow/SF_FinalTECH", RUNNER_TEMP=str(self.root),
                         PUBLISH_TEST_STATE=str(self.state_path), PUBLISH_TEST_CALLS=str(self.calls_path))
 
@@ -126,13 +127,21 @@ class TestImmutablePublication(unittest.TestCase):
         self.assertEqual(3, len(self.mutations()))
 
     def test_pr_manual_and_other_branches_cannot_publish(self) -> None:
-        for event, ref in [("pull_request", "refs/heads/main"), ("workflow_dispatch", "refs/heads/main"),
-                           ("push", "refs/heads/topic"), ("push", "refs/tags/v3.0.16")]:
+        for event, ref in [("pull_request", "refs/heads/main"), ("push", "refs/heads/main"),
+                           ("workflow_dispatch", "refs/heads/topic"),
+                           ("workflow_dispatch", "refs/tags/v3.0.16")]:
             with self.subTest(event=event, ref=ref):
                 self.env.update(GITHUB_EVENT_NAME=event, GITHUB_REF=ref)
                 result = self.publish()
                 self.assertNotEqual(0, result.returncode)
                 self.assertEqual([], self.calls())
+
+    def test_wrong_confirmation_never_mutates_a_release(self) -> None:
+        self.env["CONFIRM_VERSION"] = "3.0.17"
+        result = self.publish()
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("confirm_version must exactly match", result.stderr)
+        self.assertEqual([], self.mutations())
 
     def test_stale_main_cannot_create_a_tag_or_release(self) -> None:
         self.state["main"] = OTHER_SOURCE
