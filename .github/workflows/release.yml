@@ -22,12 +22,18 @@ jobs:
       - name: Check out FinalTECH
         uses: actions/checkout@v6
 
-      - name: Check out Slimefun Legacy
+      - name: Check out exact published Slimefun Legacy 4.1.78 core source
         uses: actions/checkout@v6
         with:
           repository: wickidcow/Slimefun-Legacy
-          ref: master
+          ref: b14a3bcc5ef221c013f93d49b6b3a1bbdb3101e9
           path: .deps/Slimefun-Legacy
+          persist-credentials: false
+      - name: Verify immutable published core source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .deps/Slimefun-Legacy rev-parse HEAD)" =             b14a3bcc5ef221c013f93d49b6b3a1bbdb3101e9
 
       - name: Set up Java 25
         uses: actions/setup-java@v5
@@ -150,33 +156,14 @@ jobs:
           -Dslimefun.version=ALBION-SNAPSHOT
           clean package
 
-      - name: Resolve Paper 26.3 primary API
+      - name: Validate numeric Paper 26.3 stable API selection
+        run: python3 -m unittest discover -s scripts -p 'test_select_paper_26_3_api.py' -v
+
+      - name: Resolve latest published stable Paper 26.3 API
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import os
-          import urllib.request
-          import xml.etree.ElementTree as ET
-
-          url = 'https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/maven-metadata.xml'
-          request = urllib.request.Request(url, headers={'User-Agent': 'FinalTECH-26.3-CI/1.0'})
-          with urllib.request.urlopen(request, timeout=30) as response:
-              root = ET.fromstring(response.read())
-
-          versions = [
-              node.text.strip()
-              for node in root.findall('./versioning/versions/version')
-              if node.text and node.text.strip().startswith('26.3')
-          ]
-          if not versions:
-              raise SystemExit('No Paper 26.3 API version is currently published')
-
-          version = versions[-1]
-          print(f'Using Paper 26.3 API: {version}')
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as stream:
-              stream.write(f'PAPER_26_3_VERSION={version}\n')
-          PY
+          python3 scripts/select_paper_26_3_api.py --github-env "$GITHUB_ENV"
 
       - name: Verify Paper 26.3 primary compatibility
         run: >-
