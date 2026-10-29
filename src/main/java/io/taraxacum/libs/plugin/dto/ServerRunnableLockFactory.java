@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
     private static final FutureTask<Void> VOID_FUTURE_TASK = new FutureTask<>(() -> null);
     private static final Map<Plugin, Map<Class<?>, ServerRunnableLockFactory<?>>> INSTANCE_MAP = new HashMap<>();
-    private static boolean serverStop = false;
+    private static volatile boolean serverStop = false;
     private final Plugin plugin;
     private final BukkitScheduler scheduler;
     private final ObjectMap<T> objectMap;
@@ -95,6 +95,11 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
         this.scheduler.runTaskLaterAsynchronously(this.plugin, () -> {
             boolean work = false;
             while (!work) {
+                if (ServerRunnableLockFactory.serverStop) {
+                    // No keys are reserved yet; never remove another task's locks on this path.
+                    futureTask.cancel(false);
+                    return;
+                }
                 ServerRunnableLockFactory.this.waitFor(objects);
                 synchronized (futureTask) {
                     synchronized (ServerRunnableLockFactory.this.objectMap) {
@@ -142,6 +147,11 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
         this.scheduler.runTaskLaterAsynchronously(this.plugin, () -> {
             boolean work = false;
             while (!work) {
+                if (ServerRunnableLockFactory.serverStop) {
+                    // No keys are reserved yet; never remove another task's locks on this path.
+                    futureTask.cancel(false);
+                    return;
+                }
                 ServerRunnableLockFactory.this.waitFor(objects);
                 synchronized (futureTask) {
                     synchronized (ServerRunnableLockFactory.this.objectMap) {
