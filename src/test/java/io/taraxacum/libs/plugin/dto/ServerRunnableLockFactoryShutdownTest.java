@@ -124,6 +124,34 @@ class ServerRunnableLockFactoryShutdownTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void submissionsAfterStopReturnDistinctCancelledFuturesWithoutScheduling(boolean callable) throws Exception {
+        try (Fixture fixture = new Fixture()) {
+            AtomicInteger calls = new AtomicInteger();
+            FutureTask<Void> predecessor = new FutureTask<>(() -> null);
+            fixture.installPredecessor(predecessor);
+            ServerRunnableLockFactory.stop();
+            Callable<Integer> supplier = calls::incrementAndGet;
+            Runnable action = calls::incrementAndGet;
+            FutureTask<?> immediate = callable
+                    ? fixture.factory.waitThenRun(supplier, fixture.key)
+                    : fixture.factory.waitThenRun(action, fixture.key);
+            FutureTask<?> delayed = callable
+                    ? fixture.factory.waitThenRun(7L, supplier, fixture.key)
+                    : fixture.factory.waitThenRun(7L, action, fixture.key);
+            assertCancelledWithoutPayload(immediate, calls);
+            assertCancelledWithoutPayload(delayed, calls);
+            assertNotSame(immediate, delayed, "Cancellation state must not be shared between submissions");
+            assertNull(fixture.scheduled, "A stopped factory must not ask the server to schedule work");
+            assertFalse(predecessor.isDone());
+            assertFalse(predecessor.isCancelled());
+            assertSame(predecessor, fixture.map.getTask(fixture.key));
+            assertSame(fixture.factory, fixture.map.getFactory(fixture.key));
+            assertEquals(1, fixture.factory.taskSize());
+        }
+    }
+
     private static void assertCancelledWithoutPayload(FutureTask<?> future, AtomicInteger calls) {
         assertEquals(0, calls.get());
         assertTrue(future.isDone(), "Cancelled future must not strand a caller");
