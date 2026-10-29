@@ -84,6 +84,9 @@ jobs:
       - name: Verify immutable publication guard
         run: python3 -m unittest discover -s scripts -p 'test_publish_release.py' -v
 
+      - name: Verify project manifest remains intact during shading
+        run: python3 -m unittest discover -s scripts -p 'test_shaded_manifest_contract.py' -v
+
       - name: Verify compatibility metadata
         shell: bash
         run: |
@@ -212,7 +215,20 @@ jobs:
           jar = pathlib.Path('target/${JAR}')
           max_major = 0
           with zipfile.ZipFile(jar) as zf:
-              for name in zf.namelist():
+              names = zf.namelist()
+              if names.count('META-INF/MANIFEST.MF') != 1:
+                  raise SystemExit('Shaded JAR lost or duplicated the canonical project manifest')
+              if b'Manifest-Version:' not in zf.read('META-INF/MANIFEST.MF'):
+                  raise SystemExit('Canonical project manifest is invalid')
+              if names.count('plugin.yml') != 1 or b'version: ${VERSION}' not in zf.read('plugin.yml'):
+                  raise SystemExit('Shaded JAR lost the expected FinalTECH plugin.yml')
+              if not any(n.startswith('io/taraxacum/finaltech/shaded/bstats/') and n.endswith('.class')
+                         for n in names):
+                  raise SystemExit('Relocated bStats classes are absent')
+              if any(n.startswith('org/bstats/') and n.endswith('.class') for n in names):
+                  raise SystemExit('Unrelocated bStats classes leaked into the plugin JAR')
+              print('Canonical project manifest, plugin.yml and relocated bStats verified')
+              for name in names:
                   if not name.endswith('.class'):
                       continue
                   data = zf.read(name)[:8]

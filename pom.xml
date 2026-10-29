@@ -68,9 +68,20 @@
                             <shadedPattern>io.taraxacum.finaltech.shaded.bstats</shadedPattern>
                         </relocation>
                     </relocations>
+                    <!-- Exclude signatures/duplicate manifests only from bundled bStats JARs,
+                         preserving the project's own canonical META-INF/MANIFEST.MF. -->
                     <filters>
                         <filter>
-                            <artifact>*:*</artifact>
+                            <artifact>org.bstats:bstats-base</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.bstats:bstats-bukkit</artifact>
                             <excludes>
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
