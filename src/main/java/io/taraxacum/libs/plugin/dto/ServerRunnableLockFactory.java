@@ -24,7 +24,6 @@ import java.util.concurrent.*;
  * @since 2.2
  */
 public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
-    private static final FutureTask<Void> VOID_FUTURE_TASK = new FutureTask<>(() -> null);
     private static final Map<Plugin, Map<Class<?>, ServerRunnableLockFactory<?>>> INSTANCE_MAP = new HashMap<>();
     private static volatile boolean serverStop = false;
     private final Plugin plugin;
@@ -90,7 +89,9 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
             return null;
         });
         if (ServerRunnableLockFactory.serverStop) {
-            return VOID_FUTURE_TASK;
+            // Rejected work must have a terminal future, without acquiring or clearing any keys.
+            futureTask.cancel(false);
+            return futureTask;
         }
         this.scheduler.runTaskLaterAsynchronously(this.plugin, () -> {
             boolean work = false;
@@ -142,7 +143,9 @@ public class ServerRunnableLockFactory<T> implements RunnableLockFactory<T> {
             return null;
         });
         if (ServerRunnableLockFactory.serverStop) {
-            return new FutureTask<>(() -> null);
+            // Rejected work must have a terminal future, without acquiring or clearing any keys.
+            futureTask.cancel(false);
+            return futureTask;
         }
         this.scheduler.runTaskLaterAsynchronously(this.plugin, () -> {
             boolean work = false;
