@@ -239,6 +239,8 @@ jobs:
           if max_major > 65:
               raise SystemExit('JAR contains classes newer than Java 21 bytecode')
           PY
+          python3 -m unittest discover -s scripts -p 'test_check_java21_bytecode.py' -v
+          python3 scripts/check_java21_bytecode.py "target/${JAR}"
           sha256sum "target/${JAR}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "jar=${JAR}" >> "$GITHUB_OUTPUT"
