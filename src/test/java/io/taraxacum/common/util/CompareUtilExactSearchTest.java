@@ -57,7 +57,7 @@ class CompareUtilExactSearchTest {
                 assertEquals(present, generic >= 0, "generic length=" + length + " query=" + query);
                 if (present) {
                     assertEquals(query, values[primitive]);
-                    assertEquals(query, boxed[generic]);
+                    assertEquals(query, boxed[generic].intValue());
                 }
             }
         }
