@@ -4,7 +4,7 @@ package io.taraxacum.common.util;
  * @author Final_ROOT
  */
 public class CompareUtil {
-    public static SimpleComparator<Integer> INTEGER_SIMPLE_COMPARATOR = (comparison, compared) -> comparison - compared;
+    public static SimpleComparator<Integer> INTEGER_SIMPLE_COMPARATOR = Integer::compare;
 
     /**
      * @param sources          should be ordered
@@ -13,19 +13,17 @@ public class CompareUtil {
      */
     public static <T> int getIndex(T[] sources, T targetValue, SimpleComparator<T> simpleComparator) {
         int left = 0;
-        int right = sources.length;
-        int mid = (left + right) >> 1;
-        int r;
-        while (mid != left && mid != right) {
-            r = simpleComparator.compare(targetValue, sources[mid]);
-            if (r > 0) {
-                left = mid;
-            } else if (r < 0) {
-                right = mid;
+        int right = sources.length - 1;
+        while (left <= right) {
+            int mid = left + ((right - left) >>> 1);
+            int comparison = simpleComparator.compare(targetValue, sources[mid]);
+            if (comparison > 0) {
+                left = mid + 1;
+            } else if (comparison < 0) {
+                right = mid - 1;
             } else {
                 return mid;
             }
-            mid = (left + right) >> 1;
         }
         return -1;
     }
@@ -84,19 +82,17 @@ public class CompareUtil {
      */
     public static int getIntIndex(int[] sources, int targetValue) {
         int left = 0;
-        int right = sources.length;
-        int mid = (left + right) >> 1;
-        int r;
-        while (mid != left && mid != right) {
-            r = targetValue - sources[mid];
-            if (r > 0) {
-                left = mid;
-            } else if (r < 0) {
-                right = mid;
+        int right = sources.length - 1;
+        while (left <= right) {
+            int mid = left + ((right - left) >>> 1);
+            int comparison = Integer.compare(targetValue, sources[mid]);
+            if (comparison > 0) {
+                left = mid + 1;
+            } else if (comparison < 0) {
+                right = mid - 1;
             } else {
                 return mid;
             }
-            mid = (left + right) >> 1;
         }
         return -1;
     }
