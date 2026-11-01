@@ -83,6 +83,8 @@ jobs:
 
       - name: Verify immutable publication guard
         run: python3 -m unittest discover -s scripts -p 'test_publish_release.py' -v
+      - name: Verify exact-source release artifact selection
+        run: python3 -m unittest discover -s scripts -p 'test_release_artifact_identity.py' -v
 
       - name: Verify project manifest remains intact during shading
         run: python3 -m unittest discover -s scripts -p 'test_shaded_manifest_contract.py' -v
@@ -265,9 +267,12 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: true
+      - name: Resolve exact-source release artifact identity
+        id: identity
+        run: python3 scripts/release_artifact_identity.py --github-output "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v8
         with:
-          name: SF_FinalTECH3.0.16.jar
+          name: ${{ steps.identity.outputs.jar }}
           path: dist
           skip-decompress: true
       - name: Verify exact version confirmation and release bytes
