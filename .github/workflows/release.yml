@@ -86,6 +86,9 @@ jobs:
       - name: Verify exact-source release artifact selection
         run: python3 -m unittest discover -s scripts -p 'test_release_artifact_identity.py' -v
 
+      - name: Verify exact-green-main publisher policy and raw JAR fixtures
+        run: python3 -m unittest discover -s scripts -p 'test_verified_green_main_publisher.py' -v
+
       - name: Verify project manifest remains intact during shading
         run: python3 -m unittest discover -s scripts -p 'test_shaded_manifest_contract.py' -v
 
@@ -244,6 +247,7 @@ jobs:
           python3 -m unittest discover -s scripts -p 'test_check_java21_bytecode.py' -v
           python3 scripts/check_java21_bytecode.py "target/${JAR}"
           sha256sum "target/${JAR}"
+          python3 scripts/verify_immutable_release_jar.py "target/${JAR}" "$VERSION" "$(sha256sum "target/${JAR}" | cut -d' ' -f1)"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "jar=${JAR}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
