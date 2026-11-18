@@ -88,6 +88,12 @@ class VerifiedPublisherTest(unittest.TestCase):
                 'gh release create "$TAG" "dist/$NAME" --verify-tag',
                 'gh release upload "$TAG" "dist/$NAME" --clobber', 1))
 
+    def test_pinned_maven_archive_fallback_preserves_sha512(self):
+        installer = (ROOT / "scripts/install_maven_3_10.sh").read_text(encoding="utf-8")
+        self.assertIn("archive.apache.org/dist/maven/maven-3/", installer)
+        self.assertIn("sha512sum --check --status", installer)
+        self.assertIn("908b1501bfb420bf7c8affb855534a9c", installer)
+
     def test_builder_can_produce_exact_run_artifact(self):
         builder = BUILDER.read_text(encoding="utf-8")
         self.assertIn("name: Build and Publish FinalTECH JAR", builder)
