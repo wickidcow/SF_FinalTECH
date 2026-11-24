@@ -92,7 +92,8 @@ class VerifiedPublisherTest(unittest.TestCase):
         installer = (ROOT / "scripts/install_maven_3_10.sh").read_text(encoding="utf-8")
         self.assertIn("archive.apache.org/dist/maven/maven-3/", installer)
         self.assertIn("sha512sum --check --status", installer)
-        self.assertIn("908b1501bfb420bf7c8affb855534a9c", installer)
+        self.assertIn("MAVEN_VERSION=3.10.2\n", installer)
+        self.assertIn("MAVEN_SHA512=57d2db6b37e7582119137ade544557bba741b29e62109ef81539a2bdfd6d0e641fdd5d8edb014af1816d0510deac6fac8f347433b3a1aa36316ba85aa77b8119\n", installer)
 
     def test_builder_can_produce_exact_run_artifact(self):
         builder = BUILDER.read_text(encoding="utf-8")
